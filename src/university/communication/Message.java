@@ -4,26 +4,10 @@ import university.users.User;
 
 import java.util.Date;
 
-//ooo
-//jjjjjj
-//llll
 public class Message
 {
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
-	
+
 	public User sender;
-	
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!--  end-user-doc  -->
-	 * @generated
-	 * @ordered
-	 */
 	
 	public User recipient;
 	
