@@ -6,7 +6,7 @@ import university.courses.School;
 import university.courses.StudentOrganization;
 import university.courses.Transcript;
 
-public class Student implements Researcher
+public class Student extends User implements Researcher
 {
 	public String studentId;
 	public School school;

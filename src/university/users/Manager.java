@@ -1,5 +1,5 @@
 package university.users;
 
-public enum Manager {
-	OR, Dean;
+public class Manager extends Employee{
+
 }
