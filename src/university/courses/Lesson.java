@@ -4,8 +4,7 @@ import java.util.Date;
 
 
 
-public class Lesson
-{
+public class Lesson {
 	private String id;
 	public String name;
 	public Course course;

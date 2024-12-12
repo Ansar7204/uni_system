@@ -13,8 +13,7 @@ public abstract class Employee extends User
 
 
 	public String viewRequests() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 	
 }

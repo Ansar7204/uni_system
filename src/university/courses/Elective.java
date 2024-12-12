@@ -1,7 +1,6 @@
 package university.courses;
 
 
-public enum Elective
-{
-	Major, Minor, Free;
+public enum Elective {
+	MAJOR, MINOR, FREE;
 }

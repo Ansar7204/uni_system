@@ -1,7 +1,5 @@
 package university.courses;
 
-public enum Marks
-{
-	A, A-, B, B-, C+, C, C-, D, F;
+public enum Marks {
+	A, B, C, D, F;
 }
-//fjnehuflpredpfjgg

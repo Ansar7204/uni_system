@@ -1,11 +1,5 @@
 package university.users;
 
-/**
- * <!-- begin-user-doc -->
- * <!--  end-user-doc  -->
- * @generated
- */
-public enum Manager
-{
+public enum Manager {
 	OR, Dean;
 }

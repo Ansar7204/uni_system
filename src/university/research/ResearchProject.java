@@ -5,7 +5,7 @@ public class ResearchProject
 {
 	public String topic;
 	public ResearchPaper publishedPapers;
-	public Researcher participiants;
+	public Researcher participants;
 
 	public ResearchProject(){
 		super();
@@ -13,7 +13,6 @@ public class ResearchProject
 
 
 	public void addParticipiant() {
-		// TODO implement me	
 	}
 	
 }

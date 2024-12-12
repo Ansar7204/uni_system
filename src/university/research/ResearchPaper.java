@@ -21,9 +21,8 @@ public class ResearchPaper
 
 
 	
-	public String getCitation(Format parameter) {
-		// TODO implement me
-		return "";	
+	public String getCitation(Format f) {
+		return "";
 	}
 	
 }

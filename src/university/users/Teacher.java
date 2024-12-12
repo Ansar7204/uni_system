@@ -1,11 +1,11 @@
 package university.users;
 
+import university.communication.UrgencyLevel;
 import university.research.ResearchPaper;
 import university.research.Researcher;
 
 
-public class Teacher extends Employee implements Researcher
-{
+public class Teacher extends Employee implements Researcher {
 	private boolean isProfessor;
 	private String courses;
 
@@ -23,8 +23,8 @@ public class Teacher extends Employee implements Researcher
 		return "";
 	}
 
-	public String viewStudents() {
-		return "";
+	public String viewStudents(Student s) {
+		return s.toString();
 	}
 
 	
@@ -32,8 +32,8 @@ public class Teacher extends Employee implements Researcher
 	}
 
 	
-	public String sendComplaint() {
-		return "";
+	public String sendComplaint(UrgencyLevel urgency) {
+		return "Complaint has been sent!";
 	}
 
 	public double calculateHIndex() {

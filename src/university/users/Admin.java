@@ -3,8 +3,7 @@ package university.users;
 import university.logs.Log;
 
 
-public class Admin extends Employee
-{
+public class Admin extends Employee {
 	public Log logs;
 	public Admin(){
 		super();

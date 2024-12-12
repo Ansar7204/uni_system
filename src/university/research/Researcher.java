@@ -1,13 +1,10 @@
 package university.research;
 
 
-public  interface Researcher 
-{
+public interface Researcher {
 
 	 double calculateHIndex() ;
-
 	 ResearchPaper printPapers(ResearchPaper parameter) ;
-	
-	
+
 }
 
