@@ -3,7 +3,12 @@ package university.communication;
 import university.users.User;
 
 import java.util.Date;
-//dddd
+
+/**
+ * <!-- begin-user-doc -->
+ * <!--  end-user-doc  -->
+ * @generated
+ */
 
 public class Message
 {
