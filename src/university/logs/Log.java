@@ -3,8 +3,7 @@ package university.logs;
 import java.util.Date;
 
 
-public class Log
-{
+public class Log {
 	private Date timestamp;
 	private String userId;
 	private String action;

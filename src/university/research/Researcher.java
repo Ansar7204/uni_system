@@ -4,9 +4,7 @@ package university.research;
 public  interface Researcher 
 {
 
-	
-	 int calculateHIndex() ;
-	
+	 double calculateHIndex() ;
 
 	 ResearchPaper printPapers(ResearchPaper parameter) ;
 	

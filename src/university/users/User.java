@@ -2,14 +2,9 @@ package university.users;
 
 import university.communication.Message;
 
-/**
- * <!-- begin-user-doc -->
- * <!--  end-user-doc  -->
- * @generated
- */
+import java.io.Serializable;
 
-public abstract class User
-{
+public abstract class User implements Serializable {
 	private String id;
 	private String name;
 	private String email;
@@ -21,21 +16,18 @@ public abstract class User
 
 	
 	public String login() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 	
 
 	
 	public Message sendMessage(User parameter, Message parameter2) {
-		// TODO implement me
-		return null;	
+		return null;
 	}
 
 	
 	public String viewNews() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 	
 }

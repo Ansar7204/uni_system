@@ -22,65 +22,54 @@ public class Student implements Researcher
 
 
 	public String viewCourses() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 	
 
 	
 	public void registerForCourses() {
-		// TODO implement me	
 	}
 	
 
 	
 	public String viewTeacher() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 
 	
 	public String viewMarks() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 	
 
 	public String viewTranscript() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 
 	
 	public void rateTeachers() {
-		// TODO implement me	
 	}
 	
 
 	public void getTranscript() {
-		// TODO implement me	
 	}
 	
 
 	
 	public String seeSchedule() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 	
 
 	
 	public String viewFiles() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 
-	@Override
-	public int calculateHIndex() {
+	public double calculateHIndex() {
 		return 0;
 	}
 
-	@Override
 	public ResearchPaper printPapers(ResearchPaper parameter) {
 		return null;
 	}

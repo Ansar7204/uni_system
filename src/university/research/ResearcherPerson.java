@@ -17,7 +17,7 @@ public class ResearcherPerson extends Employee implements Researcher
 	}
 
 	@Override
-	public int calculateHIndex() {
+	public double calculateHIndex() {
 		return 0;
 	}
 

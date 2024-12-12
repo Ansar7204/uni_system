@@ -15,38 +15,31 @@ public class Teacher extends Employee implements Researcher
 
 	
 	public String viewCourses() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 
 	
 	public String manageCourses() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 
 	public String viewStudents() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 
 	
 	public void putMarks() {
-		// TODO implement me	
 	}
 
 	
 	public String sendComplaint() {
-		// TODO implement me
-		return "";	
+		return "";
 	}
 
-	@Override
-	public int calculateHIndex() {
+	public double calculateHIndex() {
 		return 0;
 	}
 
-	@Override
 	public ResearchPaper printPapers(ResearchPaper parameter) {
 		return null;
 	}

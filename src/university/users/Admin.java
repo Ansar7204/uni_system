@@ -12,21 +12,17 @@ public class Admin extends Employee
 
 
 	public void addUser() {
-		// TODO implement me	
 	}
 	
 
 	public void removeUser() {
-		// TODO implement me	
 	}
 
 	
 	public void updateUser() {
-		// TODO implement me	
 	}
 
 	public void viewLogs() {
-		// TODO implement me	
 	}
 	
 }
