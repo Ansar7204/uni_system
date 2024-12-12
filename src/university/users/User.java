@@ -1,6 +1,7 @@
 package university.users;
 
 import university.communication.Message;
+import university.communication.News;
 
 import java.io.Serializable;
 
@@ -11,24 +12,48 @@ public abstract class User {
 	private String id;
 	private String name;
 	private String email;
-
-	// List to store received messages
+	private String password;
 	private List<Message> receivedMessages;
 
-	// Constructor
-	public User(String id, String name, String email) {
+	public User(String id, String name, String email, String password) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
+		this.password = password ;
 		this.receivedMessages = new ArrayList<>();
 	}
 
-	// Default constructor
-	public User() {
-		this("", "", "");
+	public boolean logIn(String email, String password) {
+		LanguageManager languageManager = LanguageManager.getInstance();
+		if(this.email.equals(email) && this.password.equals(password)) {
+			System.out.println(languageManager.getLocalizedMessage(
+					"Login successful for user: " + name
+			));
+			return true;
+		}
+		System.out.println(languageManager.getLocalizedMessage(
+				"Login failed for user: " + name
+		return false;
+
 	}
 
-	// Getters and Setters
+	public void logOut() {
+		LanguageManager languageManager = LanguageManager.getInstance();
+		System.out.println(languageManager.getLocalizedMessage(
+				"User " + name + " logged out successfully"
+		));
+	}
+
+	public void commentNews(News news, String comment) {
+		LanguageManager languageManager = LanguageManager.getInstance();
+		news.addComment(this, comment);
+		System.out.println(languageManager.getLocalizedMessage(
+				"Comment addded to news by " + name,
+				"Комментарий добавлен в новость пользователем " + name,
+				name + " есімді қолданушы жаңалыққа пікір қосты"
+		));
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -57,12 +82,10 @@ public abstract class User {
 		return receivedMessages;
 	}
 
-	// Login method
 	public String login() {
 		return "User " + name + " has logged in successfully.";
 	}
 
-	// Send a message to another user
 	public Message sendMessage(User recipient, Message message) {
 		if (recipient == null || message == null) {
 			throw new IllegalArgumentException("Recipient or message cannot be null.");
@@ -71,36 +94,25 @@ public abstract class User {
 		return message;
 	}
 
-	// Receive a message (adds to the receivedMessages list)
 	public void receiveMessage(Message message) {
 		if (message != null) {
 			receivedMessages.add(message);
 		}
 	}
 
-	// View received messages
 	public String viewMessages() {
 		if (receivedMessages.isEmpty()) {
 			return "No messages.";
 		}
-		StringBuilder sb = new StringBuilder();
-		sb.append("Messages for ").append(name).append(":\n");
-		for (Message message : receivedMessages) {
-			sb.append("- ").append(message.getContent()).append("\n");
-		}
-		return sb.toString();
+		return receivedMessages.toString();
 	}
 
-	// View news (placeholder for actual news logic)
 	public String viewNews() {
 		return "Displaying the latest news...";
 	}
 
-	// Abstract method to get the role of the user
 	public abstract String getRole();
 
-	// ToString method
-	@Override
 	public String toString() {
 		return "User{id='" + id + "', name='" + name + "', email='" + email + "'}";
 	}
