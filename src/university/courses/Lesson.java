@@ -5,10 +5,10 @@ import java.util.Date;
 
 
 public class Lesson {
-	private String id;
-	public String name;
+	public LessonTypes LessonType ;
+	public String LessonName;
 	public Course course;
-	public Date dateTime;
+	public Date LessonTime;
 
 	public Lesson(){
 		super();

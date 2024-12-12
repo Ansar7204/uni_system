@@ -51,8 +51,7 @@ public class Student extends User implements Researcher
 	}
 	
 
-	public String viewTranscript() {
-		return "";
+	public String viewTranscript() { return "";
 	}
 
 	
