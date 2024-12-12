@@ -14,6 +14,7 @@ public class Course {
 	public String elective;
 	public List<Teacher> courseTeachers;
 	public List<Student> enrolledStudents;
+	public List<Lesson> lessonsOfCourse;
 
 	public Course(String courseID, String courseName, String majorRequirement, String minorRequirement, String elective) {
 		this.courseID = courseID;
@@ -23,6 +24,7 @@ public class Course {
 		this.elective = elective;
 		this.courseTeachers = new ArrayList<>();
 		this.enrolledStudents = new ArrayList<>();
+		this.lessonsOfCourse = new ArrayList<>();
 	}
 
 
@@ -49,6 +51,10 @@ public class Course {
 		for (Student student : students) {
 			addStudent(student);
 		}
+	}
+
+	public void setLessonsOfCourse(List<Lesson> lessonsOfCourse) {
+		this.lessonsOfCourse = lessonsOfCourse;
 	}
 
 	public List<Teacher> getCourseTeachers() {
