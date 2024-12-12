@@ -22,20 +22,15 @@ public class Student extends User implements Researcher {
 	private List<File> files;
 
 	public Student(String studentId, School school, Transcript transcript, StudentOrganization organizationMembership, int yearOfStudy) {
-		this.studentId = studentId;
-		this.school = school;
-		this.transcript = transcript;
-		this.organizationMembership = organizationMembership;
-		this.yearOfStudy = yearOfStudy;
-		this.registeredCourses = new ArrayList<Course>();
-		this.files = new ArrayList<File>();
+		 super();
+		 this.studentId = studentId;
+		 this.school = school;
+		 this.transcript = transcript;
+		 this.organizationMembership = organizationMembership;
+		 this.yearOfStudy = yearOfStudy;
+		 this.registeredCourses = new ArrayList<Course>();
+		 this.files = new ArrayList<File>();
 	}
-
-	public Student() {
-		super();
-	}
-
-	// Getters and Setters
 	public String getStudentId() {
 		return studentId;
 	}
@@ -68,15 +63,11 @@ public class Student extends User implements Researcher {
 		this.yearOfStudy = yearOfStudy;
 	}
 
-	@Override
 	public String getRole() {
 		return "Student";
 	}
 
 	public String viewCourses() {
-		if (registeredCourses.isEmpty()) {
-			return "You are not registered for any courses.";
-		}
 		StringBuilder coursesList = new StringBuilder("Registered courses:\n");
 		for (Course course : registeredCourses) {
 			coursesList.append(course.getCourseName()).append("\n");
@@ -84,12 +75,20 @@ public class Student extends User implements Researcher {
 		return coursesList.toString();
 	}
 
-	public void registerForCourses(Course course) {
-		// Check if the student is already registered for the course
-		if (registeredCourses.contains(course)) {
-			System.out.println("You are already registered for the course: " + course.getCourseName());
-			return;
+	public String registerForCourses(Course Course) {
+		StringBuilder coursesList = new StringBuilder();
+		for (Course course : registeredCourses) {
+			coursesList.append(course.getCourseName()).append("\n");
+			if (course.getCourseName().equals(Course.getCourseName())) {
+				return "You are already registered for the course: " + course.getCourseName();
+			}
+			else {
+				registeredCourses.add(Course);
+				Course.addStudent(this);
+				return "Successfully registered for the course: " + Course.getCourseName();
+			}
 		}
+		return coursesList.toString();
 	}
 
 	public String viewTeacher(String courseName) {
@@ -130,9 +129,23 @@ public class Student extends User implements Researcher {
 	}
 
 	public String seeSchedule() {
-		return "";
+		if (registeredCourses.isEmpty()) {
+			return "No schedule available. You are not registered for any courses.";
+		}
+		StringBuilder schedule = new StringBuilder("Schedule:\n");
+		for (Course course : registeredCourses) {
+			schedule.append("Course: ").append(course.getCourseName()).append("\n");
+			List<Lesson> lessons = course.getLessonsOfCourse();
+			if (lessons.isEmpty()) {
+				schedule.append("  No lessons scheduled for this course.\n");
+			} else {
+				for (Lesson lesson : lessons) {
+					schedule.append("  Lesson: ").append(lesson.getDetails()).append("\n");
+				}
+			}
+		}
+		return schedule.toString();
 	}
-
 
 	public String viewFiles() {
 		if (files.isEmpty()) {
@@ -145,38 +158,29 @@ public class Student extends User implements Researcher {
 		return fileList.toString();
 	}
 
-	@Override
 	public void printPapers(Comparator<ResearchPaper> comparator) {
-
-
 	}
 
 	public int calculateHIndex() {
 		return 0;
 	}
-
-	@Override
 	public List<ResearchProject> getResearchProjects() {
 		return List.of();
 	}
-
-	@Override
 	public void addResearchProject(ResearchProject project) {
 
 	}
-
-	@Override
 	public List<ResearchPaper> getResearchPapers() {
 		return List.of();
 	}
-
-	@Override
 	public void addResearchPaper(ResearchPaper paper) {
-
 	}
 
 	public ResearchPaper printPapers(ResearchPaper parameter) {
 		return null;
+	}
+	public void notify(ResearchPaper paper) {
+		System.out.println("Notification for " + getName() + ": New paper published - " + paper.getTitle());
 	}
 }
 
