@@ -12,8 +12,7 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
-public class Student extends User implements Researcher
-{
+public class Student extends User implements Researcher {
 	private String studentId;
 	private School school;
 	private Transcript transcript;
@@ -31,9 +30,11 @@ public class Student extends User implements Researcher
 		this.registeredCourses = new ArrayList<Course>();
 		this.files = new ArrayList<File>();
 	}
-	public Student(){
+
+	public Student() {
 		super();
 	}
+
 	// Getters and Setters
 	public String getStudentId() {
 		return studentId;
@@ -91,7 +92,7 @@ public class Student extends User implements Researcher
 		}
 	}
 
-	public String viewTeacher (String courseName){
+	public String viewTeacher(String courseName) {
 		for (Course course : registeredCourses) {
 			if (course.getCourseName().equals(courseName)) {
 				Teacher teacher = course.getTeacher();
@@ -127,10 +128,10 @@ public class Student extends User implements Researcher
 		}
 		return "Rated teacher " + teacher.getName() + " with " + rating + " points.";
 	}
+
 	public String seeSchedule() {
 		return "";
 	}
-
 
 
 	public String viewFiles() {
