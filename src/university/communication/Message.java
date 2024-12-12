@@ -4,11 +4,7 @@ import university.users.User;
 
 import java.util.Date;
 
-/**
- * <!-- begin-user-doc -->
- * <!--  end-user-doc  -->
- * @generated
- */
+//ooo
 
 public class Message
 {
