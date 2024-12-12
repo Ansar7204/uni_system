@@ -27,8 +27,8 @@ public class Course {
 	}
 
 	public void assignTeachers(List<Teacher> teachers) {
-		for (Teacher teachers : teachers) {
-			assignTeacher(teachers);
+		for (Teacher teacher : teachers) {
+			assignTeacher(teacher);
 		}
 	}
 
