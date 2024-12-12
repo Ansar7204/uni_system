@@ -148,6 +148,7 @@ public class Student extends User implements Researcher {
 	@Override
 	public void printPapers(Comparator<ResearchPaper> comparator) {
 
+
 	}
 
 	public int calculateHIndex() {
