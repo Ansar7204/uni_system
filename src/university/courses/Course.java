@@ -32,7 +32,6 @@ public class Course {
 		}
 	}
 
-
 	public void addStudent(Student student) {
 		if (!enrolledStudents.contains(student)) {
 			enrolledStudents.add(student);
