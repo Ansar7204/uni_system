@@ -46,15 +46,6 @@ public class DatabaseManager implements Serializable {
         }
     }
 
-    public void performUserActions() {
-        for (User user : users) {
-            if (user instanceof Student) {
-                ((Student) user).viewTranscript();
-            } else if (user instanceof Teacher) {
-                ((Teacher) user).putMarks();
-            }
-        }
-    }
 
     public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();

@@ -20,14 +20,16 @@ public abstract class User {
 	private String password;
 	public Languages preferredLanguage;
 	private List<Message> receivedMessages;
+	public List<News> newsList;
 
-	public User(String id, String name, String surName, String email, String password) {
+	public User(String id, String name, String surName, String email, String password, List<News> newsList) {
 		this.id = id;
 		this.name = name;
 		this.surName = surName;
 		this.email = email;
 		this.password = password;
-		this.preferredLanguage = EN;
+        this.newsList = newsList;
+        this.preferredLanguage = EN;
 		this.receivedMessages = new ArrayList<>();
 	}
 
@@ -64,7 +66,7 @@ public abstract class User {
 
 	public void commentNews(News news, String comment) {
 		Language language = Language.getInstance();
-		news.addComment(this, comment);
+		news.addComment(this.name + " " + this.surName, comment);
 		System.out.println(language.getLocalizedMessage(
 				"Comment addded to news by " + name,
 				"Комментарий добавлен в новость пользователем " + name,
@@ -139,7 +141,20 @@ public abstract class User {
 	}
 
 	public String viewNews() {
-		return "Displaying the latest news...";
+		StringBuilder newsContent = new StringBuilder();
+
+		// Check if the user has any news to display
+		if (newsList != null && !newsList.isEmpty()) {
+			for (News news : newsList) {
+				newsContent.append("Topic: ").append(news.getTopic()).append("\n")
+						.append("Content: ").append(news.getContent()).append("\n")
+						.append("Comments: ").append(news.getComments()).append("\n\n");
+			}
+		} else {
+			newsContent.append("No news available.");
+		}
+
+		return newsContent.toString();
 	}
 
 	public abstract String getRole();

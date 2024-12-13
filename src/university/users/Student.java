@@ -1,14 +1,17 @@
 package university.users;
 
+import university.communication.News;
 import university.courses.*;
 import university.research.ResearchPaper;
 import university.research.ResearchProject;
 import university.research.Researcher;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
+
 public class Student extends User implements Researcher {
 
 	private String studentId;
@@ -17,17 +20,18 @@ public class Student extends User implements Researcher {
 	private StudentOrganization organizationMembership;
 	private int yearOfStudy;
 	private List<Course> registeredCourses;
-	private List<File> files;
+	/*private List<File> files;*/
 
 
-	public Student(String studentID, String name, String email, String password, School school, Transcript transcript, StudentOrganization organizationMembership, int yearOfStudy) {
-		 super(studentID, name, email, password);
+	public Student(String studentID, String name, String surName, String email, String password, School school, Transcript transcript, StudentOrganization organizationMembership, int yearOfStudy) {
+		 List<News> newsList = new ArrayList<>();
+		 super(studentID, name, surName, email, password, newsList);
 		 this.school = school;
 		 this.transcript = transcript;
 		 this.organizationMembership = organizationMembership;
 		 this.yearOfStudy = yearOfStudy;
 		 this.registeredCourses = new ArrayList<Course>();
-		 this.files = new ArrayList<File>();
+//		 this.files = new ArrayList<File>();
 	}
 
 	public String viewCourses() {
@@ -57,12 +61,23 @@ public class Student extends User implements Researcher {
 	public String viewTeacher(String courseName) {
 		for (Course course : registeredCourses) {
 			if (course.getCourseName().equals(courseName)) {
-				List <Teacher> teacher = course.getCourseTeachers();
-				return "Teacher for " + courseName + ": " + teacher.getName();
+				List<Teacher> teachers = course.getCourseTeachers(); // List of teachers
+				if (teachers.isEmpty()) {
+					return "No teachers assigned for " + courseName;
+				}
+
+				StringBuilder teacherNames = new StringBuilder("Teachers for " + courseName + ": ");
+				for (Teacher teacher : teachers) {
+					teacherNames.append(teacher.getName()).append(", ");
+				}
+
+				// Remove the trailing comma and space
+				return teacherNames.substring(0, teacherNames.length() - 2);
 			}
 		}
 		return "You are not registered for the course: " + courseName;
 	}
+
 
 	public String viewMarks(String courseName) {
 		for (Mark mark : transcript.getMarks()) {
@@ -83,13 +98,21 @@ public class Student extends User implements Researcher {
 		}
 		return "Transcript: " + transcript.getMarks().toString();
 	}
+	public Transcript getTranscript() {
+		return transcript;
+	}
 
 	public String rateTeacher(Teacher teacher, int rating) {
 		if (rating < 0 || rating > 10) {
 			return "Invalid rating. Please provide a rating between 0 and 10.";
 		}
-		return "Rated teacher " + teacher.getName() + " with " + rating + " points.";
+
+		// Add the rating to the teacher's list
+		teacher.addRating(rating);
+
+		return "Rated teacher " + teacher.getName() + " with " + rating + " points. Average rating: " + teacher.getAverageRating();
 	}
+
 
 	public String seeSchedule() {
 		if (registeredCourses.isEmpty()) {
@@ -110,7 +133,7 @@ public class Student extends User implements Researcher {
 		return schedule.toString();
 	}
 
-	public String viewFiles() {
+	/*public String viewFiles() {
 		if (files.isEmpty()) {
 			return "No files available for your courses.";
 		}
@@ -119,7 +142,7 @@ public class Student extends User implements Researcher {
 			fileList.append(file.getFileName()).append("\n");
 		}
 		return fileList.toString();
-	}
+	}*/
 
 	public void printPapers(Comparator<ResearchPaper> comparator) {
 	}
@@ -181,6 +204,10 @@ public class Student extends User implements Researcher {
 
 	public String getRole() {
 		return "Student";
+	}
+
+	public Collection<Course> getRegisteredCourses() {
+		return registeredCourses;
 	}
 }
 

@@ -2,8 +2,10 @@ package university.users;
 
 import university.communication.Language;
 import university.communication.Message;
+import university.communication.News;
 import university.database.DatabaseManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -11,8 +13,9 @@ public class Admin extends User {
 
 	DatabaseManager db = DatabaseManager.getInstance();
 
-	public Admin(String id, String name,String email, String password) {
-		super(id, name, email, password);
+	public Admin(String id, String name, String surName,String email, String password) {
+		List<News> newsList = new ArrayList<>();
+		super(id, name, surName, email, password, newsList);
 	}
 
 	public void addUser(User user) {
