@@ -13,7 +13,7 @@ public class Librarian extends Employee {
 	private String email;
 	private String password;
 	private List<Message> receivedMessages;
-	private String books;
+	private List<Book> books;
 
 	public Librarian(String id, String name, String email, String password, String books) {
 		this.id = id;
@@ -21,7 +21,7 @@ public class Librarian extends Employee {
 		this.email = email;
 		this.password = password;
 		this.receivedMessages = new ArrayList<>();
-		this.books = books;
+		this.books = new ArrayList<>();
 	}
 
 

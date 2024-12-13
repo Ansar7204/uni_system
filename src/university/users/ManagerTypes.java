@@ -1,5 +1,5 @@
 package university.users;
 
 public enum ManagerTypes {
-    OR, DEAN
+    OR, Dean
 }

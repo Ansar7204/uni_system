@@ -1,53 +1,69 @@
 package university.users;
 
+import university.communication.Language;
+import university.communication.Languages;
 import university.communication.Message;
 import university.communication.News;
 
-import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import static university.communication.Languages.EN;
 
 public abstract class User {
-	private String id;
-	private String name;
-	private String email;
+
+	public String id;
+	public String name;
+	public String email;
 	private String password;
+	public Languages preferredLanguage;
 	private List<Message> receivedMessages;
 
 	public User(String id, String name, String email, String password) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
-		this.password = password ;
+		this.password = password;
+		this.preferredLanguage = EN;
 		this.receivedMessages = new ArrayList<>();
 	}
 
+
+
 	public boolean logIn(String email, String password) {
-		LanguageManager languageManager = LanguageManager.getInstance();
+		Language language = Language.getInstance();
 		if(this.email.equals(email) && this.password.equals(password)) {
-			System.out.println(languageManager.getLocalizedMessage(
-					"Login successful for user: " + name
+			System.out.println(language.getLocalizedMessage(
+					"Login successful!",
+					"Вход выполнен успешно!",
+					"Сіз сәтті кірдіңіз!"
 			));
 			return true;
 		}
-		System.out.println(languageManager.getLocalizedMessage(
-				"Login failed for user: " + name
+		
+		System.out.println(language.getLocalizedMessage(
+				"Login failed!",
+				"Вход не выполнен!",
+				"Кіру сәтсіз аяқталды!"
+		));
 		return false;
 
 	}
 
 	public void logOut() {
-		LanguageManager languageManager = LanguageManager.getInstance();
-		System.out.println(languageManager.getLocalizedMessage(
-				"User " + name + " logged out successfully"
+		Language language = Language.getInstance();
+		System.out.println(language.getLocalizedMessage(
+				"Logged out.",
+				"Вы вышли из системы.",
+				"Сіз жүйеден шықтыңыз."
 		));
 	}
 
 	public void commentNews(News news, String comment) {
-		LanguageManager languageManager = LanguageManager.getInstance();
+		Language language = Language.getInstance();
 		news.addComment(this, comment);
-		System.out.println(languageManager.getLocalizedMessage(
+		System.out.println(language.getLocalizedMessage(
 				"Comment addded to news by " + name,
 				"Комментарий добавлен в новость пользователем " + name,
 				name + " есімді қолданушы жаңалыққа пікір қосты"
@@ -78,12 +94,25 @@ public abstract class User {
 		this.email = email;
 	}
 
-	public List<Message> getReceivedMessages() {
-		return receivedMessages;
+	public String getPassword() {
+		return password;
 	}
 
-	public String login() {
-		return "User " + name + " has logged in successfully.";
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Languages getPreferredLanguage() {
+		return preferredLanguage;
+	}
+
+	public void setPreferredLanguage(Languages preferredLanguage) {
+		this.preferredLanguage = preferredLanguage;
+		System.out.println("Preferred language changed to: " + preferredLanguage);
+	}
+
+	public List<Message> getReceivedMessages() {
+		return receivedMessages;
 	}
 
 	public Message sendMessage(User recipient, Message message) {
@@ -115,6 +144,19 @@ public abstract class User {
 
 	public String toString() {
 		return "User{id='" + id + "', name='" + name + "', email='" + email + "'}";
+	}
+
+	public boolean equals(Object o) {
+		if (this == o) return true; // Сравнение с самим собой
+		if (o == null || getClass() != o.getClass()) return false; // Проверка на null и совпадение классов
+		User user = (User) o;
+		return Objects.equals(id, user.id) && // Сравнение по id
+				Objects.equals(email, user.email) && // Сравнение по email
+				Objects.equals(password, user.password); // Сравнение по password
+	}
+
+	public int hashCode() {
+		return Objects.hash(id, email, password);
 	}
 }
 

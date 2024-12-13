@@ -2,6 +2,7 @@ package university.users;
 
 import university.communication.Message;
 import university.communication.UrgencyLevel;
+import university.courses.Course;
 import university.research.ResearchPaper;
 import university.research.ResearchProject;
 import university.research.Researcher;
@@ -12,41 +13,22 @@ import java.util.List;
 
 
 public class Teacher extends Employee implements Researcher {
-	private String id;
-	private String name;
-	private String email;
-	private String password;
+
 	private List<Message> receivedMessages;
 	public TeacherTypes typeOfTeacher;
 	private String courses;
+	public List<Course> courseList;
 
-	public Teacher(String id, String name, String email, String password, TeacherTypes typeOfTeacher, String courses) {
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.password = password;
+	public Teacher(String id, String name, String email, String password, DepartmentsOfEmployees department, int salary, TeacherTypes typeOfTeacher, String courses) {
+		super(id, name, email, password, department, salary);
 		this.receivedMessages = new ArrayList<>();
 		this.typeOfTeacher = typeOfTeacher;
-		this.courses = courses;
-	}
-
-	public String toString() {
-		return "Teacher{" +
-				"id='" + id + '\'' +
-				", name='" + name + '\'' +
-				", email='" + email + '\'' +
-				", typeOfTeacher=" + typeOfTeacher +
-				", courses='" + courses + '\'' +
-				", receivedMessages=" + (receivedMessages);
-	}
-
-	public String getRole() {
-		return "";
+		this.courseList = new ArrayList<>();
 	}
 
 
-	public String viewCourses() {
-		return "";
+	public List<Course> viewCourses() {
+		return courseList;
 	}
 
 	
@@ -54,8 +36,8 @@ public class Teacher extends Employee implements Researcher {
 		return "";
 	}
 
-	public String viewStudents(Student s) {
-		return s.toString();
+	public String viewStudent(Student student) {
+		return student.toString();
 	}
 
 	
@@ -67,7 +49,6 @@ public class Teacher extends Employee implements Researcher {
 		return "Complaint has been sent!";
 	}
 
-	@Override
 	public void printPapers(Comparator<ResearchPaper> comparator) {
 
 	}
@@ -76,28 +57,42 @@ public class Teacher extends Employee implements Researcher {
 		return 0;
 	}
 
-	@Override
 	public List<ResearchProject> getResearchProjects() {
 		return List.of();
 	}
 
-	@Override
 	public void addResearchProject(ResearchProject project) {
 
 	}
 
-	@Override
 	public List<ResearchPaper> getResearchPapers() {
 		return List.of();
 	}
 
-	@Override
 	public void addResearchPaper(ResearchPaper paper) {
 
 	}
 
 	public ResearchPaper printPapers(ResearchPaper parameter) {
 		return null;
+	}
+
+	public String getTypeOfTeacher() {
+		return typeOfTeacher.toString();
+	}
+
+	public String getRole() {
+		return "Teacher " + "of type " + getTypeOfTeacher();
+	}
+
+	public String toString() {
+		return "Teacher{" +
+				"id='" + id + '\'' +
+				", name='" + name + '\'' +
+				", email='" + email + '\'' +
+				", typeOfTeacher=" + typeOfTeacher +
+				", courses='" + courses + '\'' +
+				", receivedMessages=" + (receivedMessages);
 	}
 }
 

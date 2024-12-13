@@ -1,18 +1,16 @@
 package university.users;
 
-import university.courses.Course;
+import university.courses.*;
 import university.research.ResearchPaper;
 import university.research.ResearchProject;
 import university.research.Researcher;
-import university.courses.School;
-import university.courses.StudentOrganization;
-import university.courses.Transcript;
 
 import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 public class Student extends User implements Researcher {
+
 	private String studentId;
 	private School school;
 	private Transcript transcript;
@@ -21,50 +19,15 @@ public class Student extends User implements Researcher {
 	private List<Course> registeredCourses;
 	private List<File> files;
 
-	public Student(String studentId, School school, Transcript transcript, StudentOrganization organizationMembership, int yearOfStudy) {
-		 super();
-		 this.studentId = studentId;
+
+	public Student(String studentID, String name, String email, String password, School school, Transcript transcript, StudentOrganization organizationMembership, int yearOfStudy) {
+		 super(studentID, name, email, password);
 		 this.school = school;
 		 this.transcript = transcript;
 		 this.organizationMembership = organizationMembership;
 		 this.yearOfStudy = yearOfStudy;
 		 this.registeredCourses = new ArrayList<Course>();
 		 this.files = new ArrayList<File>();
-	}
-	public String getStudentId() {
-		return studentId;
-	}
-
-	public void setStudentId(String studentId) {
-		this.studentId = studentId;
-	}
-
-	public School getSchool() {
-		return school;
-	}
-
-	public void setSchool(School school) {
-		this.school = school;
-	}
-
-	public StudentOrganization getOrganizationMembership() {
-		return organizationMembership;
-	}
-
-	public void setOrganizationMembership(StudentOrganization organizationMembership) {
-		this.organizationMembership = organizationMembership;
-	}
-
-	public int getYearOfStudy() {
-		return yearOfStudy;
-	}
-
-	public void setYearOfStudy(int yearOfStudy) {
-		this.yearOfStudy = yearOfStudy;
-	}
-
-	public String getRole() {
-		return "Student";
 	}
 
 	public String viewCourses() {
@@ -94,7 +57,7 @@ public class Student extends User implements Researcher {
 	public String viewTeacher(String courseName) {
 		for (Course course : registeredCourses) {
 			if (course.getCourseName().equals(courseName)) {
-				Teacher teacher = course.getTeacher();
+				List <Teacher> teacher = course.getCourseTeachers();
 				return "Teacher for " + courseName + ": " + teacher.getName();
 			}
 		}
@@ -179,8 +142,45 @@ public class Student extends User implements Researcher {
 	public ResearchPaper printPapers(ResearchPaper parameter) {
 		return null;
 	}
+
 	public void notify(ResearchPaper paper) {
 		System.out.println("Notification for " + getName() + ": New paper published - " + paper.getTitle());
+	}
+
+	public String getStudentId() {
+		return studentId;
+	}
+
+	public void setStudentId(String studentId) {
+		this.studentId = studentId;
+	}
+
+	public School getSchool() {
+		return school;
+	}
+
+	public void setSchool(School school) {
+		this.school = school;
+	}
+
+	public StudentOrganization getOrganizationMembership() {
+		return organizationMembership;
+	}
+
+	public void setOrganizationMembership(StudentOrganization organizationMembership) {
+		this.organizationMembership = organizationMembership;
+	}
+
+	public int getYearOfStudy() {
+		return yearOfStudy;
+	}
+
+	public void setYearOfStudy(int yearOfStudy) {
+		this.yearOfStudy = yearOfStudy;
+	}
+
+	public String getRole() {
+		return "Student";
 	}
 }
 

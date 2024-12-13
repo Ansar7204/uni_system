@@ -1,6 +1,7 @@
 package university.research;
 
 import university.courses.School;
+import university.users.DepartmentsOfEmployees;
 import university.users.Employee;
 
 import java.util.Comparator;
@@ -12,16 +13,15 @@ public class ResearcherPerson extends Employee implements Researcher {
 	public ResearchPaper researchPapers;
 	public ResearchProject researchProject;
 
-	public ResearcherPerson(){
-		super();
+	public ResearcherPerson(String id, String name, String email, String password, DepartmentsOfEmployees department, int salary) {
+		super(id, name, email, password, department, salary);
 	}
 
-	@Override
+
 	public String getRole() {
 		return "";
 	}
 
-	@Override
 	public void printPapers(Comparator<ResearchPaper> comparator) {
 
 	}
@@ -30,22 +30,18 @@ public class ResearcherPerson extends Employee implements Researcher {
 		return 0;
 	}
 
-	@Override
 	public List<ResearchProject> getResearchProjects() {
 		return List.of();
 	}
 
-	@Override
 	public void addResearchProject(ResearchProject project) {
 
 	}
 
-	@Override
 	public List<ResearchPaper> getResearchPapers() {
 		return List.of();
 	}
 
-	@Override
 	public void addResearchPaper(ResearchPaper paper) {
 
 	}

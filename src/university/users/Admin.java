@@ -1,43 +1,76 @@
 package university.users;
 
+import university.communication.Language;
 import university.communication.Message;
-import university.logs.Log;
+import university.database.DatabaseManager;
 
 import java.util.List;
 
 
-public class Admin extends Employee {
-	public Log logs;
-	public Admin(){
-		super();
+public class Admin extends User {
+
+	DatabaseManager db = DatabaseManager.getInstance();
+
+	public Admin(String id, String name,String email, String password) {
+		super(id, name, email, password);
 	}
 
-	public static User createUser(String userType, String id, String name, String email, String password) {
-		switch (userType.toLowerCase()) {
-			case "student":
-				return new Student(id, name, email, password);
-			case "teacher":
-				return new Teacher(id, name, email, password);
-			case "librarian":
-				return new Librarian(id, name, email, password);
-			default:
-				throw new IllegalArgumentException("Invalid user type: " + userType);
+	public void addUser(User user) {
+		Language language = Language.getInstance();
+		db.addUser(user);
+		System.out.println(language.getLocalizedMessage(
+				"User " +  user.getName() + " added.",
+				"Пользователь " + user.getName() + " добавлен.",
+				"Қолданушы " + user.getName() + " қосылды."
+		));
+	}
+
+	public void removeUser(User user) {
+		Language language = Language.getInstance();
+		if (db.getUsers().remove(user)) {
+			System.out.println(language.getLocalizedMessage(
+					"User " +  user.getName() + " removed.",
+					"Пользователь " + user.getName() + " удален.",
+					"Қолданушы " + user.getName() + " жойылды."
+			));
 		}
-
-
-	public void addUser() {
-	}
-	
-
-	public void removeUser() {
-	}
-
-	
-	public void updateUser() {
+		else {
+			System.out.println("User " + user.getName() + " not found.");
+			System.out.println(language.getLocalizedMessage(
+					"User " +  user.getName() + " not found.",
+					"Пользователь " + user.getName() + " не найден.",
+					"Қолданушы " + user.getName() + " табылмады."
+			));
+		}
 	}
 
-	public void viewLogs() {
+	public void updateUser(String userId, String newName, String newEmail, String newPassword) {
+		Language language = Language.getInstance();
+		for (User user : db.getUsers()) {
+			if (user.getId().equals(userId)) {
+				user.setName(newName);
+				user.setEmail(newEmail);
+				user.setPassword(newPassword);
+				System.out.println(language.getLocalizedMessage(
+						"User " +  userId + " updated.",
+						"Пользователь " + userId + " обновлен.",
+						"Қолданушы " + userId + " өзгертіліді."
+				));
+				return;
+			}
+			else{
+				System.out.println(language.getLocalizedMessage(
+						"User " +  user.getName() + " not found.",
+						"Пользователь " + user.getName() + " не найден.",
+						"Қолданушы " + user.getName() + " табылмады."
+				));
+			}
+		}
+			}
+
+
+	public String getRole() {
+		return "Admin";
 	}
-	
 }
 

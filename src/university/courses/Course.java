@@ -27,8 +27,6 @@ public class Course {
 		this.lessonsOfCourse = new ArrayList<>();
 	}
 
-
-	
 	public void assignTeacher(Teacher teacher) {
 		if (!courseTeachers.contains(teacher)) {
 			courseTeachers.add(teacher);
@@ -53,19 +51,6 @@ public class Course {
 		}
 	}
 
-	public void setLessonsOfCourse(List<Lesson> lessonsOfCourse) {
-		this.lessonsOfCourse = lessonsOfCourse;
-	}
-
-	public List<Teacher> getCourseTeachers() {
-		return courseTeachers;
-	}
-
-
-	public List<Student> getEnrolledStudents() {
-		return enrolledStudents;
-	}
-
 
 	public String toString() {
 		return "Course ID: " + courseID + "\n" +
@@ -74,7 +59,75 @@ public class Course {
 				"Minor Requirement: " + minorRequirement + "\n" +
 				"Elective: " + elective + "\n" +
 				"Teachers: " + courseTeachers + "\n" +
-				"Enrolled Students: " + enrolledStudents;
+				"Enrolled Students: " + enrolledStudents+ "\n" +
+				"Lessons of Course: " + lessonsOfCourse;
+
 	}
+
+	public String getCourseID() {
+		return courseID;
+	}
+
+	public void setCourseID(String courseID) {
+		this.courseID = courseID;
+	}
+
+	public String getCourseName() {
+		return courseName;
+	}
+
+	public void setCourseName(String courseName) {
+		this.courseName = courseName;
+	}
+
+	public String getMajorRequirement() {
+		return majorRequirement;
+	}
+
+	public void setMajorRequirement(String majorRequirement) {
+		this.majorRequirement = majorRequirement;
+	}
+
+	public String getMinorRequirement() {
+		return minorRequirement;
+	}
+
+	public void setMinorRequirement(String minorRequirement) {
+		this.minorRequirement = minorRequirement;
+	}
+
+	public String getElective() {
+		return elective;
+	}
+
+	public void setElective(String elective) {
+		this.elective = elective;
+	}
+
+	public List<Teacher> getCourseTeachers() {
+		return courseTeachers;
+	}
+
+
+	public void setCourseTeachers(List<Teacher> courseTeachers) {
+		this.courseTeachers = courseTeachers;
+	}
+
+	public List<Student> getEnrolledStudents() {
+		return enrolledStudents;
+	}
+
+	public void setEnrolledStudents(List<Student> enrolledStudents) {
+		this.enrolledStudents = enrolledStudents;
+	}
+
+	public List<Lesson> getLessonsOfCourse() {
+		return lessonsOfCourse;
+	}
+
+	public void setLessonsOfCourse(List<Lesson> lessonsOfCourse) {
+		this.lessonsOfCourse = lessonsOfCourse;
+	}
+
 }
 
