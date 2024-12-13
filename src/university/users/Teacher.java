@@ -19,8 +19,8 @@ public class Teacher extends Employee implements Researcher {
 	private String courses;
 	public List<Course> courseList;
 
-	public Teacher(String id, String name, String email, String password, DepartmentsOfEmployees department, int salary, TeacherTypes typeOfTeacher, String courses) {
-		super(id, name, email, password, department, salary);
+	public Teacher(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary, TeacherTypes typeOfTeacher, String courses) {
+		super(id, name, surName, email, password, department, salary);
 		this.receivedMessages = new ArrayList<>();
 		this.typeOfTeacher = typeOfTeacher;
 		this.courseList = new ArrayList<>();
