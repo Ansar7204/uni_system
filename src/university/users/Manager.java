@@ -6,8 +6,8 @@ import java.util.List;
 public class Manager extends Employee{
     public ManagerTypes managerType;
 
-    public Manager(String id, String name, String email, String password, DepartmentsOfEmployees department, int salary, ManagerTypes managerType) {
-        super(id, name, email, password, department, salary);
+    public Manager(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary, ManagerTypes managerType) {
+        super(id, name, surName, email, password, department, salary);
         this.managerType = managerType;
     }
 
