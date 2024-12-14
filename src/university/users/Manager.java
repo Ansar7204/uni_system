@@ -36,7 +36,7 @@ public class Manager extends Employee {
     public String toString() {
         return "Manager {" +
                 "ID = '" + getId() + '\'' +
-                ", Name = '" + getName() + '\'' +
+                ", Name = '" + getFirstName() + '\'' +
                 ", Surname = '" + getSurName() + '\'' +
                 ", Email = '" + getEmail() + '\'' +
                 ", Department = " + getDepartment() +
@@ -54,7 +54,7 @@ public class Manager extends Employee {
     }
 
     private String getSurName() {
-        return surName;
+        return surname;
     }
 
 

@@ -177,7 +177,7 @@ public class Student extends User {
 	}
 
 	public void notify(ResearchPaper paper) {
-		System.out.println("Notification for " + getName() + ": New paper published - " + paper.getTitle());
+		System.out.println("Notification for " + getFirstName() + ": New paper published - " + paper.getTitle());
 	}
 
 	public String getStudentId() {
