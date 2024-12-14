@@ -2,6 +2,7 @@ package university.users;
 
 import university.communication.News;
 import university.courses.*;
+import university.database.DatabaseManager;
 import university.research.ResearchPaper;
 import university.research.ResearchProject;
 import university.research.Researcher;
@@ -11,7 +12,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
-
 public class Student extends User {
 
 	private String studentId;
@@ -21,7 +21,7 @@ public class Student extends User {
 	private int yearOfStudy;
 	private List<Course> registeredCourses;
 	private List<ResearchPaper> diplomaProjects;
-	/*private List<File> files;*/
+	public List<Files> files;
 
 
 	public Student(String studentID, String firstname, String surname, String email, String password, School school, Transcript transcript, StudentOrganization organizationMembership, int yearOfStudy) {
@@ -33,7 +33,32 @@ public class Student extends User {
 		 this.registeredCourses = new ArrayList<Course>();
 		 this.newsList = new ArrayList<News>();
 		this.diplomaProjects = new ArrayList<>();
-//		 this.files = new ArrayList<File>();
+		this.files = loadFilesFromDatabase() ;
+	}
+	private boolean isTeacherRelatedToStudent(Teacher teacher) {
+		for (Course course : registeredCourses) {
+			if (course.getCourseTeachers().contains(teacher)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private List<Files> loadFilesFromDatabase() {
+		DatabaseManager dbManager = DatabaseManager.getInstance();
+		List<Files> studentFiles = new ArrayList<>();
+
+		// Loop through all files in DatabaseManager to find those owned by this student's teachers
+		for (Files file : dbManager.getAllFolders()) {
+			if (file.getTeacher() != null && isTeacherRelatedToStudent(file.getTeacher())) {
+				studentFiles.add(file);
+			}
+		}
+
+		return studentFiles;
+	}
+	public void refreshFiles() {
+		this.files = loadFilesFromDatabase();
 	}
 
 	public void addDiplomaProject(Researcher researcher, ResearchPaper paper) {
@@ -142,16 +167,16 @@ public class Student extends User {
 		return schedule.toString();
 	}
 
-	/*public String viewFiles() {
+	public String viewFiles() {
 		if (files.isEmpty()) {
 			return "No files available for your courses.";
 		}
 		StringBuilder fileList = new StringBuilder("Files:\n");
-		for (File file : files) {
-			fileList.append(file.getFileName()).append("\n");
+		for (Files file : files) {
+			fileList.append(file.getNameOfFile()).append("\n");
 		}
 		return fileList.toString();
-	}*/
+	}
 
 	public void printPapers(Comparator<ResearchPaper> comparator) {
 	}
