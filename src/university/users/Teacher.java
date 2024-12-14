@@ -61,7 +61,7 @@ public class Teacher extends Employee{
 		Mark mark = new Mark(course, firstAttestation, secondAttestation, finalExam);
 		student.getTranscript().addCourseMark(course, mark);
 
-		System.out.println("Marks have been successfully added for student " + student.getName() + " in the course " + course.getCourseName());
+		System.out.println("Marks have been successfully added for student " + student.getFirstName() + " " + student.getSurname() + " in the course " + course.getCourseName());
 	}
 
 
@@ -140,7 +140,7 @@ public class Teacher extends Employee{
 	public String toString() {
 		return "Teacher{" +
 				"id='" + id + '\'' +
-				", name='" + name + '\'' +
+				", name='" + firstname + '\'' +
 				", email='" + email + '\'' +
 				", typeOfTeacher=" + typeOfTeacher +
 				", courses='" + courses + '\'' +

@@ -22,9 +22,9 @@ public class Admin extends User {
 		Language language = Language.getInstance();
 		db.addUser(user);
 		System.out.println(language.getLocalizedMessage(
-				"User " +  user.getName() + " added.",
-				"Пользователь " + user.getName() + " добавлен.",
-				"Қолданушы " + user.getName() + " қосылды."
+				"User " +  user.getFirstName() + " " + user.getSurname() + " added.",
+				"Пользователь " + user.getFirstName() + " " + user.getSurname() + " добавлен.",
+				"Қолданушы " + user.getFirstName() + " " + user.getSurname() + " қосылды."
 		));
 	}
 
@@ -32,26 +32,27 @@ public class Admin extends User {
 		Language language = Language.getInstance();
 		if (db.getUsers().remove(user)) {
 			System.out.println(language.getLocalizedMessage(
-					"User " +  user.getName() + " removed.",
-					"Пользователь " + user.getName() + " удален.",
-					"Қолданушы " + user.getName() + " жойылды."
+					"User " +  user.getFirstName() + " " + user.getSurname() + " removed.",
+					"Пользователь " + user.getFirstName() + " " + user.getSurname() + " удален.",
+					"Қолданушы " + user.getFirstName() + " " + user.getSurname() + " жойылды."
 			));
 		}
 		else {
-			System.out.println("User " + user.getName() + " not found.");
+			System.out.println("User " + user.getFirstName() + " " + user.getSurname() + " not found.");
 			System.out.println(language.getLocalizedMessage(
-					"User " +  user.getName() + " not found.",
-					"Пользователь " + user.getName() + " не найден.",
-					"Қолданушы " + user.getName() + " табылмады."
+					"User " +  user.getFirstName() + " " + user.getSurname() + " not found.",
+					"Пользователь " + user.getFirstName() + " " + user.getSurname() + " не найден.",
+					"Қолданушы " + user.getFirstName() + " " + user.getSurname() + " табылмады."
 			));
 		}
 	}
 
-	public void updateUser(String userId, String newName, String newEmail, String newPassword) {
+	public void updateUser(String userId, String newFirstName, String newSurName, String newEmail, String newPassword) {
 		Language language = Language.getInstance();
 		for (User user : db.getUsers()) {
 			if (user.getId().equals(userId)) {
-				user.setName(newName);
+				user.setFirstName(newFirstName);
+				user.setSurname(newSurName);
 				user.setEmail(newEmail);
 				user.setPassword(newPassword);
 				System.out.println(language.getLocalizedMessage(
@@ -63,9 +64,9 @@ public class Admin extends User {
 			}
 			else{
 				System.out.println(language.getLocalizedMessage(
-						"User " +  user.getName() + " not found.",
-						"Пользователь " + user.getName() + " не найден.",
-						"Қолданушы " + user.getName() + " табылмады."
+						"User " +  user.getFirstName() + " " + user.getSurname() + " not found.",
+						"Пользователь " + user.getFirstName() + " " + user.getSurname() + " не найден.",
+						"Қолданушы " + user.getFirstName() + " " + user.getSurname() + " табылмады."
 				));
 			}
 		}
