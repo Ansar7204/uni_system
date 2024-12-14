@@ -1,5 +1,7 @@
 package university.users;
 
+import university.communication.Language;
+import university.communication.Languages;
 import university.communication.News;
 import university.courses.*;
 import university.database.DatabaseManager;
@@ -62,11 +64,15 @@ public class Student extends User {
 	}
 
 	public void addDiplomaProject(Researcher researcher, ResearchPaper paper) {
+		Language language = Language.getInstance();
 		if (!researcher.getPublications().contains(paper)) {
 			throw new IllegalArgumentException("The research paper is not published by the researcher.");
 		}
 		diplomaProjects.add(paper);
-		System.out.println("Added research paper '" + paper.getTitle() + "' to the diploma projects of " + getFirstName() + " " + getSurname());
+		System.out.println(language.getLocalizedMessage("Added research paper '" + paper.getTitle() + "' to the diploma projects of " + getFirstName() + " " + getSurname(),
+				"Добавлена научная работа '" + paper.getTitle() + "' в дипломные проекты студента " + getFirstName() + " " + getSurname(),
+				"'" + paper.getTitle() + "' атты ғылыми жұмыс " + getFirstName() + " " + getSurname() + " студентінің дипломдық жобаларына қосылды"
+		));
 	}
 
 	public String viewCourses() {
@@ -78,43 +84,71 @@ public class Student extends User {
 	}
 
 	public String registerForCourses(Course Course) {
+		Language language = Language.getInstance();
+		Languages currentLanguage = language.getCurrentLanguage();
 		StringBuilder coursesList = new StringBuilder();
 		for (Course course : registeredCourses) {
 			coursesList.append(course.getCourseName()).append("\n");
 			if (course.getCourseName().equals(Course.getCourseName())) {
-				return "You are already registered for the course: " + course.getCourseName();
+				switch (currentLanguage) {
+					case RU:
+						return "Вы уже зарегестрированы на курсы: " + course.getCourseName();
+					default:
+						return "You are already registered for the course: " + course.getCourseName();
+					case KZ:
+						return " Сіз курстарға тіркелгенсіз" + course.getCourseName();
+				}
 			}
 			else {
 				registeredCourses.add(Course);
 				Course.addStudent(this);
-				return "Successfully registered for the course: " + Course.getCourseName();
+					switch (currentLanguage) {
+						default: return "Successfully registered for the course: " + Course.getCourseName();
+						case RU: return "Успешно зарегестрированы на курс: " + course.getCourseName();
+						case KZ: return "Курсқа сәтті тіркелдіңіз: " + course.getCourseName();
+					}
 			}
 		}
 		return coursesList.toString();
 	}
 
 	public String viewTeacher(String courseName) {
+		Language language = Language.getInstance();
+		Languages currentLanguage = language.getCurrentLanguage();
 		for (Course course : registeredCourses) {
 			if (course.getCourseName().equals(courseName)) {
-				List<Teacher> teachers = course.getCourseTeachers(); // List of teachers
+				List<Teacher> teachers = course.getCourseTeachers();
 				if (teachers.isEmpty()) {
-					return "No teachers assigned for " + courseName;
+					switch (currentLanguage) {
+						default:
+							return "No teachers assigned for " + courseName;
+						case RU:
+							return "Не учителей: " + course.getCourseName();
+						case KZ:
+							return "Мүғалім табылмады: " + course.getCourseName();
+					}
 				}
 
 				StringBuilder teacherNames = new StringBuilder("Teachers for " + courseName + ": ");
 				for (Teacher teacher : teachers) {
 					teacherNames.append(teacher.getFirstName()).append(", ");
 				}
-
-				// Remove the trailing comma and space
 				return teacherNames.substring(0, teacherNames.length() - 2);
 			}
 		}
-		return "You are not registered for the course: " + courseName;
+		switch (currentLanguage) {
+			default:
+				return "You are not registered for the course: " + courseName;
+			case RU:
+				return "Вы не зарегестрированы на курс " + courseName;
+			case KZ:
+				return "Сіз курсқа тіркелмегенсіз" + courseName;
+		}
 	}
 
 
 	public String viewMarks(String courseName) {
+		Language language = Language.getInstance();
 		for (Mark mark : transcript.getMarks()) {
 			if (mark.getCourse().getCourseName().equals(courseName)) {
 				return "Your marks for " + courseName + ": " +
