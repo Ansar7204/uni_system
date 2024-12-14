@@ -17,17 +17,13 @@ public class Librarian extends Employee {
 
 	public Librarian(String id, String name, String surName,String email, String password, DepartmentsOfEmployees department, int salary, String books) {
 		super(id,name,surName,email,password,department,salary);
-		this.id = id;
-		this.name = name;
-		this.surname=surName;
-		this.email = email;
-		this.password = password;
 		this.receivedMessages = new ArrayList<>();
 		this.books = new ArrayList<>();
 	}
 
 
-	public void addBook(Book b) {
+	public void addBook(Book b){
+
 	}
 
 	

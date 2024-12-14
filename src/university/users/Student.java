@@ -117,7 +117,6 @@ public class Student extends User {
 			return "Invalid rating. Please provide a rating between 0 and 10.";
 		}
 
-		// Add the rating to the teacher's list
 		teacher.addRating(rating);
 
 		return "Rated teacher " + teacher.getFirstName() + " with " + rating + " points. Average rating: " + teacher.getAverageRating();
