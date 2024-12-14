@@ -5,9 +5,6 @@ import java.util.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Transcript {
 	private Map<Course, Mark> courseMarks;
 
