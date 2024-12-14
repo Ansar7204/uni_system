@@ -9,14 +9,17 @@ public class DatabaseManager implements Serializable {
     private static final long serialVersionUID = 1L;
     private static DatabaseManager instance;
 
-    private List<User> users;
-    private List<Course> courses;
+    private List<User> users;              // List of all users
+    private List<Course> courses;          // List of all courses
+    private List<Files> fileSystem;        // List of files (Folders)
 
     private DatabaseManager() {
         users = new ArrayList<>();
         courses = new ArrayList<>();
+        fileSystem = new ArrayList<>();    // Initialize the file system
     }
 
+    // Singleton instance retrieval
     public static DatabaseManager getInstance() {
         if (instance == null) {
             instance = new DatabaseManager();
@@ -24,6 +27,7 @@ public class DatabaseManager implements Serializable {
         return instance;
     }
 
+    // User management methods
     public void addUser(User user) {
         users.add(user);
     }
@@ -32,6 +36,7 @@ public class DatabaseManager implements Serializable {
         return users;
     }
 
+    // Course management methods
     public List<Course> getCourses() {
         return courses;
     }
@@ -45,7 +50,6 @@ public class DatabaseManager implements Serializable {
             System.out.println(user);
         }
     }
-
 
     public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
@@ -77,6 +81,44 @@ public class DatabaseManager implements Serializable {
         return managers;
     }
 
+    // File system management methods
+    public void addFolder(Files folder) {
+        fileSystem.add(folder);
+    }
+
+    public List<Files> getAllFolders() {
+        return fileSystem;
+    }
+
+    public Files getFolderByName(String folderName) {
+        for (Files folder : fileSystem) {
+            if (folder.nameOfFile.equals(folderName)) {
+                return folder;
+            }
+        }
+        return null; // Return null if no matching folder is found
+    }
+
+    public void addFileToFolder(String folderName, String fileName) {
+        Files folder = getFolderByName(folderName);
+        if (folder != null) {
+            folder.getFilesInFolder().add(fileName);
+        } else {
+            System.out.println("Folder not found!");
+        }
+    }
+
+    public void printAllFolders() {
+        for (Files folder : fileSystem) {
+            System.out.println("Folder: " + folder.nameOfFile +
+                    " (Owned by: " + folder.teacher.getFirstName() + " " + folder.teacher.getSurname() + ")");
+            for (String file : folder.getFilesInFolder()) {
+                System.out.println("  - " + file);
+            }
+        }
+    }
+
+    // Serialization methods
     public void saveToFile(String filePath) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
             oos.writeObject(this);

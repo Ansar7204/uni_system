@@ -8,9 +8,9 @@ public class Mark {
 
     public Mark(Course course, double firstAttestation, double secondAttestation, double finalExam) {
         this.course = course;
-        this.firstAttestation = (firstAttestation >= 0 && firstAttestation <= 100) ? firstAttestation : 0;
-        this.secondAttestation = (secondAttestation >= 0 && secondAttestation <= 100) ? secondAttestation : 0;
-        this.finalExam = (finalExam >= 0 && finalExam <= 100) ? finalExam : 0;
+        this.firstAttestation = (firstAttestation >= 0 && firstAttestation <= 30) ? firstAttestation : 0;
+        this.secondAttestation = (secondAttestation >= 0 && secondAttestation <= 30) ? secondAttestation : 0;
+        this.finalExam = (finalExam >= 0 && finalExam <= 40) ? finalExam : 0;
     }
 
 
