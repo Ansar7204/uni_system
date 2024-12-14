@@ -19,7 +19,7 @@ public class DatabaseManager implements Serializable {
         fileSystem = new ArrayList<>();
     }
 
-    // Singleton instance retrieval
+
     public static DatabaseManager getInstance() {
         if (instance == null) {
             instance = new DatabaseManager();
@@ -27,7 +27,7 @@ public class DatabaseManager implements Serializable {
         return instance;
     }
 
-    // User management methods
+
     public void addUser(User user) {
         users.add(user);
     }
@@ -36,7 +36,7 @@ public class DatabaseManager implements Serializable {
         return users;
     }
 
-    // Course management methods
+
     public List<Course> getCourses() {
         return courses;
     }
@@ -96,7 +96,7 @@ public class DatabaseManager implements Serializable {
                 return folder;
             }
         }
-        return null; // Return null if no matching folder is found
+        return null;
     }
 
     public void addFileToFolder(String folderName, String fileName) {
@@ -118,7 +118,7 @@ public class DatabaseManager implements Serializable {
         }
     }
 
-    // Serialization methods
+
     public void saveToFile(String filePath) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
             oos.writeObject(this);

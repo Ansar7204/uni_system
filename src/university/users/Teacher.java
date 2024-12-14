@@ -1,6 +1,7 @@
 package university.users;
 
 import university.communication.Complaints;
+import university.communication.Language;
 import university.communication.Message;
 import university.communication.UrgencyLevel;
 import university.courses.Course;
@@ -53,10 +54,16 @@ public class Teacher extends Employee{
 
 
 	public void putMarks(Student student, Course course, double firstAttestation, double secondAttestation, double finalExam) {
+		Language language = Language.getInstance();
 		if (!student.getRegisteredCourses().contains(course)) {
-			System.out.println("Student is not registered for the course: " + course.getCourseName());
+			System.out.println(language.getLocalizedMessage(
+					"Student is not registered for the course:"  + course.getCourseName(),
+					"Студент не зарегистрирован на курс: " + course.getCourseName(),
+					"Студент " + course.getCourseName() + " курсына тіркелмеген"
+			));
 			return;
 		}
+
 
 		Mark mark = new Mark(course, firstAttestation, secondAttestation, finalExam);
 		student.getTranscript().addCourseMark(course, mark);
