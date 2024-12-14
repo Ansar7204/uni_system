@@ -92,7 +92,7 @@ public class DatabaseManager implements Serializable {
 
     public Files getFolderByName(String folderName) {
         for (Files folder : fileSystem) {
-            if (folder.nameOfFile.equals(folderName)) {
+            if (folder.getNameOfFile().equals(folderName)) {
                 return folder;
             }
         }
@@ -110,8 +110,8 @@ public class DatabaseManager implements Serializable {
 
     public void printAllFolders() {
         for (Files folder : fileSystem) {
-            System.out.println("Folder: " + folder.nameOfFile +
-                    " (Owned by: " + folder.teacher.getFirstName() + " " + folder.teacher.getSurname() + ")");
+            System.out.println("Folder: " + folder.getNameOfFile() +
+                    " (Owned by: " + folder.getTeacher().getFirstName() + " " + folder.getTeacher().getSurname() + ")");
             for (String file : folder.getFilesInFolder()) {
                 System.out.println("  - " + file);
             }
