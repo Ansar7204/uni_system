@@ -1,8 +1,6 @@
 package university.users;
 
-import university.communication.Complaints;
-import university.communication.Message;
-import university.communication.UrgencyLevel;
+import university.communication.*;
 import university.courses.Course;
 import university.courses.Mark;
 import university.courses.School;
@@ -53,28 +51,40 @@ public class Teacher extends Employee{
 
 
 	public void putMarks(Student student, Course course, double firstAttestation, double secondAttestation, double finalExam) {
+		Language language = Language.getInstance();
 		if (!student.getRegisteredCourses().contains(course)) {
-			System.out.println("Student is not registered for the course: " + course.getCourseName());
+			System.out.println(language.getLocalizedMessage(
+					"Student is not registered for the course:"  + course.getCourseName(),
+					"Студент не зарегистрирован на курс: " + course.getCourseName(),
+					"Студент " + course.getCourseName() + " курсына тіркелмеген"
+			));
 			return;
 		}
+
 
 		Mark mark = new Mark(course, firstAttestation, secondAttestation, finalExam);
 		student.getTranscript().addCourseMark(course, mark);
 
-		System.out.println("Marks have been successfully added for student " + student.getFirstName() + " " + student.getSurname() + " in the course " + course.getCourseName());
+		System.out.println(language.getLocalizedMessage("Marks have been successfully added for student " + student.getFirstName() + " " + student.getSurname() + " in the course " + course.getCourseName(),
+				                " Оценки для студента успешно добавлены: "+ student.getFirstName()+ " "+ student.getSurname()+ " в курсе  " + course.getCourseName(),
+				" Бағалар сәтті енгізілді "+ student.getFirstName()+ " "+ student.getSurname()+ " курс  " + course.getCourseName()));
 	}
 
 
 
 
-	public String sendComplaint(UrgencyLevel urgency, String complaintContent,Student student) {
+	public void sendComplaint(UrgencyLevel urgency, String complaintContent,Student student) {
+		Language language = Language.getInstance();
 		Student studentGettingComplaint = student;
 		Complaints newComplaint = new Complaints(urgency, this, studentGettingComplaint, false);
 
 		newComplaint.addComplaint(complaintContent);
 
-		return "Complaint " + complaintContent + " has been sent with " + urgency + " urgency.";
+		System.out.println(language.getLocalizedMessage("Complaint " + complaintContent + " has been sent with " + urgency + " urgency.",
+				"Жалоба " + complaintContent + " была отправлена с уровнем срочности: " + urgency,
+				 complaintContent + " шағымы " + urgency + " шұғылдылық деңгейімен жіберілді."));
 	}
+
 
 	public boolean isProfessor() {
 		return this.typeOfTeacher.equals("Professor");
@@ -110,19 +120,56 @@ public class Teacher extends Employee{
 	public String viewStudent(Student student) {
 		return student.toString();
 	}
-
 	public String getRole() {
-		return "Teacher " + "of type " + getTypeOfTeacher();
+		Language language = Language.getInstance();
+		Languages currentLanguage = language.getCurrentLanguage();
+
+		switch (currentLanguage) {
+			case RU:
+				return "Преподаватель типа " + getTypeOfTeacher();
+			case KZ:
+				return "Мұғалімнің түрі: " + getTypeOfTeacher();
+			default:
+				return "Teacher of type " + getTypeOfTeacher(); // По умолчанию — английский
+		}
 	}
+
 
 	public String toString() {
-		return "Teacher{" +
-				"id='" + id + '\'' +
-				", name='" + firstname + '\'' +
-				", email='" + email + '\'' +
-				", typeOfTeacher=" + typeOfTeacher +
-				", courses='" + courses + '\'' +
-				", averageRating=" + getAverageRating();
+		Language language = Language.getInstance();
+		Languages currentLanguage = language.getCurrentLanguage();
+
+		switch (currentLanguage) {
+			case RU:
+				return "Преподаватель{" +
+						"id='" + id + '\'' +
+						", имя='" + firstname + '\'' +
+						", email='" + email + '\'' +
+						", тип преподавателя=" + typeOfTeacher +
+						", курсы='" + courses + '\'' +
+						", средний рейтинг=" + getAverageRating() +
+						'}';
+			case KZ:
+				return "Мұғалім{" +
+						"id='" + id + '\'' +
+						", аты='" + firstname + '\'' +
+						", email='" + email + '\'' +
+						", мұғалім түрі=" + typeOfTeacher +
+						", курстар='" + courses + '\'' +
+						", орташа рейтинг=" + getAverageRating() +
+						'}';
+			default:
+				return "Teacher{" +
+						"id='" + id + '\'' +
+						", name='" + firstname + '\'' +
+						", email='" + email + '\'' +
+						", typeOfTeacher=" + typeOfTeacher +
+						", courses='" + courses + '\'' +
+						", averageRating=" + getAverageRating() +
+						'}';
+		}
 	}
+
 }
+
 
