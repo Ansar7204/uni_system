@@ -14,7 +14,6 @@ import java.util.List;
 
 
 public class Teacher extends Employee{
-
 	private List<Message> receivedMessages;
 	public School school;
 	public TeacherTypes typeOfTeacher;
