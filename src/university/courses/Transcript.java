@@ -49,7 +49,6 @@ public class Transcript {
 		return sb.toString();
 	}
 
-	@Override
 	public String toString() {
 		return viewTranscript();
 	}
