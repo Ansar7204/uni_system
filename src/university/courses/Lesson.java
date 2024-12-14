@@ -34,7 +34,6 @@ public class Lesson {
 				", Course: " + (course != null ? course.getCourseName() : "None");
 	}
 
-	@Override
 	public String toString() {
 		return "Lesson{" +
 				"lessonType=" + lessonType +
@@ -45,25 +44,19 @@ public class Lesson {
 				", roomType='" + roomType + '\'' +
 				'}';
 	}
-
-	// New method to mark attendance
 	public void markAttendance(Student student, boolean isPresent) {
 		attendance.put(student, isPresent);
 	}
-
-	// New method to check if a specific student attended the lesson
 	public boolean checkAttendance(Student student) {
 		return attendance.getOrDefault(student, false);
 	}
-
-	// New method to print attendance summary
 	public String getAttendanceSummary() {
 		if (attendance.isEmpty()) {
 			return "No attendance records available.";
 		}
 		StringBuilder summary = new StringBuilder("Attendance Summary:\n");
 		for (Map.Entry<Student, Boolean> entry : attendance.entrySet()) {
-			summary.append(entry.getKey().getFirstName()) // Assuming Student class has getName()
+			summary.append(entry.getKey().getFirstName())
 					.append(" - ")
 					.append(entry.getValue() ? "Present" : "Absent")
 					.append("\n");
