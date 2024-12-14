@@ -14,19 +14,42 @@ public class Admin extends User {
 	DatabaseManager db = DatabaseManager.getInstance();
 
 	public Admin(String id, String name, String surName,String email, String password) {
+		super(id, name, surName, email, password);
 		List<News> newsList = new ArrayList<>();
-		super(id, name, surName, email, password, newsList);
 	}
 
 	public void addUser(User user) {
 		Language language = Language.getInstance();
+
+		for (User existingUser : db.getUsers()) {
+			if (existingUser.getId().equals(user.getId())) {
+				System.out.println(language.getLocalizedMessage(
+						"User with ID " + user.getId() + " already exists.",
+						"Пользователь с ID " + user.getId() + " уже существует.",
+						"ID-мен " + user.getId() + " қолданушы бар."
+				));
+				return;
+			}
+
+			if (existingUser.getEmail().equals(user.getEmail())) {
+				System.out.println(language.getLocalizedMessage(
+						"User with email " + user.getEmail() + " already exists.",
+						"Пользователь с электронной почтой " + user.getEmail() + " уже существует.",
+						"Электрондық пошта арқылы " + user.getEmail() + " қолданушы бар."
+				));
+				return;
+			}
+		}
+
 		db.addUser(user);
 		System.out.println(language.getLocalizedMessage(
-				"User " +  user.getFirstName() + " " + user.getSurname() + " added.",
-				"Пользователь " + user.getFirstName() + " " + user.getSurname() + " добавлен.",
-				"Қолданушы " + user.getFirstName() + " " + user.getSurname() + " қосылды."
+				"User " + user.getFirstName() + " " + user.getSurname() + " added successfully.",
+				"Пользователь " + user.getFirstName() + " " + user.getSurname() + " успешно добавлен.",
+				user.getFirstName() + " " + user.getSurname() + " қолданушы сәтті қосылды."
 		));
 	}
+
+
 
 	public void removeUser(User user) {
 		Language language = Language.getInstance();

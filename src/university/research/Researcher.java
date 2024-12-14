@@ -6,6 +6,7 @@ import university.users.Student;
 import university.users.Teacher;
 import university.users.User;
 import university.utils.PublicationSorter;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -84,13 +85,10 @@ public class Researcher extends User {
 		System.out.println(getFirstName() + " is conducting research on: " + topic);
 	}
 
-	public void publishPaper(String title, String authors, List<String> citations, int numberOfCitations, String journal, int pages, String doi, Date publishedDate, List<String> relatedPapers) {
-
-		ResearchPaper paper = new ResearchPaper(title, authors, citations, numberOfCitations, journal, pages, doi, publishedDate, relatedPapers);
-
+	public void publishPaper(String title) {
+		ResearchPaper paper = new ResearchPaper(title, getFirstName() + " " + getSurname(), new ArrayList<>(), 0, null, 0, null, new Date(), new ArrayList<>());
 		publications.add(paper);
-
-		System.out.println(authors + " has published a paper titled: " + title);
+		System.out.println(getFirstName() + " has published a paper titled: " + title);
 	}
 
 	public void attendConference(String conferenceName) {

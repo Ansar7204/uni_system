@@ -29,7 +29,17 @@ public abstract class User {
 		this.email = email;
 		this.password = password;
         this.newsList = new ArrayList<News>() ;
-        this.preferredLanguage = EN;
+		this.receivedMessages = new ArrayList<>();
+	}
+
+	public User(String id, String firstname, String surname, String email, String password, Languages preferredLanguage) {
+		this.id = id;
+		this.firstname = firstname;
+		this.surname = surname;
+		this.email = email;
+		this.password = password;
+		this.preferredLanguage = preferredLanguage;
+		this.newsList = new ArrayList<News>() ;
 		this.receivedMessages = new ArrayList<>();
 	}
 
@@ -44,12 +54,13 @@ public abstract class User {
 			));
 			return true;
 		}
-		
-		System.out.println(language.getLocalizedMessage(
-				"Login failed!",
-				"Вход не выполнен!",
-				"Кіру сәтсіз аяқталды!"
-		));
+		else {
+			System.out.println(language.getLocalizedMessage(
+					"Login failed!",
+					"Вход не выполнен!",
+					"Кіру сәтсіз аяқталды!"
+			));
+		}
 		return false;
 
 	}
