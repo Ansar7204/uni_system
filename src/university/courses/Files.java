@@ -67,7 +67,6 @@ public class Files {
     }
 
 
-    @Override
     public String toString() {
         StringBuilder details = new StringBuilder("Folder: ").append(nameOfFile)
                 .append(" (Owner: ").append(teacher.getFirstName() + " " + teacher.getSurname()).append(")\nFiles:\n");

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Course {
-	private String courseID;
+	public String courseID;
 	public String courseName;
 	public String majorRequirement;
 	public String minorRequirement;
@@ -15,6 +15,7 @@ public class Course {
 	public List<Teacher> courseTeachers;
 	public List<Student> enrolledStudents;
 	public List<Lesson> lessonsOfCourse;
+
 
 	public Course(String courseID, String courseName, String majorRequirement, String minorRequirement, String elective) {
 		this.courseID = courseID;
