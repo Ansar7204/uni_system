@@ -5,13 +5,11 @@ import university.users.Teacher;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class Files {
-    private Teacher teacher;             // Teacher who owns this folder
-    private String nameOfFile;           // Name of the folder/file
-    private List<String> filesInFolder;  // List of file names in this folder
+    private Teacher teacher;
+    private String nameOfFile;
+    private List<String> filesInFolder;
 
 
     public Files(Teacher teacher, String nameOfFile) {
@@ -42,7 +40,7 @@ public class Files {
 
 
     public List<String> getFilesInFolder() {
-        return new ArrayList<>(filesInFolder); // Return a copy to maintain encapsulation
+        return new ArrayList<>(filesInFolder);
     }
 
 
