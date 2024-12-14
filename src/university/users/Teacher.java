@@ -5,11 +5,9 @@ import university.courses.Course;
 import university.courses.Mark;
 import university.courses.School;
 import university.research.ResearchPaper;
-import university.research.ResearchProject;
 import university.research.Researcher;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 
@@ -72,7 +70,7 @@ public class Teacher extends Employee{
 
 
 
-	public void sendComplaint(UrgencyLevel urgency, String complaintContent,Student student) {
+	public String sendComplaint(UrgencyLevel urgency, String complaintContent, Student student) {
 		Language language = Language.getInstance();
 		Student studentGettingComplaint = student;
 		Complaints newComplaint = new Complaints(urgency, this, studentGettingComplaint, false);
@@ -82,6 +80,7 @@ public class Teacher extends Employee{
 		System.out.println(language.getLocalizedMessage("Complaint " + complaintContent + " has been sent with " + urgency + " urgency.",
 				"Жалоба " + complaintContent + " была отправлена с уровнем срочности: " + urgency,
 				 complaintContent + " шағымы " + urgency + " шұғылдылық деңгейімен жіберілді."));
+		return complaintContent;
 	}
 
 
