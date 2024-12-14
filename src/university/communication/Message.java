@@ -67,7 +67,7 @@ public class Message {
 	}
 
 	public String toString() {
-		return "Message from " + sender.getName() + " to " + recipient.getName() + " at " + date + ": " + content;
+		return "Message from " + sender.getFirstName() + " " + sender.getSurname() + " to " + recipient.getFirstName() + " " + recipient.getSurname() + " at " + date + ": " + content;
 	}
 }
 
