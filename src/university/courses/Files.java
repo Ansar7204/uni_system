@@ -13,39 +13,39 @@ public class Files {
     private String nameOfFile;           // Name of the folder/file
     private List<String> filesInFolder;  // List of file names in this folder
 
-    // Constructor
+
     public Files(Teacher teacher, String nameOfFile) {
         this.teacher = teacher;
         this.nameOfFile = nameOfFile;
         this.filesInFolder = new ArrayList<>();
     }
 
-    // Getter for teacher
+
     public Teacher getTeacher() {
         return teacher;
     }
 
-    // Setter for teacher
+
     public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
 
-    // Getter for folder name
+
     public String getNameOfFile() {
         return nameOfFile;
     }
 
-    // Setter for folder name
+
     public void setNameOfFile(String nameOfFile) {
         this.nameOfFile = nameOfFile;
     }
 
-    // Getter for files in the folder
+
     public List<String> getFilesInFolder() {
         return new ArrayList<>(filesInFolder); // Return a copy to maintain encapsulation
     }
 
-    // Add a file to the folder
+
     public void addFile(String fileName) {
         if (!filesInFolder.contains(fileName)) {
             filesInFolder.add(fileName);
@@ -54,7 +54,7 @@ public class Files {
         }
     }
 
-    // Remove a file from the folder
+
     public void removeFile(String fileName) {
         if (filesInFolder.remove(fileName)) {
             System.out.println("File removed successfully.");
@@ -63,12 +63,12 @@ public class Files {
         }
     }
 
-    // Check if a file exists in the folder
+
     public boolean containsFile(String fileName) {
         return filesInFolder.contains(fileName);
     }
 
-    // Get details about the folder and its contents
+
     @Override
     public String toString() {
         StringBuilder details = new StringBuilder("Folder: ").append(nameOfFile)

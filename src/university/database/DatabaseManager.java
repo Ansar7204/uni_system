@@ -9,14 +9,14 @@ public class DatabaseManager implements Serializable {
     private static final long serialVersionUID = 1L;
     private static DatabaseManager instance;
 
-    private List<User> users;              // List of all users
-    private List<Course> courses;          // List of all courses
-    private List<Files> fileSystem;        // List of files (Folders)
+    private List<User> users;
+    private List<Course> courses;
+    private List<Files> fileSystem;
 
     private DatabaseManager() {
         users = new ArrayList<>();
         courses = new ArrayList<>();
-        fileSystem = new ArrayList<>();    // Initialize the file system
+        fileSystem = new ArrayList<>();
     }
 
     // Singleton instance retrieval
@@ -81,7 +81,7 @@ public class DatabaseManager implements Serializable {
         return managers;
     }
 
-    // File system management methods
+
     public void addFolder(Files folder) {
         fileSystem.add(folder);
     }
