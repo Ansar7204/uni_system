@@ -15,12 +15,11 @@ public class Transcript {
 		this.courseMarks = new HashMap<>();
 	}
 
-	// Adds a Mark object associated with a specific Course
 	public void addCourseMark(Course course, Mark mark) {
 		courseMarks.put(course, mark);
 	}
 
-	// Calculates the overall GPA based on all courses in the transcript
+
 	public double calculateGPA() {
 		if (courseMarks.isEmpty()) {
 			return 0.0;
@@ -34,7 +33,6 @@ public class Transcript {
 		return totalGpa / courseMarks.size();
 	}
 
-	// Retrieves the Mark object for a specific Course
 	public Mark getMarks(Course course) {
 		return courseMarks.get(course);
 	}
@@ -44,7 +42,7 @@ public class Transcript {
 
 
 
-	// Displays the transcript as a formatted string
+
 	public String viewTranscript() {
 		StringBuilder sb = new StringBuilder("Transcript:\n");
 		for (Map.Entry<Course, Mark> entry : courseMarks.entrySet()) {

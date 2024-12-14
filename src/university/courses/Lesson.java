@@ -12,8 +12,8 @@ public class Lesson {
 	public String lessonName;
 	public Course course;
 	public WeekDays lessonTime;
-	public String roomType; // New field for room type
-	private Map<Student, Boolean> attendance; // Map to track attendance
+	public String roomType;
+	private Map<Student, Boolean> attendance;
 
 	public Lesson(LessonTypes lessonType, String lessonTopic, String lessonName, Course course, WeekDays lessonTime, String roomType) {
 		this.lessonType = lessonType;

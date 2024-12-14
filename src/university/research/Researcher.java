@@ -84,10 +84,13 @@ public class Researcher extends User {
 		System.out.println(getFirstName() + " is conducting research on: " + topic);
 	}
 
-	public void publishPaper(String title) {
-		ResearchPaper paper = new ResearchPaper(title, getFirstName(), "Content of " + title, 10, new Date());
+	public void publishPaper(String title, String authors, List<String> citations, int numberOfCitations, String journal, int pages, String doi, Date publishedDate, List<String> relatedPapers) {
+
+		ResearchPaper paper = new ResearchPaper(title, authors, citations, numberOfCitations, journal, pages, doi, publishedDate, relatedPapers);
+
 		publications.add(paper);
-		System.out.println(getFirstName() + " has published a paper titled: " + title);
+
+		System.out.println(authors + " has published a paper titled: " + title);
 	}
 
 	public void attendConference(String conferenceName) {

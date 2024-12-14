@@ -19,7 +19,7 @@ public class Message {
 		this.sender = sender;
 		this.recipient = recipient;
 		this.content = content;
-		this.date = LocalDateTime.now(); // Automatically set the current date and time
+		this.date = LocalDateTime.now();
 	}
 
 	public User getSender() {

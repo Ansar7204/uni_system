@@ -13,32 +13,29 @@ public class Mark {
         this.finalExam = (finalExam >= 0 && finalExam <= 100) ? finalExam : 0;
     }
 
-    // Getter for the Course
+
     public Course getCourse() {
         return course;
     }
 
-    // Getter for the final exam score
+
     public double getFinal() {
         return finalExam;
     }
 
-    // Getter for the overall value (total score)
     public double getValue() {
         return firstAttestation + secondAttestation + finalExam;
     }
 
-    // Getter for the first attestation score
     public double getFirstAttestation() {
         return firstAttestation;
     }
 
-    // Getter for the second attestation score
     public double getSecondAttestation() {
         return secondAttestation;
     }
 
-    // Calculate GPA based on total score
+
     public double getGpaValue() {
         double totalScore = getValue();
 

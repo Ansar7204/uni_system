@@ -20,7 +20,7 @@ public class ComplaintRegistry {
                 return complaint;
             }
         }
-        return null; // Complaint not found
+        return null;
     }
 
     public List<String> getAllUnsignedComplaints() {
