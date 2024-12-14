@@ -14,8 +14,8 @@ public class Admin extends User {
 	DatabaseManager db = DatabaseManager.getInstance();
 
 	public Admin(String id, String name, String surName,String email, String password) {
-		List<News> newsList = new ArrayList<>();
-		super(id, name, surName, email, password, newsList);
+		super(id, name, surName, email, password);
+
 	}
 
 	public void addUser(User user) {

@@ -77,20 +77,14 @@ public class Student extends User {
 		return coursesList.toString();
 	}
 
-	public String registerForCourses(Course Course) {
-		StringBuilder coursesList = new StringBuilder();
-		for (Course course : registeredCourses) {
-			coursesList.append(course.getCourseName()).append("\n");
-			if (course.getCourseName().equals(Course.getCourseName())) {
-				return "You are already registered for the course: " + course.getCourseName();
-			}
-			else {
-				registeredCourses.add(Course);
-				Course.addStudent(this);
-				return "Successfully registered for the course: " + Course.getCourseName();
-			}
+	public String registerForCourses(Course course) {
+		if (registeredCourses.contains(course)) {
+			return "You are already registered for the course: " + course.getCourseName();
 		}
-		return coursesList.toString();
+
+		registeredCourses.add(course);
+		course.addStudent(this);
+		return "Successfully registered for the course: " + course.getCourseName();
 	}
 
 	public String viewTeacher(String courseName) {

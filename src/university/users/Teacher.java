@@ -23,10 +23,10 @@ public class Teacher extends Employee{
 	public TeacherTypes typeOfTeacher;
 	private String courses;
 	public List<Course> courseList;
-	private List<Integer> ratings;
+	private List<Integer> ratings = new ArrayList<>();
 	public Researcher researcherProfile;
 
-	public Teacher(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary, TeacherTypes typeOfTeacher, String courses, List<Integer> ratings) {
+	public Teacher(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary, TeacherTypes typeOfTeacher, String courses) {
 		super(id, name, surName, email, password, department, salary);
         this.ratings = ratings;
         this.receivedMessages = new ArrayList<>();

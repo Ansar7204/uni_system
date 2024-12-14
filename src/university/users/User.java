@@ -20,7 +20,7 @@ public abstract class User {
 	private String password;
 	public Languages preferredLanguage;
 	private List<Message> receivedMessages;
-    public List<News> newsList;
+    public List<News> newsList = new ArrayList<News>();
 
 	public User(String id, String firstname, String surname, String email, String password) {
 		this.id = id;
@@ -28,7 +28,6 @@ public abstract class User {
 		this.surname = surname;
 		this.email = email;
 		this.password = password;
-        this.newsList = new ArrayList<News>() ;
         this.preferredLanguage = EN;
 		this.receivedMessages = new ArrayList<>();
 	}
@@ -167,6 +166,20 @@ public abstract class User {
 
 	public List<Message> getReceivedMessages() {
 		return receivedMessages;
+	}
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id='" + id + '\'' +
+				", firstname='" + firstname + '\'' +
+				", surname='" + surname + '\'' +
+				", email='" + email + '\'' +
+				", password='" + password + '\'' +
+				", preferredLanguage=" + preferredLanguage +
+				", receivedMessages=" + receivedMessages +
+				", newsList=" + newsList +
+				'}';
 	}
 
 	public boolean equals(Object o) {
