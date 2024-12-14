@@ -8,13 +8,13 @@ import java.util.Comparator;
 import java.util.List;
 
 
-public class ResearcherPerson extends Employee implements Researcher {
+public class ResearcherPerson extends Researcher {
 	public School school;
 	public ResearchPaper researchPapers;
 	public ResearchProject researchProject;
 
-	public ResearcherPerson(String id, String name, String email, String password, DepartmentsOfEmployees department, int salary) {
-		super(id, name, email, password, department, salary);
+	public ResearcherPerson(String id, String firstname, String surname, String email, String password, School school, int experienceYear) {
+		super(id, firstname, surname, email, password, school, experienceYear );
 	}
 
 

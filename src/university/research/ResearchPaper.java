@@ -2,6 +2,7 @@ package university.research;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -9,11 +10,10 @@ import java.util.List;
 import static java.util.Collections.sort;
 
 
-public class ResearchPaper
-{
+public class ResearchPaper {
 	public String title;
 	public String authors;
-	public String citations;
+	public List<String> citations;
 	public int numberOfCitations;
 	public String journal;
 	public int pages;
@@ -22,10 +22,10 @@ public class ResearchPaper
 	public List<String> papers;
 
 
-	public ResearchPaper(String title, String authors, String citations, int numberOfCitations, String journal, int pages, String doi, Date publishedDate, List<String> papers) {
+	public ResearchPaper(String title, String authors, List<String> citations, int numberOfCitations, String journal, int pages, String doi, Date publishedDate, List<String> papers) {
 		this.title = title;
 		this.authors = authors;
-		this.citations = citations;
+		this.citations = new ArrayList<>();
 		this.numberOfCitations = numberOfCitations;
 		this.journal = journal;
 		this.pages = pages;
@@ -36,7 +36,7 @@ public class ResearchPaper
 
 	
 	public String getCitation(Format f) {
-		return "";
+		return getCitations();
 	}
 
 	public void SortByDate(List<String> papers) {
@@ -66,18 +66,33 @@ public class ResearchPaper
 	}
 
 
-		public String getTitle() {
+
+
+
+	public String getTitle() {
 		return title;
 	}
 	public void setTitle(String title) {
 		this.title = title;
 	}
 
-	public String getAuthors() { return authors; }
-	public void setAuthors(String authors) { this.authors = authors; }
+	public String getAuthors() {
+		return authors;
+	}
 
-	public String getCitations() { return citations; }
-	public void setCitations(String citations) { this.citations = citations; }
+	public void setAuthors(String authors) {
+		this.authors = authors;
+	}
+
+	public String getCitations() {
+		return citations.toString();
+	}
+
+	public void addCitation(String citation) {
+		citations.add(citation);
+		numberOfCitations++;
+	}
+
 	public int getNumberOfCitations(){
 		return numberOfCitations;
 	}
@@ -86,20 +101,44 @@ public class ResearchPaper
 		this.numberOfCitations = numberOfCitations;
 	}
 
-	public String getJournal() { return journal; }
-	public void setJournal(String journal) { this.journal = journal; }
+	public String getJournal() {
+		return journal;
+	}
+	public void setJournal(String journal) {
+		this.journal = journal;
+	}
 
-	public int getPages() { return pages; }
-	public void setPages(int pages) { this.pages = pages; }
+	public int getPages() {
+		return pages;
+	}
 
-	public String getDoi() { return doi; }
-	public void setDoi(String doi) { this.doi = doi; }
+	public void setPages(int pages) {
+		this.pages = pages;
+	}
 
-	public Date getPublishedDate() { return publishedDate; }
-	public void setPublishedDate(Date publishedDate) { this.publishedDate = publishedDate; }
+	public String getDoi() {
+		return doi;
+	}
 
-	public List<String> getPapers() { return papers; }
-	public void setPapers(List<String> papers) { this.papers = papers; }
+	public void setDoi(String doi) {
+		this.doi = doi;
+	}
+
+	public Date getPublishedDate() {
+		return publishedDate;
+	}
+
+	public void setPublishedDate(Date publishedDate) {
+		this.publishedDate = publishedDate;
+	}
+
+	public List<String> getPapers() {
+		return papers;
+	}
+
+	public void setPapers(List<String> papers) {
+		this.papers = papers;
+	}
 
 	public String toString() {
 		return "ResearchPaper{" +

@@ -12,7 +12,6 @@ public class Manager extends Employee {
         this.managerType = managerType;
     }
 
-    // Assuming you have a centralized ComplaintRegistry to access all complaints
     public List<String> getUnsignedComplaints(ComplaintRegistry registry) {
         return registry.getAllUnsignedComplaints();
     }
@@ -33,5 +32,31 @@ public class Manager extends Employee {
     public String getRole() {
         return getTypeOfManager();
     }
+
+    public String toString() {
+        return "Manager {" +
+                "ID = '" + getId() + '\'' +
+                ", Name = '" + getName() + '\'' +
+                ", Surname = '" + getSurName() + '\'' +
+                ", Email = '" + getEmail() + '\'' +
+                ", Department = " + getDepartment() +
+                ", Salary = " + getSalary() +
+                ", Manager Type = " + managerType +
+                '}';
+    }
+
+    private int getSalary() {
+        return getSalary();
+    }
+
+    private String getDepartment() {
+        return department.toString();
+    }
+
+    private String getSurName() {
+        return surName;
+    }
+
+
 }
 

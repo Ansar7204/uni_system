@@ -5,6 +5,7 @@ import university.communication.Message;
 import university.communication.UrgencyLevel;
 import university.courses.Course;
 import university.courses.Mark;
+import university.courses.School;
 import university.research.ResearchPaper;
 import university.research.ResearchProject;
 import university.research.Researcher;
@@ -14,13 +15,15 @@ import java.util.Comparator;
 import java.util.List;
 
 
-public class Teacher extends Employee implements Researcher {
+public class Teacher extends Employee{
 
 	private List<Message> receivedMessages;
+	public School school;
 	public TeacherTypes typeOfTeacher;
 	private String courses;
 	public List<Course> courseList;
 	private List<Integer> ratings;
+	public Researcher researcherProfile;
 
 	public Teacher(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary, TeacherTypes typeOfTeacher, String courses, List<Integer> ratings) {
 		super(id, name, surName, email, password, department, salary);
@@ -28,16 +31,18 @@ public class Teacher extends Employee implements Researcher {
         this.receivedMessages = new ArrayList<>();
 		this.typeOfTeacher = typeOfTeacher;
 		this.courseList = new ArrayList<>();
+		if (isProfessor()) {
+			this.researcherProfile = new Researcher(id, firstname, surname, email, password, school, 0);
+		}
 	}
 
 	public void addRating(int rating) {
 		ratings.add(rating);
 	}
 
-	// Method to calculate the average rating
 	public double getAverageRating() {
 		if (ratings.isEmpty()) {
-			return 0.0; // No ratings yet
+			return 0.0;
 		}
 		double sum = 0;
 		for (int rating : ratings) {
@@ -46,36 +51,16 @@ public class Teacher extends Employee implements Researcher {
 		return sum / ratings.size();
 	}
 
-	public List<Integer> getRatings() {
-		return ratings;
-	}
-
-
-	public List<Course> viewCourses() {
-		return courseList;
-	}
-
-
-
-	public String viewStudent(Student student) {
-		return student.toString();
-	}
-
 
 	public void putMarks(Student student, Course course, double firstAttestation, double secondAttestation, double finalExam) {
-		// Check if the student is registered for the course
 		if (!student.getRegisteredCourses().contains(course)) {
 			System.out.println("Student is not registered for the course: " + course.getCourseName());
 			return;
 		}
 
-		// Create the Mark object with the provided details
 		Mark mark = new Mark(course, firstAttestation, secondAttestation, finalExam);
-
-		// Add the Mark to the student's Transcript
 		student.getTranscript().addCourseMark(course, mark);
 
-		// Optionally, you can print a confirmation message
 		System.out.println("Marks have been successfully added for student " + student.getName() + " in the course " + course.getCourseName());
 	}
 
@@ -83,20 +68,16 @@ public class Teacher extends Employee implements Researcher {
 
 
 	public String sendComplaint(UrgencyLevel urgency, String complaintContent,Student student) {
-		// Create a new Complaint instance for the given teacher and student, with the appropriate urgency level
 		Student studentGettingComplaint = student;
-		Complaints newComplaint = new Complaints(urgency, this, studentGettingComplaint, false); // Assuming `this` is the teacher
+		Complaints newComplaint = new Complaints(urgency, this, studentGettingComplaint, false);
 
-		// Add the complaint content to the list of all complaints
 		newComplaint.addComplaint(complaintContent);
 
-		// Log the complaint or save it in a database (assuming you have some manager to handle storage)
-		// DatabaseManager.getInstance().addComplaint(newComplaint); // Uncomment if you have a database manager
+		return "Complaint " + complaintContent + " has been sent with " + urgency + " urgency.";
+	}
 
-		// Output message to confirm that the complaint was sent
-		System.out.println("Complaint sent: " + complaintContent);
-
-		return "Complaint has been sent with " + urgency + " urgency.";
+	public boolean isProfessor() {
+		return this.typeOfTeacher.equals("Professor");
 	}
 
 
@@ -130,6 +111,26 @@ public class Teacher extends Employee implements Researcher {
 
 	public String getTypeOfTeacher() {
 		return typeOfTeacher.toString();
+	}
+
+	public void setTypeOfTeacher(TeacherTypes typeOfTeacher) {
+		this.typeOfTeacher = typeOfTeacher;
+
+		if (isProfessor() && researcherProfile == null) {
+			this.researcherProfile = new Researcher(getId(), getFirstName(), getSurname(), getEmail(), getPassword(), school, 0);
+		}
+	}
+
+	public List<Integer> getRatings() {
+		return ratings;
+	}
+
+	public List<Course> viewCourses() {
+		return courseList;
+	}
+
+	public String viewStudent(Student student) {
+		return student.toString();
 	}
 
 	public String getRole() {

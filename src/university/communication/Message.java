@@ -7,12 +7,11 @@ import java.util.Date;
 import java.time.LocalDateTime;
 
 public class Message {
-	private User sender;         // Sender is now of type User
-	private User recipient;      // Recipient is now of type User
-	private String content;      // The message content
-	private LocalDateTime date;  // The date and time when the message was sent
+	private User sender;
+	private User recipient;
+	private String content;
+	private LocalDateTime date;
 
-	// Constructor
 	public Message(User sender, User recipient, String content) {
 		if (sender == null || recipient == null || content == null || content.isEmpty()) {
 			throw new IllegalArgumentException("Sender, recipient, and content cannot be null or empty.");
@@ -23,7 +22,6 @@ public class Message {
 		this.date = LocalDateTime.now(); // Automatically set the current date and time
 	}
 
-	// Getters and Setters
 	public User getSender() {
 		return sender;
 	}
@@ -68,7 +66,6 @@ public class Message {
 		this.date = date;
 	}
 
-	@Override
 	public String toString() {
 		return "Message from " + sender.getName() + " to " + recipient.getName() + " at " + date + ": " + content;
 	}

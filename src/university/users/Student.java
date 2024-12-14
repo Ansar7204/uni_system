@@ -12,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Student extends User implements Researcher {
+public class Student extends User {
 
 	private String studentId;
 	private School school;
@@ -20,18 +20,28 @@ public class Student extends User implements Researcher {
 	private StudentOrganization organizationMembership;
 	private int yearOfStudy;
 	private List<Course> registeredCourses;
+	private List<ResearchPaper> diplomaProjects;
 	/*private List<File> files;*/
 
 
-	public Student(String studentID, String name, String surName, String email, String password, School school, Transcript transcript, StudentOrganization organizationMembership, int yearOfStudy) {
-		 List<News> newsList = new ArrayList<>();
-		 super(studentID, name, surName, email, password, newsList);
+	public Student(String studentID, String firstname, String surname, String email, String password, School school, Transcript transcript, StudentOrganization organizationMembership, int yearOfStudy) {
+		 super(studentID, firstname, surname, email, password);
 		 this.school = school;
 		 this.transcript = transcript;
 		 this.organizationMembership = organizationMembership;
 		 this.yearOfStudy = yearOfStudy;
 		 this.registeredCourses = new ArrayList<Course>();
+		 this.newsList = new ArrayList<News>();
+		this.diplomaProjects = new ArrayList<>();
 //		 this.files = new ArrayList<File>();
+	}
+
+	public void addDiplomaProject(Researcher researcher, ResearchPaper paper) {
+		if (!researcher.getPublications().contains(paper)) {
+			throw new IllegalArgumentException("The research paper is not published by the researcher.");
+		}
+		diplomaProjects.add(paper);
+		System.out.println("Added research paper '" + paper.getTitle() + "' to the diploma projects of " + getFirstName() + " " + getSurname());
 	}
 
 	public String viewCourses() {
@@ -68,7 +78,7 @@ public class Student extends User implements Researcher {
 
 				StringBuilder teacherNames = new StringBuilder("Teachers for " + courseName + ": ");
 				for (Teacher teacher : teachers) {
-					teacherNames.append(teacher.getName()).append(", ");
+					teacherNames.append(teacher.getFirstName()).append(", ");
 				}
 
 				// Remove the trailing comma and space
@@ -110,7 +120,7 @@ public class Student extends User implements Researcher {
 		// Add the rating to the teacher's list
 		teacher.addRating(rating);
 
-		return "Rated teacher " + teacher.getName() + " with " + rating + " points. Average rating: " + teacher.getAverageRating();
+		return "Rated teacher " + teacher.getFirstName() + " with " + rating + " points. Average rating: " + teacher.getAverageRating();
 	}
 
 

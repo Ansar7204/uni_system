@@ -14,23 +14,31 @@ import static university.communication.Languages.EN;
 public abstract class User {
 
 	public String id;
-	public String name;
-	public String surName;
+	public String firstname;
+	public String surname;
 	public String email;
 	private String password;
 	public Languages preferredLanguage;
 	private List<Message> receivedMessages;
 	public List<News> newsList;
 
-	public User(String id, String name, String surName, String email, String password, List<News> newsList) {
+	public User(String id, String firstname, String surname, String email, String password, List<News> newsList) {
 		this.id = id;
-		this.name = name;
-		this.surName = surName;
+		this.firstname = firstname;
+		this.surname = surname;
 		this.email = email;
 		this.password = password;
         this.newsList = newsList;
         this.preferredLanguage = EN;
 		this.receivedMessages = new ArrayList<>();
+	}
+
+	public User(String id, String firstname, String surname, String email, String password) {
+		this.id = id;
+		this.firstname = firstname;
+		this.surname = surname;
+		this.email = email;
+		this.password = password;
 	}
 
 
@@ -66,13 +74,56 @@ public abstract class User {
 
 	public void commentNews(News news, String comment) {
 		Language language = Language.getInstance();
-		news.addComment(this.name + " " + this.surName, comment);
+		news.addComment(this.firstname + " " + this.surname, comment);
 		System.out.println(language.getLocalizedMessage(
-				"Comment addded to news by " + name,
-				"Комментарий добавлен в новость пользователем " + name,
-				name + " есімді қолданушы жаңалыққа пікір қосты"
+				"Comment added to news by " + firstname,
+				"Комментарий добавлен в новость пользователем " + firstname,
+				firstname + " есімді қолданушы жаңалыққа пікір қосты"
 		));
 	}
+
+	public Message sendMessage(User recipient, Message message) {
+		if (recipient == null || message == null) {
+			throw new IllegalArgumentException("Recipient or message cannot be null.");
+		}
+		recipient.receiveMessage(message);
+		return message;
+	}
+
+	public void receiveMessage(Message message) {
+		if (message != null) {
+			receivedMessages.add(message);
+		}
+	}
+
+	public String viewMessages() {
+		if (receivedMessages.isEmpty()) {
+			return "No messages.";
+		}
+		return receivedMessages.toString();
+	}
+
+	public String viewNews() {
+		StringBuilder newsContent = new StringBuilder();
+
+		if (newsList != null && !newsList.isEmpty()) {
+			for (News news : newsList) {
+				newsContent.append("Topic: ").append(news.getTopic()).append("\n")
+						.append("Content: ").append(news.getContent()).append("\n")
+						.append("Comments: ").append(news.getComments()).append("\n\n");
+			}
+		}
+		else {
+			newsContent.append("No news available.");
+		}
+
+		return newsContent.toString();
+	}
+
+
+
+
+	public abstract String getRole();
 
 	public String getId() {
 		return id;
@@ -82,12 +133,20 @@ public abstract class User {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstname;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String name) {
+		this.firstname = name;
+	}
+
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String name) {
+		this.surname = surname;
 	}
 
 	public String getEmail() {
@@ -119,57 +178,13 @@ public abstract class User {
 		return receivedMessages;
 	}
 
-	public Message sendMessage(User recipient, Message message) {
-		if (recipient == null || message == null) {
-			throw new IllegalArgumentException("Recipient or message cannot be null.");
-		}
-		recipient.receiveMessage(message);
-		return message;
-	}
-
-	public void receiveMessage(Message message) {
-		if (message != null) {
-			receivedMessages.add(message);
-		}
-	}
-
-	public String viewMessages() {
-		if (receivedMessages.isEmpty()) {
-			return "No messages.";
-		}
-		return receivedMessages.toString();
-	}
-
-	public String viewNews() {
-		StringBuilder newsContent = new StringBuilder();
-
-		// Check if the user has any news to display
-		if (newsList != null && !newsList.isEmpty()) {
-			for (News news : newsList) {
-				newsContent.append("Topic: ").append(news.getTopic()).append("\n")
-						.append("Content: ").append(news.getContent()).append("\n")
-						.append("Comments: ").append(news.getComments()).append("\n\n");
-			}
-		} else {
-			newsContent.append("No news available.");
-		}
-
-		return newsContent.toString();
-	}
-
-	public abstract String getRole();
-
-	public String toString() {
-		return "User{id='" + id + "', name='" + name + "', email='" + email + "'}";
-	}
-
 	public boolean equals(Object o) {
-		if (this == o) return true; // Сравнение с самим собой
-		if (o == null || getClass() != o.getClass()) return false; // Проверка на null и совпадение классов
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
 		User user = (User) o;
-		return Objects.equals(id, user.id) && // Сравнение по id
-				Objects.equals(email, user.email) && // Сравнение по email
-				Objects.equals(password, user.password); // Сравнение по password
+		return Objects.equals(id, user.id) &&
+				Objects.equals(email, user.email) &&
+				Objects.equals(password, user.password);
 	}
 
 	public int hashCode() {
