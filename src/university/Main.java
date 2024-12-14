@@ -14,7 +14,6 @@ public class Main {
     public static void main(String[] args) {
         DatabaseManager db = DatabaseManager.getInstance();
 
-
         initializeExampleData(db);
 
         Scanner scanner = new Scanner(System.in);
@@ -50,14 +49,13 @@ public class Main {
                 if (user instanceof Student) {
                     studentMenu((Student) user, scanner, db);
                 } else if (user instanceof Teacher) {
-                    teacherMenu((Teacher) user,db);
+                    teacherMenu((Teacher) user, db);
                 } else if (user instanceof Admin) {
                     adminMenu((Admin) user, scanner, db);
                 } else {
                     System.out.println("Unknown user role.");
                 }
 
-                break; // Exit the loop after successful login and menu
             } else if (choice == 2) {
                 // Registration flow
                 System.out.println("Please enter your role (Student, Teacher, Admin):");
@@ -105,7 +103,6 @@ public class Main {
         }
     }
 
-
     private static void studentMenu(Student student, Scanner scanner, DatabaseManager db) {
         System.out.println("Welcome, " + student.getFirstName() + "!");
         List<Course> courses = db.getCourses();
@@ -124,18 +121,9 @@ public class Main {
             scanner.nextLine(); // Consume the newline character
 
             switch (choice) {
-                case 1 -> {
-                    System.out.println("\nViewing Your Files:");
-                    System.out.println(student.viewFiles());
-                }
-                case 2 -> {
-                    System.out.println("\nYour Courses:");
-                    System.out.println(student.viewCourses());
-                }
-                case 3 -> {
-                    System.out.println("\nYour Transcript:");
-                    System.out.println(student.viewTranscript());
-                }
+                case 1 -> System.out.println("\nViewing Your Files:\n" + student.viewFiles());
+                case 2 -> System.out.println("\nYour Courses:\n" + student.viewCourses());
+                case 3 -> System.out.println("\nYour Transcript:\n" + student.viewTranscript());
                 case 4 -> {
                     System.out.println("\nAvailable Courses for Registration:");
                     for (int i = 0; i < courses.size(); i++) {
@@ -165,19 +153,17 @@ public class Main {
     private static void teacherMenu(Teacher teacher, DatabaseManager databaseManager) {
         System.out.println("Welcome, " + teacher.getFirstName() + "!");
 
-        // Main menu loop
         while (true) {
             System.out.println("\nSelect an option:");
             System.out.println("1. View Courses");
             System.out.println("2. Put Marks for a Student");
             System.out.println("3. Send Complaint to Student");
-            System.out.println("4. Exit");
+            System.out.println("4. Logout");
 
             int choice = new Scanner(System.in).nextInt();
 
             switch (choice) {
-                case 1:
-                    // View courses taught by the teacher
+                case 1 -> {
                     List<Course> courses = teacher.viewCourses();
                     if (courses.isEmpty()) {
                         System.out.println("You are not teaching any courses currently.");
@@ -187,111 +173,17 @@ public class Main {
                             System.out.println(course.getCourseName());
                         }
                     }
-                    break;
-
-                case 2:
-                    // Put marks for a student in a specific course
-                    putMarks(teacher, databaseManager);
-                    break;
-
-                case 3:
-                    // Send a complaint to a student
-                    sendComplaint(teacher, databaseManager);
-                    break;
-
-                case 4:
-                    // Exit the menu
-                    System.out.println("Goodbye, " + teacher.getFirstName() + "!");
+                }
+                case 2 -> putMarks(teacher, databaseManager);
+                case 3 -> sendComplaint(teacher, databaseManager);
+                case 4 -> {
+                    System.out.println("Logging out...");
                     return;
-
-                default:
-                    System.out.println("Invalid option. Please try again.");
+                }
+                default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
-
-    private static void putMarks(Teacher teacher, DatabaseManager databaseManager) {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter student ID: ");
-        String studentId = scanner.nextLine();
-
-        // Find the student using DatabaseManager
-        Student student = databaseManager.getAllStudents().stream()
-                .filter(s -> s.getId().equals(studentId))
-                .findFirst()
-                .orElse(null);
-
-        if (student == null) {
-            System.out.println("Student not found.");
-            return;
-        }
-
-        System.out.print("Enter course name: ");
-        String courseName = scanner.nextLine();
-
-        // Find the course using DatabaseManager
-        Course course = databaseManager.getCourses().stream()
-                .filter(c -> c.getCourseName().equals(courseName))
-                .findFirst()
-                .orElse(null);
-
-        if (course == null) {
-            System.out.println("Course not found.");
-            return;
-        }
-
-        if (!student.getRegisteredCourses().contains(course)) {
-            System.out.println("The student is not registered for this course.");
-            return;
-        }
-
-        System.out.print("Enter first attestation mark (0-30): ");
-        double firstAttestation = scanner.nextDouble();
-
-        System.out.print("Enter second attestation mark (0-30): ");
-        double secondAttestation = scanner.nextDouble();
-
-        System.out.print("Enter final exam mark (0-40): ");
-        double finalExam = scanner.nextDouble();
-
-        // Use Teacher's method to put marks
-        teacher.putMarks(student, course, firstAttestation, secondAttestation, finalExam);
-    }
-
-    private static void sendComplaint(Teacher teacher, DatabaseManager databaseManager) {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter student ID: ");
-        String studentId = scanner.nextLine();
-
-        // Find the student using DatabaseManager
-        Student student = databaseManager.getAllStudents().stream()
-                .filter(s -> s.getId().equals(studentId))
-                .findFirst()
-                .orElse(null);
-
-        if (student == null) {
-            System.out.println("Student not found.");
-            return;
-        }
-
-        System.out.print("Enter complaint content: ");
-        String complaintContent = scanner.nextLine();
-
-        System.out.print("Enter urgency level (LOW, MEDIUM, HIGH): ");
-        String urgencyInput = scanner.nextLine();
-
-        try {
-            UrgencyLevel urgency = UrgencyLevel.valueOf(urgencyInput.toUpperCase());
-            String result = teacher.sendComplaint(urgency, complaintContent, student);
-            System.out.println(result);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid urgency level. Please try again.");
-        }
-    }
-
-
 
     private static void adminMenu(Admin admin, Scanner scanner, DatabaseManager db) {
         System.out.println("Welcome, Admin " + admin.getFirstName() + "!");
@@ -327,7 +219,7 @@ public class Main {
                     if (role.equalsIgnoreCase("Student")) {
                         System.out.print("Year: ");
                         int year = scanner.nextInt();
-                        scanner.nextLine(); // Consume the newline
+                        scanner.nextLine();
                         newUser = new Student("S" + System.currentTimeMillis(), firstName, lastName, email, password, null, new Transcript(), null, year);
                     } else if (role.equalsIgnoreCase("Teacher")) {
                         System.out.print("Department: ");
@@ -393,53 +285,112 @@ public class Main {
         }
     }
 
+    private static void putMarks(Teacher teacher, DatabaseManager databaseManager) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter student ID: ");
+        String studentId = scanner.nextLine();
+
+        Student student = databaseManager.getAllStudents().stream()
+                .filter(s -> s.getId().equals(studentId))
+                .findFirst()
+                .orElse(null);
+
+        if (student == null) {
+            System.out.println("Student not found.");
+            return;
+        }
+
+        System.out.print("Enter course name: ");
+        String courseName = scanner.nextLine();
+
+        Course course = databaseManager.getCourses().stream()
+                .filter(c -> c.getCourseName().equals(courseName))
+                .findFirst()
+                .orElse(null);
+
+        if (course == null) {
+            System.out.println("Course not found.");
+            return;
+        }
+
+        if (!student.getRegisteredCourses().contains(course)) {
+            System.out.println("The student is not registered for this course.");
+            return;
+        }
+
+        System.out.print("Enter first attestation mark (0-30): ");
+        double firstAttestation = scanner.nextDouble();
+
+        System.out.print("Enter second attestation mark (0-30): ");
+        double secondAttestation = scanner.nextDouble();
+
+        System.out.print("Enter final exam mark (0-40): ");
+        double finalExam = scanner.nextDouble();
+
+        teacher.putMarks(student, course, firstAttestation, secondAttestation, finalExam);
+    }
+
+    private static void sendComplaint(Teacher teacher, DatabaseManager databaseManager) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter student ID: ");
+        String studentId = scanner.nextLine();
+
+        Student student = databaseManager.getAllStudents().stream()
+                .filter(s -> s.getId().equals(studentId))
+                .findFirst()
+                .orElse(null);
+
+        if (student == null) {
+            System.out.println("Student not found.");
+            return;
+        }
+
+        System.out.print("Enter complaint content: ");
+        String complaintContent = scanner.nextLine();
+
+        System.out.print("Enter urgency level (LOW, MEDIUM, HIGH): ");
+        String urgencyInput = scanner.nextLine();
+
+        try {
+            UrgencyLevel urgency = UrgencyLevel.valueOf(urgencyInput.toUpperCase());
+            String result = teacher.sendComplaint(urgency, complaintContent, student);
+            System.out.println(result);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid urgency level. Please try again.");
+        }
+    }
+
     private static void initializeExampleData(DatabaseManager db) {
-        // Create example teachers
         Teacher teacher1 = new Teacher("T1", "Alice", "Smith", "alice@school.com", "password123", DepartmentsOfEmployees.Teacher, 500, TeacherTypes.Lector, "Math");
         Teacher teacher2 = new Teacher("T2", "Bob", "Johnson", "bob@school.com", "password123", DepartmentsOfEmployees.Teacher, 100, TeacherTypes.Professor, "Physics");
 
-        // Create example courses
         Course course1 = new Course("CS101", "Intro to Programming", "PP1", "PP2", "none");
-        Course course2 = new Course("CS102", "Data Structures", "DicreteMAth", "Math", "none");
+        Course course2 = new Course("CS102", "Data Structures", "DiscreteMath", "Math", "none");
         db.addCourse(course1);
         db.addCourse(course2);
 
         course1.assignTeacher(teacher1);
         course2.assignTeacher(teacher2);
 
-        // Create example students
-        Student student1 = new Student(
-                "S1", "John", "Doe", "john@student.com", "pass123",
-                null, new Transcript(), null, 1
-        );
-        Student student2 = new Student(
-                "S2", "Jane", "Doe", "jane@student.com", "pass123",
-                null, new Transcript(), null, 2
-        );
+        Student student1 = new Student("S1", "John", "Doe", "john@student.com", "pass123", null, new Transcript(), null, 1);
+        Student student2 = new Student("S2", "Jane", "Doe", "jane@student.com", "pass123", null, new Transcript(), null, 2);
 
-        // Register students for courses
         student1.registerForCourses(course1);
         student2.registerForCourses(course2);
 
-        // Create example files
         Files file1 = new Files(teacher1, "CS101 Lecture Notes");
         Files file2 = new Files(teacher2, "CS102 Lecture Notes");
         db.addFolder(file1);
         db.addFolder(file2);
 
-        // Create an example admin
         Admin admin1 = new Admin("A1", "Emma", "Williams", "emma@admin.com", "admin123");
 
-        // Add example users to the database
         db.addUser(student1);
         db.addUser(student2);
         db.addUser(teacher1);
         db.addUser(teacher2);
         db.addUser(admin1);
     }
-
-
 }
-// new line
-// oiejqlkwej
-

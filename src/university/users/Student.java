@@ -3,6 +3,7 @@ package university.users;
 import university.communication.News;
 import university.courses.*;
 import university.database.DatabaseManager;
+import university.library.Book;
 import university.research.ResearchPaper;
 import university.research.ResearchProject;
 import university.research.Researcher;
@@ -22,6 +23,7 @@ public class Student extends User {
 	private List<Course> registeredCourses;
 	private List<ResearchPaper> diplomaProjects;
 	public List<Files> files;
+	public List<Book> borrowedBooks;
 
 
 	public Student(String studentID, String firstname, String surname, String email, String password, School school, Transcript transcript, StudentOrganization organizationMembership, int yearOfStudy) {
@@ -32,8 +34,9 @@ public class Student extends User {
 		 this.yearOfStudy = yearOfStudy;
 		 this.registeredCourses = new ArrayList<Course>();
 		 this.newsList = new ArrayList<News>();
-		this.diplomaProjects = new ArrayList<>();
-		this.files = loadFilesFromDatabase() ;
+		 this.diplomaProjects = new ArrayList<>();
+		 this.files = loadFilesFromDatabase();
+		 this.borrowedBooks = new ArrayList<>();
 	}
 	private boolean isTeacherRelatedToStudent(Teacher teacher) {
 		for (Course course : registeredCourses) {
@@ -42,6 +45,10 @@ public class Student extends User {
 			}
 		}
 		return false;
+	}
+
+	public List<Book> getBorrowedBooks() {
+		return borrowedBooks;
 	}
 
 	private List<Files> loadFilesFromDatabase() {
