@@ -20,18 +20,7 @@ public abstract class User {
 	private String password;
 	public Languages preferredLanguage;
 	private List<Message> receivedMessages;
-	public List<News> newsList;
-
-	public User(String id, String firstname, String surname, String email, String password, List<News> newsList) {
-		this.id = id;
-		this.firstname = firstname;
-		this.surname = surname;
-		this.email = email;
-		this.password = password;
-        this.newsList = newsList;
-        this.preferredLanguage = EN;
-		this.receivedMessages = new ArrayList<>();
-	}
+    public List<News> newsList;
 
 	public User(String id, String firstname, String surname, String email, String password) {
 		this.id = id;
@@ -39,8 +28,10 @@ public abstract class User {
 		this.surname = surname;
 		this.email = email;
 		this.password = password;
+        this.newsList = new ArrayList<News>() ;
+        this.preferredLanguage = EN;
+		this.receivedMessages = new ArrayList<>();
 	}
-
 
 
 	public boolean logIn(String email, String password) {
