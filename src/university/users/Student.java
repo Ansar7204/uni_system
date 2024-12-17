@@ -179,27 +179,6 @@ public class Student extends User {
 		return fileList.toString();
 	}
 
-	public void printPapers(Comparator<ResearchPaper> comparator) {
-	}
-
-	public int calculateHIndex() {
-		return 0;
-	}
-	public List<ResearchProject> getResearchProjects() {
-		return List.of();
-	}
-	public void addResearchProject(ResearchProject project) {
-
-	}
-	public List<ResearchPaper> getResearchPapers() {
-		return List.of();
-	}
-	public void addResearchPaper(ResearchPaper paper) {
-	}
-
-	public ResearchPaper printPapers(ResearchPaper parameter) {
-		return null;
-	}
 
 	public void notify(ResearchPaper paper) {
 		System.out.println("Notification for " + getFirstName() + ": New paper published - " + paper.getTitle());

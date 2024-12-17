@@ -1,9 +1,16 @@
 package university.database;
 
+import university.communication.Complaints;
+import university.communication.Log;
+import university.communication.News;
 import university.users.*;
 import university.courses.*;
 import java.io.*;
 import java.util.*;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseManager implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -12,11 +19,19 @@ public class DatabaseManager implements Serializable {
     private List<User> users;
     private List<Course> courses;
     private List<Files> fileSystem;
+    private List<Log> logs;                // User activity logs
+    private List<Transcript> transcripts;  // Transcripts of students
+    private List<News> newsList;
+    private List<Complaints> complaints; // News updates
 
     private DatabaseManager() {
         users = new ArrayList<>();
         courses = new ArrayList<>();
         fileSystem = new ArrayList<>();
+        logs = new ArrayList<>();
+        transcripts = new ArrayList<>();
+        newsList = new ArrayList<>();
+        complaints = new ArrayList<>();
     }
 
     // Singleton instance retrieval
@@ -45,6 +60,42 @@ public class DatabaseManager implements Serializable {
         courses.add(course);
     }
 
+    // Files management
+    public void addFolder(Files folder) {
+        fileSystem.add(folder);
+    }
+
+    public List<Files> getAllFolders() {
+        return fileSystem;
+    }
+
+    public Files getFolderByName(String folderName) {
+        for (Files folder : fileSystem) {
+            if (folder.getNameOfFile().equals(folderName)) {
+                return folder;
+            }
+        }
+        return null;
+    }
+
+    public void addFileToFolder(String folderName, String fileName) {
+        Files folder = getFolderByName(folderName);
+        if (folder != null) {
+            folder.getFilesInFolder().add(fileName);
+        } else {
+            System.out.println("Folder not found!");
+        }
+    }
+
+    public void printAllFolders() {
+        for (Files folder : fileSystem) {
+            System.out.println("Folder: " + folder.getNameOfFile() +
+                    " (Owned by: " + folder.getTeacher().getFirstName() + " " + folder.getTeacher().getSurname() + ")");
+            for (String file : folder.getFilesInFolder()) {
+                System.out.println("  - " + file);
+            }
+        }
+    }
     public void printAllUsers() {
         for (User user : users) {
             System.out.println(user);
@@ -81,41 +132,93 @@ public class DatabaseManager implements Serializable {
         return managers;
     }
 
-
-    public void addFolder(Files folder) {
-        fileSystem.add(folder);
+    // Logs management
+    public void addLog(Log log) {
+        logs.add(log);
     }
 
-    public List<Files> getAllFolders() {
-        return fileSystem;
+    public List<Log> getLogs() {
+        return logs;
     }
 
-    public Files getFolderByName(String folderName) {
-        for (Files folder : fileSystem) {
-            if (folder.getNameOfFile().equals(folderName)) {
-                return folder;
+    public void printLogs() {
+        for (Log log : logs) {
+            System.out.println(log);
+        }
+    }
+
+    // Transcript management
+    public void addTranscript(Transcript transcript) {
+        transcripts.add(transcript);
+    }
+
+    public List<Transcript> getTranscripts() {
+        return transcripts;
+    }
+
+    public Transcript getTranscriptForStudent(String studentID) {
+        // Iterate over all users and find the student with the given studentID
+        for (User user : users) {
+            if (user instanceof Student) {
+                Student student = (Student) user;
+                if (student.getStudentId().equals(studentID)) {
+                    return student.getTranscript();
+                }
             }
         }
-        return null; // Return null if no matching folder is found
+        // If no matching student is found, return null
+        System.out.println("Student with ID " + studentID + " not found.");
+        return null;
     }
 
-    public void addFileToFolder(String folderName, String fileName) {
-        Files folder = getFolderByName(folderName);
-        if (folder != null) {
-            folder.getFilesInFolder().add(fileName);
-        } else {
-            System.out.println("Folder not found!");
+
+    public void printTranscripts() {
+        for (Transcript transcript : transcripts) {
+            System.out.println(transcript);
         }
     }
 
-    public void printAllFolders() {
-        for (Files folder : fileSystem) {
-            System.out.println("Folder: " + folder.getNameOfFile() +
-                    " (Owned by: " + folder.getTeacher().getFirstName() + " " + folder.getTeacher().getSurname() + ")");
-            for (String file : folder.getFilesInFolder()) {
-                System.out.println("  - " + file);
+    // News management
+    public void addNews(News news) {
+        newsList.add(news);
+    }
+    public void removeAllNews() {
+        newsList.clear();
+    }
+
+    public List<News> getNewsList() {
+        return newsList;
+    }
+
+    public void printAllNews() {
+        for (News news : newsList) {
+            System.out.println(news);
+        }
+    }
+
+    public void addComplaint(Complaints complaint) {
+        complaints.add(complaint);  // Adds a new complaint to the list
+    }
+
+    public List<Complaints> getComplaints() {
+        return complaints;  // Returns the list of all complaints
+    }
+
+    public List<String> getAllUnsignedComplaints() {
+        List<String> unsignedComplaints = new ArrayList<>();
+        for (Complaints complaint : complaints) {
+            unsignedComplaints.addAll(complaint.getUnsignedComplaints());
+        }
+        return unsignedComplaints;  // Returns a list of all unsigned complaints
+    }
+
+    public Complaints getComplaintByText(String complaintText) {
+        for (Complaints complaint : complaints) {
+            if (complaint.getAllComplaints().contains(complaintText)) {
+                return complaint;  // Returns the complaint by the text
             }
         }
+        return null;
     }
 
     // Serialization methods
@@ -131,3 +234,4 @@ public class DatabaseManager implements Serializable {
         }
     }
 }
+

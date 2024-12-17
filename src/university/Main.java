@@ -1,5 +1,7 @@
 package university;
 
+import university.communication.Complaints;
+import university.communication.Message;
 import university.communication.UrgencyLevel;
 import university.courses.Course;
 import university.courses.Files;
@@ -24,7 +26,7 @@ public class Main {
             System.out.println("2. Register");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline
+            scanner.nextLine();
 
             if (choice == 1) {
                 // Login flow
@@ -52,7 +54,12 @@ public class Main {
                     teacherMenu((Teacher) user, db);
                 } else if (user instanceof Admin) {
                     adminMenu((Admin) user, scanner, db);
-                } else {
+                } else if (user instanceof Librarian) {
+                    librarianMenu((Librarian) user, scanner, db);
+                } else if (user instanceof Manager) {
+                    managerMenu((Manager) user, scanner, db);
+                }
+                else {
                     System.out.println("Unknown user role.");
                 }
 
@@ -90,7 +97,7 @@ public class Main {
                         break;
                     default:
                         System.out.println("Invalid role entered.");
-                        continue; // Retry registration if the role is invalid
+                        continue;
                 }
 
                 if (newUser != null) {
@@ -174,8 +181,8 @@ public class Main {
                         }
                     }
                 }
-                case 2 -> putMarks(teacher, databaseManager);
-                case 3 -> sendComplaint(teacher, databaseManager);
+                case 2 -> {}
+                case 3 -> {}
                 case 4 -> {
                     System.out.println("Logging out...");
                     return;
@@ -285,82 +292,268 @@ public class Main {
         }
     }
 
-    private static void putMarks(Teacher teacher, DatabaseManager databaseManager) {
-        Scanner scanner = new Scanner(System.in);
+    private static void librarianMenu(Librarian librarian, Scanner scanner, DatabaseManager db) {
+        System.out.println("Welcome, Librarian " + librarian.getFirstName() + "!");
 
-        System.out.print("Enter student ID: ");
-        String studentId = scanner.nextLine();
+        while (true) {
+            System.out.println("\nLibrarian Menu:");
+            System.out.println("1. Send Message");
+            System.out.println("2. View Books");
+            System.out.println("3. View Borrowed Books");
+            System.out.println("4. Add Books");
+            System.out.println("5. Remove Books");
+            System.out.println("6. View Messages");
+            System.out.println("7. Change Language");
+            System.out.println("8. View News");
+            System.out.println("9. View Incoming Borrow Requests");  // New menu option
+            System.out.println("10. Process Borrow Request");
+            System.out.println("11. Logout");
+            System.out.print("Choose an option: ");
 
-        Student student = databaseManager.getAllStudents().stream()
-                .filter(s -> s.getId().equals(studentId))
-                .findFirst()
-                .orElse(null);
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
 
-        if (student == null) {
-            System.out.println("Student not found.");
-            return;
+            switch (choice) {
+                case 1 -> {
+                    System.out.print("Enter the recipient's email: ");
+                    String recipientEmail = scanner.nextLine();
+
+                    // Find the recipient (user) by email
+                    User recipient = db.getUsers().stream()
+                            .filter(u -> u.getEmail().equalsIgnoreCase(recipientEmail))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (recipient == null) {
+                        System.out.println("User with the given email not found.");
+                        break;
+                    }
+
+                    System.out.print("Enter the message content: ");
+                    String content = scanner.nextLine();
+
+                    try {
+                        // Create and send the message
+                        Message newMessage = new Message(librarian, recipient, content);
+                        librarian.sendMessage(recipient, newMessage);
+                        System.out.println("Message sent successfully to " + recipient.getFirstName() + ".");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                }
+
+                case 2 -> librarian.viewBooks();
+                case 3 -> librarian.viewBorrowedBooks();
+                case 4 -> {
+                    System.out.print("Enter the book ID: ");
+                    String bookId = scanner.nextLine();
+
+                    System.out.print("Enter the book title: ");
+                    String bookTitle = scanner.nextLine();
+
+                    System.out.print("Enter the author's name: ");
+                    String author = scanner.nextLine();
+
+                    System.out.print("Enter the number of pages: ");
+                    int numberOfPages = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+
+                    librarian.addBook(bookId, bookTitle, author, numberOfPages);
+                    System.out.println("Book added successfully.");
+                }
+                case 5 -> {
+                    System.out.print("Enter the book title to remove: ");
+                    String bookTitle = scanner.nextLine();
+                    librarian.removeBook(bookTitle);
+                    System.out.println("Book removed successfully.");
+                }
+
+                case 6 -> System.out.println("\nMessages:\n" + librarian.viewMessages());
+                case 7 -> {
+                    System.out.print("Enter new language (e.g., English, Spanish): ");
+                    String language = scanner.nextLine();
+                    librarian.changeLanguage(language);
+                    System.out.println("Language changed to " + language);
+                }
+                case 8 -> {
+                    System.out.println("\nLatest News:\n" + librarian.viewNews());
+                }
+                case 9 -> {
+                    // View Incoming Borrow Requests
+                    System.out.println("\nIncoming Borrow Requests:\n" + librarian.viewIncomingRequests());
+                }
+                case 10 -> {
+                    // Process Borrow Request
+                    System.out.print("Enter the number of the request you want to process: ");
+                    int requestIndex = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+
+                    System.out.print("Approve request? (yes/no): ");
+                    String approval = scanner.nextLine();
+                    boolean approve = approval.equalsIgnoreCase("yes");
+
+                    librarian.handleBorrowRequest(requestIndex, approve);
+                }
+                case 11 -> {
+                    System.out.println("Logging out...");
+                    return;
+                }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
         }
-
-        System.out.print("Enter course name: ");
-        String courseName = scanner.nextLine();
-
-        Course course = databaseManager.getCourses().stream()
-                .filter(c -> c.getCourseName().equals(courseName))
-                .findFirst()
-                .orElse(null);
-
-        if (course == null) {
-            System.out.println("Course not found.");
-            return;
-        }
-
-        if (!student.getRegisteredCourses().contains(course)) {
-            System.out.println("The student is not registered for this course.");
-            return;
-        }
-
-        System.out.print("Enter first attestation mark (0-30): ");
-        double firstAttestation = scanner.nextDouble();
-
-        System.out.print("Enter second attestation mark (0-30): ");
-        double secondAttestation = scanner.nextDouble();
-
-        System.out.print("Enter final exam mark (0-40): ");
-        double finalExam = scanner.nextDouble();
-
-        teacher.putMarks(student, course, firstAttestation, secondAttestation, finalExam);
     }
 
-    private static void sendComplaint(Teacher teacher, DatabaseManager databaseManager) {
-        Scanner scanner = new Scanner(System.in);
+    private static void managerMenu(Manager manager, Scanner scanner, DatabaseManager db) {
+        System.out.println("Welcome, Manager " + manager.getFirstName() + "!");
 
-        System.out.print("Enter student ID: ");
-        String studentId = scanner.nextLine();
+        while (true) {
+            System.out.println("\nManager Menu:");
+            System.out.println("1. Send Message");
+            System.out.println("2. Approve Complaint");
+            System.out.println("3. View Teacher Ratings");
+            System.out.println("4. Add News");
+            System.out.println("5. Remove All News");
+            System.out.println("6. View Messages");
+            System.out.println("7. Change Language");
+            System.out.println("8. View News");
+            System.out.println("9. Logout");
+            System.out.print("Choose an option: ");
 
-        Student student = databaseManager.getAllStudents().stream()
-                .filter(s -> s.getId().equals(studentId))
-                .findFirst()
-                .orElse(null);
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
 
-        if (student == null) {
-            System.out.println("Student not found.");
-            return;
-        }
+            switch (choice) {
+                case 1 -> {
+                    System.out.print("Enter the recipient's email: ");
+                    String recipientEmail = scanner.nextLine();
 
-        System.out.print("Enter complaint content: ");
-        String complaintContent = scanner.nextLine();
+                    // Find the recipient (user) by email
+                    User recipient = db.getUsers().stream()
+                            .filter(u -> u.getEmail().equalsIgnoreCase(recipientEmail))
+                            .findFirst()
+                            .orElse(null);
 
-        System.out.print("Enter urgency level (LOW, MEDIUM, HIGH): ");
-        String urgencyInput = scanner.nextLine();
+                    if (recipient == null) {
+                        System.out.println("User with the given email not found.");
+                        break;
+                    }
 
-        try {
-            UrgencyLevel urgency = UrgencyLevel.valueOf(urgencyInput.toUpperCase());
-            String result = teacher.sendComplaint(urgency, complaintContent, student);
-            System.out.println(result);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid urgency level. Please try again.");
+                    System.out.print("Enter message content: ");
+                    String content = scanner.nextLine();
+
+                    try {
+                        // Create a new message from the manager to the recipient
+                        Message newMessage = new Message(manager, recipient, content);
+
+                        // Send the message using the sendMessage method
+                        manager.sendMessage(recipient, newMessage);
+
+                        System.out.println("Message sent successfully to " + recipient.getFirstName() + ".");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                }
+
+                case 2 -> {
+                    System.out.println("Approving Complaints...");
+
+                    // Fetch all unsigned complaints from DatabaseManager
+                    List<String> unsignedComplaints = DatabaseManager.getInstance().getAllUnsignedComplaints();
+
+                    // Check if there are any unsigned complaints
+                    if (unsignedComplaints.isEmpty()) {
+                        System.out.println("No unsigned complaints to approve.");
+                        break;
+                    }
+
+                    // Display the unsigned complaints
+                    System.out.println("Unsigned Complaints:");
+                    for (int i = 0; i < unsignedComplaints.size(); i++) {
+                        System.out.println((i + 1) + ". " + unsignedComplaints.get(i));
+                    }
+
+                    // Ask the manager to select a complaint to approve
+                    System.out.print("Select a complaint to approve (enter the number): ");
+                    int complaintChoice = scanner.nextInt();
+                    scanner.nextLine(); // Consume the newline character
+
+                    if (complaintChoice < 1 || complaintChoice > unsignedComplaints.size()) {
+                        System.out.println("Invalid selection.");
+                        break;
+                    }
+
+                    // Get the selected complaint text
+                    String selectedComplaint = unsignedComplaints.get(complaintChoice - 1);
+
+                    // Retrieve the complaint from the database
+                    Complaints complaint = DatabaseManager.getInstance().getComplaintByText(selectedComplaint);
+                    if (complaint != null) {
+                        // Approve the complaint
+                        boolean result = manager.signComplaint(selectedComplaint); // Pass only the complaint text
+                        if (result) {
+                            System.out.println("Complaint approved successfully.");
+                        } else {
+                            System.out.println("Failed to approve the complaint.");
+                        }
+                    } else {
+                        System.out.println("Complaint not found.");
+                    }
+
+                }
+
+                case 3 -> {
+                        System.out.println("Viewing teacher ratings...");
+
+                        // Get all teachers from DatabaseManager
+                        List<Teacher> teachers = DatabaseManager.getInstance().getAllTeachers();
+
+                        // Check if there are teachers
+                        if (teachers.isEmpty()) {
+                            System.out.println("No teachers found.");
+                        } else {
+                            // Display ratings of each teacher
+                            for (Teacher teacher : teachers) {
+                                double averageRating = teacher.getAverageRating();
+                                System.out.println("Teacher: " + teacher.getFirstName() + " " + teacher.getSurname() + " | Average Rating: " + averageRating);
+                            }
+                    }
+                }
+
+                case 4 -> {
+                    System.out.println("Adding news...");
+
+                    // Get user input for the topic and content
+                    System.out.print("Enter news topic: ");
+                    String topic = scanner.nextLine();
+                    System.out.print("Enter news content: ");
+                    String content = scanner.nextLine();
+
+                    // Add the news using the manager's addNews method
+                    manager.addNews(topic, content);
+                }
+
+                case 5 -> {
+                    manager.removeAllNews();  // Call the manager's removeAllNews method
+                    System.out.println("All news removed.");
+                }
+
+                case 6 -> System.out.println("\nMessages:\n" + manager.viewMessages());
+                case 7 -> {
+                    // needs to be implemented
+                }
+                case 8 -> System.out.println("\nLatest News:\n" + manager.viewNews());
+                case 9 -> {
+                    System.out.println("Logging out...");
+                    return;
+                }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
         }
     }
+
+
+
+
 
     private static void initializeExampleData(DatabaseManager db) {
         Teacher teacher1 = new Teacher("T1", "Alice", "Smith", "alice@school.com", "password123", DepartmentsOfEmployees.Teacher, 500, TeacherTypes.Lector, "Math");

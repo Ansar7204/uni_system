@@ -39,25 +39,6 @@ public class News {
 		return isPinned;
 	}
 
-	public static News generateResearchPaperAnnouncement(Researcher researcher, ResearchPaper paper) {
-		String topic = "Research";
-		String content = "New research paper published by " + researcher.getFirstName() + " " + researcher.getSurname() + ": \"" + paper.getTitle() + "\"";
-		return new News(topic, content, null, true);
-	}
-
-	public static News generateTopCitedResearcherOfSchoolAnnouncement() {
-		Researcher topResearcher = Journal.printTopCitedResearcherOfSchool(null);
-		String topic = "University Highlights";
-		String content = "Top-cited researcher of school: " + topResearcher.getSchool().toString() + " is " + topResearcher.getFirstName() + " " + topResearcher.getSurname();
-		return new News(topic, content, null, true);
-	}
-
-	public static News generateTopCitedResearcherOfYearAnnouncement() {
-		Researcher topResearcher = Journal.printTopCitedResearcherOfYear(null, currentYear);
-		String topic = "University Highlights";
-		String content = "Top-cited researcher of year: " + topResearcher.getSchool().toString() + " is " + topResearcher.getFirstName() + " " + topResearcher.getSurname();
-		return new News(topic, content, null, true);
-	}
 
 	public void addComment(String commenterName, String comment) {
 		comments.add("[" + commenterName + "]: " + comment);
