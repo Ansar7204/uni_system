@@ -1,6 +1,6 @@
 package university.database;
 
-import university.communication.Complaints;
+import university.communication.Complaint;
 import university.communication.Log;
 import university.communication.News;
 import university.users.*;
@@ -22,7 +22,7 @@ public class DatabaseManager implements Serializable {
     private List<Log> logs;                // User activity logs
     private List<Transcript> transcripts;  // Transcripts of students
     private List<News> newsList;
-    private List<Complaints> complaints; // News updates
+    private List<Complaint> complaints; // News updates
 
     private DatabaseManager() {
         users = new ArrayList<>();
@@ -132,6 +132,15 @@ public class DatabaseManager implements Serializable {
         return managers;
     }
 
+    public Librarian getLibrarian() {
+        for (User user : users) {
+            if (user instanceof Librarian) {
+                return (Librarian) user;
+            }
+        }
+        return null;  // Return null if no librarian found
+    }
+
     // Logs management
     public void addLog(Log log) {
         logs.add(log);
@@ -196,25 +205,29 @@ public class DatabaseManager implements Serializable {
         }
     }
 
-    public void addComplaint(Complaints complaint) {
+    public void addComplaint(Complaint complaint) {
         complaints.add(complaint);  // Adds a new complaint to the list
     }
 
-    public List<Complaints> getComplaints() {
-        return complaints;  // Returns the list of all complaints
-    }
 
     public List<String> getAllUnsignedComplaints() {
         List<String> unsignedComplaints = new ArrayList<>();
-        for (Complaints complaint : complaints) {
-            unsignedComplaints.addAll(complaint.getUnsignedComplaints());
+        for (Complaint complaint : complaints) {
+            if (!complaint.signedByManager) {
+                unsignedComplaints.add(complaint.complaintText);  // Add the complaint text if it's unsigned
+            }
         }
-        return unsignedComplaints;  // Returns a list of all unsigned complaints
+        return unsignedComplaints;  // Return a list of all unsigned complaints
     }
 
-    public Complaints getComplaintByText(String complaintText) {
-        for (Complaints complaint : complaints) {
-            if (complaint.getAllComplaints().contains(complaintText)) {
+
+    public List<Complaint> getAllComplaints(){
+        return complaints;
+    }
+
+    public Complaint getComplaintByText(String complaintText) {
+        for (Complaint complaint : complaints) {
+            if (this.getAllComplaints().contains(complaintText)) {
                 return complaint;  // Returns the complaint by the text
             }
         }

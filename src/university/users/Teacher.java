@@ -4,6 +4,7 @@ import university.communication.*;
 import university.courses.Course;
 import university.courses.Mark;
 import university.courses.School;
+import university.database.DatabaseManager;
 import university.research.ResearchPaper;
 import university.research.Researcher;
 
@@ -12,18 +13,15 @@ import java.util.List;
 
 
 public class Teacher extends Employee{
-	private List<Message> receivedMessages;
 	public School school;
 	public TeacherTypes typeOfTeacher;
-	private String courses;
 	public List<Course> courseList;
-	private List<Integer> ratings = new ArrayList<>();
+	private List<Integer> ratings;
 	public Researcher researcherProfile;
 
 	public Teacher(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary, TeacherTypes typeOfTeacher, String courses) {
 		super(id, name, surName, email, password, department, salary);
-        this.ratings = ratings;
-        this.receivedMessages = new ArrayList<>();
+        this.ratings = new ArrayList<>();
 		this.typeOfTeacher = typeOfTeacher;
 		this.courseList = new ArrayList<>();
 		if (isProfessor()) {
@@ -70,13 +68,11 @@ public class Teacher extends Employee{
 
 
 
-	public String sendComplaint(UrgencyLevel urgency, String complaintContent, Student student) {
+	public String sendComplaint(UrgencyLevel urgency, String complaintContent, Student student, String complaintText) {
+		DatabaseManager db = DatabaseManager.getInstance();
 		Language language = Language.getInstance();
-		Student studentGettingComplaint = student;
-		Complaints newComplaint = new Complaints(urgency, this, studentGettingComplaint, false);
-
-		newComplaint.addComplaint(complaintContent);
-
+		Complaint newComplaint = new Complaint(urgency, this, student, false,complaintText);
+		db.addComplaint(newComplaint);
 		System.out.println(language.getLocalizedMessage("Complaint " + complaintContent + " has been sent with " + urgency + " urgency.",
 				"Жалоба " + complaintContent + " была отправлена с уровнем срочности: " + urgency,
 				 complaintContent + " шағымы " + urgency + " шұғылдылық деңгейімен жіберілді."));
@@ -111,8 +107,12 @@ public class Teacher extends Employee{
 		return ratings;
 	}
 
-	public List<Course> viewCourses() {
+	public List<Course> getCourses() {
 		return courseList;
+	}
+
+	public String viewCourses() {
+		return "something";
 	}
 
 	public String viewStudent(Student student) {
@@ -144,7 +144,7 @@ public class Teacher extends Employee{
 						", имя='" + firstname + '\'' +
 						", email='" + email + '\'' +
 						", тип преподавателя=" + typeOfTeacher +
-						", курсы='" + courses + '\'' +
+						", курсы='" + viewCourses() + '\'' +
 						", средний рейтинг=" + getAverageRating() +
 						'}';
 			case KZ:
@@ -153,7 +153,7 @@ public class Teacher extends Employee{
 						", аты='" + firstname + '\'' +
 						", email='" + email + '\'' +
 						", мұғалім түрі=" + typeOfTeacher +
-						", курстар='" + courses + '\'' +
+						", курстар='" + viewCourses() + '\'' +
 						", орташа рейтинг=" + getAverageRating() +
 						'}';
 			default:
@@ -162,7 +162,7 @@ public class Teacher extends Employee{
 						", name='" + firstname + '\'' +
 						", email='" + email + '\'' +
 						", typeOfTeacher=" + typeOfTeacher +
-						", courses='" + courses + '\'' +
+						", courses='" + viewCourses() + '\'' +
 						", averageRating=" + getAverageRating() +
 						'}';
 		}

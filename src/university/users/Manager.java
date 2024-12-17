@@ -1,7 +1,6 @@
 package university.users;
 
-import university.communication.ComplaintRegistry;
-import university.communication.Complaints;
+import university.communication.Complaint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +20,15 @@ public class Manager extends Employee {
     public List<String> getUnsignedComplaints() {
         return DatabaseManager.getInstance().getAllUnsignedComplaints();
     }
+    public Complaint getComplaintByText(String complaintText){
+        return DatabaseManager.getInstance().getComplaintByText(complaintText);
+
+    }
 
     // Sign a complaint from the list of unsigned complaints
     public boolean signComplaint(String complaintText) {
-        Complaints complaint = DatabaseManager.getInstance().getComplaintByText(complaintText);
-        if (complaint != null && complaint.getUnsignedComplaints().contains(complaintText)) {
+        Complaint complaint = getComplaintByText(complaintText);
+        if (complaint != null && getUnsignedComplaints().contains(complaintText)) {
             complaint.markComplaintAsSigned(complaintText);
             return true;
         }

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Librarian extends Employee {
+	private static Librarian instance;
+
 	private String id;
 	public String name;
 	private String email;
@@ -29,6 +31,18 @@ public class Librarian extends Employee {
 		this.books = new ArrayList<>();
 		this.incomingRequests = new ArrayList<>();
 		this.currentDate = LocalDate.now();
+	}
+
+	public static Librarian getInstance(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary) {
+		if (instance == null) {
+			instance = new Librarian(id, name, surName, email, password, department, salary);
+		}
+		return instance;
+	}
+
+	// Optional: Method to reset the instance (useful if you need to reset the librarian for some reason)
+	public static void resetInstance() {
+		instance = null;
 	}
 
 	// 1. Add a Book
@@ -179,6 +193,10 @@ public class Librarian extends Employee {
 	// Role Getter
 	public String getRole() {
 		return "Librarian";
+	}
+
+	public List<Book> getBooks() {
+		return books;
 	}
 
 	public String viewBooks() {
