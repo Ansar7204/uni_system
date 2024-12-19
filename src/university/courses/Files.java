@@ -2,11 +2,12 @@ package university.courses;
 
 import university.users.Teacher;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Files {
+public class Files implements Serializable {
     private Teacher teacher;
     private String nameOfFile;
     private List<String> filesInFolder;

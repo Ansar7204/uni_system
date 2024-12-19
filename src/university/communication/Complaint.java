@@ -4,10 +4,11 @@ import university.database.DatabaseManager;
 import university.users.Student;
 import university.users.Teacher;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Complaint {
+public class Complaint implements Serializable {
 
     public UrgencyLevel urgencyLevel;
     public Teacher teacherWhoComplained;

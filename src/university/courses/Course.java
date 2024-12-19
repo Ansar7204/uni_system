@@ -3,10 +3,11 @@ package university.courses;
 import university.users.Student;
 import university.users.Teacher;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Course {
+public class Course implements Serializable {
 	public String courseID;
 	public String courseName;
 	public String majorRequirement;
@@ -15,9 +16,10 @@ public class Course {
 	public List<Teacher> courseTeachers;
 	public List<Student> enrolledStudents;
 	public List<Lesson> lessonsOfCourse;
+	public int credits;
 
 
-	public Course(String courseID, String courseName, String majorRequirement, String minorRequirement, String elective) {
+	public Course(String courseID, String courseName, String majorRequirement, String minorRequirement, String elective,int credits) {
 		this.courseID = courseID;
 		this.courseName = courseName;
 		this.majorRequirement = majorRequirement;
@@ -26,6 +28,7 @@ public class Course {
 		this.courseTeachers = new ArrayList<>();
 		this.enrolledStudents = new ArrayList<>();
 		this.lessonsOfCourse = new ArrayList<>();
+		this.credits = credits;
 	}
 
 	public void assignTeacher(Teacher teacher) {
@@ -63,6 +66,13 @@ public class Course {
 				"Enrolled Students: " + enrolledStudents+ "\n" +
 				"Lessons of Course: " + lessonsOfCourse;
 
+	}
+	public int getCredits() {
+		return credits;
+	}
+
+	public void setCredits(int credits) {
+		this.credits = credits;
 	}
 
 	public String getCourseID() {

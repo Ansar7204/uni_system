@@ -6,26 +6,39 @@ import university.communication.UrgencyLevel;
 import university.courses.Course;
 import university.courses.Files;
 import university.courses.Transcript;
+import university.exceptions.CreditLimitExceededException;
 import university.library.Book;
 import university.users.*;
 import university.database.DatabaseManager;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CreditLimitExceededException {
+
+
+        String filePath = "src/university/database/database.txt";
+
+        // Load data at startup
+        try {
+            DatabaseManager.loadFromFile(filePath);
+            System.out.println("Data loaded successfully.");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("No saved data found. Starting fresh.");
+        }
+
+
         DatabaseManager db = DatabaseManager.getInstance();
-
-        initializeExampleData(db);
-
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
             System.out.println("Welcome to the system!");
             System.out.println("1. Login");
             System.out.println("2. Register");
+            System.out.println("3. Exit");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -106,6 +119,15 @@ public class Main {
                     db.addUser(newUser);
                     System.out.println("Registration successful! You can now log in.");
                 }
+            } else if (choice == 3) {
+                try {
+                    db.saveToFile(filePath);
+                    System.out.println("Data saved successfully. Goodbye!");
+                    break;
+                } catch (IOException e) {
+                    System.err.println("Error saving data: " + e.getMessage());
+                }
+
             } else {
                 System.out.println("Invalid option, please try again.");
             }
@@ -134,7 +156,7 @@ public class Main {
             System.out.print("Choose an option: ");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> System.out.println("\nViewing Your Files:\n" + student.viewFiles());
@@ -143,19 +165,26 @@ public class Main {
                 case 4 -> {
                     System.out.println("\nAvailable Courses for Registration:");
                     for (int i = 0; i < courses.size(); i++) {
-                        System.out.println((i + 1) + ". " + courses.get(i).getCourseName());
+                        System.out.println((i + 1) + ". " + courses.get(i).getCourseName() + " (" + courses.get(i).getCredits() + " credits)");
                     }
+
                     System.out.print("Enter the number of the course you want to register for: ");
                     int courseChoice = scanner.nextInt();
                     scanner.nextLine();
 
                     if (courseChoice > 0 && courseChoice <= courses.size()) {
                         Course selectedCourse = courses.get(courseChoice - 1);
-                        String result = student.registerForCourses(selectedCourse);
-                        System.out.println(result);
+
+                        try {
+                            String result = student.registerForCourses(selectedCourse);
+                            System.out.println(result);
+                        } catch (CreditLimitExceededException e) {
+                            System.out.println("Error: " + e.getMessage());
+                        }
                     } else {
                         System.out.println("Invalid course selection. Please try again.");
                     }
+
                 }
                 case 5 -> {
                     // List all teachers for the student to choose from
@@ -725,7 +754,7 @@ public class Main {
                     System.out.println("Approving Complaints...");
 
                     // Fetch all unsigned complaints from DatabaseManager
-                    List<String> unsignedComplaints = DatabaseManager.getInstance().getAllUnsignedComplaints();
+                    List<String> unsignedComplaints = db.getAllUnsignedComplaints();
 
                     // Check if there are any unsigned complaints
                     if (unsignedComplaints.isEmpty()) {
@@ -753,7 +782,7 @@ public class Main {
                     String selectedComplaint = unsignedComplaints.get(complaintChoice - 1);
 
                     // Retrieve the complaint from the database
-                    Complaint complaint = DatabaseManager.getInstance().getComplaintByText(selectedComplaint);
+                    Complaint complaint = db.getComplaintByText(selectedComplaint);
                     if (complaint != null) {
                         // Approve the complaint
                         boolean result = manager.signComplaint(selectedComplaint); // Pass only the complaint text
@@ -772,7 +801,7 @@ public class Main {
                         System.out.println("Viewing teacher ratings...");
 
                         // Get all teachers from DatabaseManager
-                        List<Teacher> teachers = DatabaseManager.getInstance().getAllTeachers();
+                        List<Teacher> teachers = db.getAllTeachers();
 
                         // Check if there are teachers
                         if (teachers.isEmpty()) {
@@ -818,39 +847,4 @@ public class Main {
         }
     }
 
-
-
-
-
-    private static void initializeExampleData(DatabaseManager db) {
-        Teacher teacher1 = new Teacher("T1", "Alice", "Smith", "alice@school.com", "password123", DepartmentsOfEmployees.Teacher, 500, TeacherTypes.Lector, "Math");
-        Teacher teacher2 = new Teacher("T2", "Bob", "Johnson", "bob@school.com", "password123", DepartmentsOfEmployees.Teacher, 100, TeacherTypes.Professor, "Physics");
-
-        Course course1 = new Course("CS101", "Intro to Programming", "PP1", "PP2", "none");
-        Course course2 = new Course("CS102", "Data Structures", "DiscreteMath", "Math", "none");
-        db.addCourse(course1);
-        db.addCourse(course2);
-
-        course1.assignTeacher(teacher1);
-        course2.assignTeacher(teacher2);
-
-        Student student1 = new Student("S1", "John", "Doe", "john@student.com", "pass123", null, new Transcript(), null, 1);
-        Student student2 = new Student("S2", "Jane", "Doe", "jane@student.com", "pass123", null, new Transcript(), null, 2);
-
-        student1.registerForCourses(course1);
-        student2.registerForCourses(course2);
-
-        Files file1 = new Files(teacher1, "CS101 Lecture Notes");
-        Files file2 = new Files(teacher2, "CS102 Lecture Notes");
-        db.addFolder(file1);
-        db.addFolder(file2);
-
-        Admin admin1 = new Admin("A1", "Emma", "Williams", "emma@admin.com", "admin123");
-
-        db.addUser(student1);
-        db.addUser(student2);
-        db.addUser(teacher1);
-        db.addUser(teacher2);
-        db.addUser(admin1);
-    }
 }

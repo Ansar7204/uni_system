@@ -1,11 +1,12 @@
 package university.courses;
 
+import java.io.Serializable;
 import java.util.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Transcript {
+public class Transcript implements Serializable {
 	private Map<Course, Mark> courseMarks;
 
 	public Transcript() {

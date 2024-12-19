@@ -5,13 +5,14 @@ import university.communication.Languages;
 import university.communication.Message;
 import university.communication.News;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static university.communication.Languages.EN;
 
-public abstract class User {
+public abstract class User implements Serializable {
 
 	public String id;
 	public String firstname;

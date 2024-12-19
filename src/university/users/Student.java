@@ -3,6 +3,7 @@ package university.users;
 import university.communication.News;
 import university.courses.*;
 import university.database.DatabaseManager;
+import university.exceptions.CreditLimitExceededException;
 import university.library.Book;
 import university.research.ResearchPaper;
 import university.research.ResearchProject;
@@ -84,15 +85,33 @@ public class Student extends User {
 		return coursesList.toString();
 	}
 
-	public String registerForCourses(Course course) {
+	public String registerForCourses(Course course) throws CreditLimitExceededException {
+		int totalCredits = course.getCredits(); // Start with the credits of the course being added
+
+		// Calculate total credits of currently registered courses
+		for (Course registeredCourse : registeredCourses) {
+			totalCredits += registeredCourse.getCredits();
+		}
+
+		// Check if total credits exceed the limit
+		if (totalCredits > 21) {
+			throw new CreditLimitExceededException(
+					"Cannot register for " + course.getCourseName() +
+							". Total credits (" + totalCredits + ") exceed the limit of 21."
+			);
+		}
+
 		if (registeredCourses.contains(course)) {
 			return "You are already registered for the course: " + course.getCourseName();
 		}
 
+		// Register the course and update the student's course list
 		registeredCourses.add(course);
 		course.addStudent(this);
+
 		return "Successfully registered for the course: " + course.getCourseName();
 	}
+
 
 	public String viewTeacher(String courseName) {
 		for (Course course : registeredCourses) {

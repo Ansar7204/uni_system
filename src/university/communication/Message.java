@@ -2,11 +2,12 @@ package university.communication;
 
 import university.users.User;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import java.time.LocalDateTime;
 
-public class Message {
+public class Message implements Serializable {
 	private User sender;
 	private User recipient;
 	private String content;

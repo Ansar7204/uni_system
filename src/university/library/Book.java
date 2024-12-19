@@ -1,8 +1,9 @@
 package university.library;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Book {
+public class Book implements Serializable {
 	private String id;
 	private String title;
 	private String author;

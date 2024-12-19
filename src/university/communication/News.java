@@ -4,11 +4,12 @@ import university.research.ResearchPaper;
 import university.research.Researcher;
 import university.communication.Journal;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class News {
+public class News implements Serializable {
 	public String topic;
 	public String content;
 	public List<String> comments;
