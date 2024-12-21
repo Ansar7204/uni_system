@@ -1,22 +1,22 @@
 package university;
 
-import university.communication.Complaint;
-import university.communication.Message;
-import university.communication.UrgencyLevel;
+
 import university.courses.Course;
-import university.courses.Files;
 import university.courses.StudentOrganization;
 import university.courses.Transcript;
+import university.database.DatabaseManager;
 import university.exceptions.CreditLimitExceededException;
 import university.library.Book;
 import university.users.*;
-import university.database.DatabaseManager;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws CreditLimitExceededException {
+    public static void main(String[] args) throws CreditLimitExceededException, IOException {
 
 
         String filePath = "src/university/database/database.txt";
@@ -34,6 +34,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
+            ConsoleHelper.clearScreen();
             System.out.println("Welcome to the system!");
             System.out.println("1. Login");
             System.out.println("2. Register");
@@ -245,6 +246,32 @@ public class Main {
                             }
                         }
                         newUser = new Teacher("T" + (db.getUsers().size() + 1), firstName, surname, email, password, DepartmentsOfEmployees.Teacher, salary, teacherType);
+                        if (db.getCourses().isEmpty()) {
+                            System.out.println("No courses available in the system.");
+                        } else {
+                            System.out.println("Available Courses:");
+                            db.listCourses(); // List all available courses
+                        }
+
+                        // Ask which courses the teacher will teach
+                        List<Course> teacherCourses = new ArrayList<>();
+                        System.out.println("Enter course IDs (comma separated) that this teacher will teach, or press Enter to skip:");
+
+                        String courseInput = scanner.nextLine().trim();
+                        if (!courseInput.isEmpty()) {
+                            String[] courseIDs = courseInput.split(",");
+                            for (String courseID : courseIDs) {
+                                Course course = db.findCourseByID(courseID.trim());
+                                if (course != null) {
+                                    teacherCourses.add(course);
+                                    course.assignTeacher((Teacher) newUser);
+                                } else {
+                                    System.out.println("Course with ID " + courseID.trim() + " not found.");
+                                }
+                            }
+                        }
+
+                        ((Teacher) newUser).courseList = teacherCourses;
                         break;
                     case "admin":
                         newUser = new Admin("A" + (db.getUsers().size() + 1), firstName, surname, email, password);
@@ -273,11 +300,14 @@ public class Main {
         }
     }
 
-    private static void studentMenu(Student student, Scanner scanner, DatabaseManager db) {
+    private static void studentMenu(Student student, Scanner scanner, DatabaseManager db) throws IOException {
+        ConsoleHelper.clearScreen();
         System.out.println("Welcome, " + student.getFirstName() + "!");
         List<Course> courses = db.getCourses();
+        ConsoleHelper.clearScreenAfterDelay();
 
         while (true) {
+            ConsoleHelper.clearScreen();
             System.out.println("\nStudent Menu:");
             System.out.println("1. View My Files");
             System.out.println("2. View My Courses");
@@ -325,94 +355,13 @@ public class Main {
 
                 }
                 case 5 -> {
-                    // List all teachers for the student to choose from
-                    List<Teacher> teachers = DatabaseManager.getInstance().getAllTeachers();
-
-                    if (teachers.isEmpty()) {
-                        System.out.println("No teachers available to rate.");
-                        break;
-                    }
-
-                    // Display the list of teachers
-                    System.out.println("Select a teacher to rate:");
-                    for (int i = 0; i < teachers.size(); i++) {
-                        Teacher teacher = teachers.get(i);
-                        System.out.println((i + 1) + ". " + teacher.getFirstName() + " " + teacher.getSurname());
-                    }
-
-                    // Get the student's choice
-                    System.out.print("Enter the number of the teacher you want to rate: ");
-                    int teacherChoice = scanner.nextInt();
-
-                    if (teacherChoice < 1 || teacherChoice > teachers.size()) {
-                        System.out.println("Invalid choice.");
-                        break;
-                    }
-
-                    Teacher selectedTeacher = teachers.get(teacherChoice - 1);
-
-                    // Prompt the student to enter a rating
-                    System.out.print("Enter your rating for " + selectedTeacher.getFirstName() + ": ");
-                    int rating = scanner.nextInt();
-
-                    // Call the rateTeacher method from the student class
-                    String result = student.rateTeacher(selectedTeacher, rating);  // Assuming `currentStudent` is the logged-in student
-
-                    // Display the result
+                    String result = student.rateTeacher(scanner);
                     System.out.println(result);
                 }
 
                 case 6 -> {
-                    // Retrieve the single instance of the librarian
-                    Librarian librarian = DatabaseManager.getInstance().getLibrarian();
-                    if (librarian == null) {
-                        System.out.println("No librarian found in the system.");
-                        break;
-                    }
-
-                    // Retrieve the list of books from the librarian
-                    List<Book> availableBooks = librarian.getBooks();
-
-                    // Filter out the books that are available
-                    List<Book> booksToBorrow = new ArrayList<>();
-                    for (Book book : availableBooks) {
-                        if (book.isAvailable()) {
-                            booksToBorrow.add(book);
-                        }
-                    }
-
-                    if (booksToBorrow.isEmpty()) {
-                        System.out.println("No books are available to borrow at the moment.");
-                        break;
-                    }
-
-                    // Display available books
-                    System.out.println("Available books to borrow:");
-                    for (int i = 0; i < booksToBorrow.size(); i++) {
-                        Book book = booksToBorrow.get(i);
-                        System.out.println((i + 1) + ". " + book.getTitle());
-                    }
-
-                    // Ask the student to choose a book
-                    System.out.print("Enter the number of the book you want to borrow: ");
-                    int bookChoice = scanner.nextInt();
-
-                    if (bookChoice < 1 || bookChoice > booksToBorrow.size()) {
-                        System.out.println("Invalid choice.");
-                        break;
-                    }
-
-                    Book selectedBook = booksToBorrow.get(bookChoice - 1);
-
-                    // Create a borrow request
-                    librarian.receiveRequest(student, selectedBook);
-
-                    // Mark the book as borrowed
-                    selectedBook.setAvailable(false);  // Set the book's availability to false (borrowed)
-                    student.getBorrowedBooks().add(selectedBook);
-
-                    // Confirmation message
-                    System.out.println("You have successfully requested to borrow the book: " + selectedBook.getTitle());
+                    String result = student.borrowBook(scanner);
+                    System.out.println(result);
                 }
 
                 case 7 -> {
@@ -428,39 +377,16 @@ public class Main {
                             System.out.println("- " + book.getTitle());
                         }
                     }
-                    break;
                 }
                 case 8 -> {
-                    System.out.print("Enter the recipient's email: ");
-                    String recipientEmail = scanner.nextLine();
-
-                    // Find the recipient (user) by email
-                    User recipient = db.getUsers().stream()
-                            .filter(u -> u.getEmail().equalsIgnoreCase(recipientEmail))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (recipient == null) {
-                        System.out.println("User with the given email not found.");
-                        break;
-                    }
-
-                    System.out.print("Enter the message content: ");
-                    String content = scanner.nextLine();
-
-                    try {
-                        // Create and send the message
-                        Message newMessage = new Message(student, recipient, content);
-                        student.sendMessage(recipient, newMessage);
-                        System.out.println("Message sent successfully to " + recipient.getFirstName() + ".");
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Error: " + e.getMessage());
-                    }}
+                    String result = student.sendMessage(scanner, db);
+                    System.out.println(result);
+                }
                 case 9 -> {
                     System.out.println("\nMessages:\n" + student.viewMessages());
                 }
                 case 10 -> {
-                    System.out.println("\nLatest News:\n" + student.viewNews());
+                    System.out.println("\nLatest News:\n" + student.viewNews(scanner));
                 }
                 case 11 -> {}
                 case 12 -> {
@@ -472,10 +398,12 @@ public class Main {
         }
     }
 
-    private static void teacherMenu(Teacher teacher,Scanner scanner, DatabaseManager db) {
+    private static void teacherMenu(Teacher teacher, Scanner scanner, DatabaseManager db) throws IOException {
+        ConsoleHelper.clearScreen();
         System.out.println("Welcome, " + teacher.getFirstName() + "!");
-
+        ConsoleHelper.clearScreenAfterDelay();
         while (true) {
+            ConsoleHelper.clearScreen();
             System.out.println("\nSelect an option:");
             System.out.println("1. Send message");
             System.out.println("2. View messages");
@@ -490,37 +418,14 @@ public class Main {
 
             switch (choice) {
                 case 1 -> {
-                    System.out.print("Enter the recipient's email: ");
-                    String recipientEmail = scanner.nextLine();
-
-                    // Find the recipient (user) by email
-                    User recipient = db.getUsers().stream()
-                            .filter(u -> u.getEmail().equalsIgnoreCase(recipientEmail))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (recipient == null) {
-                        System.out.println("User with the given email not found.");
-                        break;
-                    }
-
-                    System.out.print("Enter the message content: ");
-                    String content = scanner.nextLine();
-
-                    try {
-                        // Create and send the message
-                        Message newMessage = new Message(teacher, recipient, content);
-                        teacher.sendMessage(recipient, newMessage);
-                        System.out.println("Message sent successfully to " + recipient.getFirstName() + ".");
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Error: " + e.getMessage());
-                    }
+                    String result = teacher.sendMessage(scanner, db);
+                    System.out.println(result);
                 }
                 case 2-> {
                     System.out.println("\nMessages:\n" + teacher.viewMessages());
                 }
                 case 3 -> {
-                    System.out.println("\nLatest News:\n" + teacher.viewNews());
+                    System.out.println("\nLatest News:\n" + teacher.viewNews(scanner));
                 }
                 case 4 -> {
                     List<Course> courses = teacher.getCourses();
@@ -533,87 +438,11 @@ public class Main {
                         }
                     }}
                 case 5 -> {
-                    // Case 6: Put Marks for a Student
-                    // Display the courses the teacher teaches
-                    System.out.println("Courses you are teaching:");
-                    List<Course> courses = teacher.getCourses();  // Assuming Teacher has getCourses method
-                    for (int i = 0; i < courses.size(); i++) {
-                        System.out.println((i + 1) + ". " + courses.get(i).getCourseName());
-                    }
-
-                    // Select a course
-                    System.out.print("Select a course (1-" + courses.size() + "): ");
-                    int courseIndex = scanner.nextInt() - 1;
-                    Course selectedCourse = courses.get(courseIndex);
-
-                    // Display students enrolled in the selected course
-                    List<Student> enrolledStudents = selectedCourse.getEnrolledStudents();  // Method to get students enrolled in the course
-                    System.out.println("Students enrolled in " + selectedCourse.getCourseName() + ":");
-                    for (int i = 0; i < enrolledStudents.size(); i++) {
-                        System.out.println((i + 1) + ". " + enrolledStudents.get(i).getFirstName() + " " + enrolledStudents.get(i).getSurname());
-                    }
-
-                    // Select a student
-                    System.out.print("Select a student to put marks for (1-" + enrolledStudents.size() + "): ");
-                    int studentIndex = scanner.nextInt() - 1;
-                    Student selectedStudent = enrolledStudents.get(studentIndex);
-
-                    // Input marks
-                    System.out.print("Enter marks for " + selectedStudent.getFirstName() + " " + selectedStudent.getSurname() + " in " + selectedCourse.getCourseName() + "\n");
-
-                    System.out.print("First Attestation (0-30): ");
-                    double firstAttestation = scanner.nextDouble();
-
-                    System.out.print("Second Attestation (0-30): ");
-                    double secondAttestation = scanner.nextDouble();
-
-                    System.out.print("Final Exam (0-40): ");
-                    double finalExam = scanner.nextDouble();
-
-                    // Call the putMarks method to save the marks
-                    teacher.putMarks(selectedStudent, selectedCourse, firstAttestation, secondAttestation, finalExam);
+                    teacher.putMarkForStudent(scanner);
                 }
                 case 6 -> {
-                    // Display list of students
-                    List<Student> students = db.getAllStudents();  // Assuming teacher has a method to get students
-                    if (students.isEmpty()) {
-                        System.out.println("No students available.");
-                        break;
-                    }
-
-                    // Show student options to choose from
-                    System.out.println("Choose a student to file a complaint against:");
-                    for (int i = 0; i < students.size(); i++) {
-                        System.out.println(i + 1 + ". " + students.get(i).getFirstName() + " " + students.get(i).getSurname());
-                    }
-                    int studentChoice = scanner.nextInt() - 1;  // Get student choice
-                    if (studentChoice < 0 || studentChoice >= students.size()) {
-                        System.out.println("Invalid choice.");
-                        break;
-                    }
-
-                    // Get the selected student
-                    Student selectedStudent = students.get(studentChoice);
-
-                    // Ask for the urgency level of the complaint
-                    System.out.println("Choose the urgency level for the complaint (1. LOW, 2. MEDIUM, 3. HIGH):");
-                    int urgencyChoice = scanner.nextInt();
-                    UrgencyLevel urgency = UrgencyLevel.LOW;  // Default to LOW
-                    switch (urgencyChoice) {
-                        case 1 -> urgency = UrgencyLevel.LOW;
-                        case 2 -> urgency = UrgencyLevel.MEDIUM;
-                        case 3 -> urgency = UrgencyLevel.HIGH;
-                        default -> System.out.println("Invalid urgency level. Defaulting to LOW.");
-                    }
-
-                    // Ask for the complaint text
-                    scanner.nextLine();  // Consume newline character from previous input
-                    System.out.println("Enter the complaint text:");
-                    String complaintText = scanner.nextLine();
-
-                    // Call the sendComplaint method to send the complaint
-                    teacher.sendComplaint(urgency, "Complaint against student " + selectedStudent.getFirstName() + " " + selectedStudent.getSurname(), selectedStudent, complaintText);
-                    break;
+                    String result = teacher.sendComplaintForStudent(scanner, db);
+                    System.out.println(result);
                 }
 
                 case 7 -> {}
@@ -626,16 +455,23 @@ public class Main {
         }
     }
 
-    private static void adminMenu(Admin admin, Scanner scanner, DatabaseManager db) {
+    private static void adminMenu(Admin admin, Scanner scanner, DatabaseManager db) throws IOException {
+        ConsoleHelper.clearScreen();
         System.out.println("Welcome, Admin " + admin.getFirstName() + "!");
+        ConsoleHelper.clearScreenAfterDelay();
 
         while (true) {
+            ConsoleHelper.clearScreen();
             System.out.println("\nAdmin Menu:");
             System.out.println("1. Add User");
             System.out.println("2. Update User");
             System.out.println("3. Remove User");
             System.out.println("4. View All Users");
-            System.out.println("5. Logout");
+            System.out.println("5. Add course");
+            System.out.println("6. Remove course");
+            System.out.println("7. Update course");
+            System.out.println("8. View all courses");
+            System.out.println("9. Logout");
             System.out.print("Choose an option: ");
 
             int choice = scanner.nextInt();
@@ -643,166 +479,7 @@ public class Main {
 
             switch (choice) {
                 case 1 -> {
-                    System.out.println("Enter user details to add:");
-                    System.out.print("Role (Student/Teacher/Manager/Librarian): ");
-                    String role = scanner.nextLine().trim();
-
-                    System.out.print("First Name: ");
-                    String firstName = scanner.nextLine();
-                    System.out.print("Last Name: ");
-                    String lastName = scanner.nextLine();
-                    System.out.print("Email: ");
-                    String email = scanner.nextLine();
-                    System.out.print("Password: ");
-                    String password = scanner.nextLine();
-
-                    User newUser = null;
-
-                    switch (role.toLowerCase()) {
-                        case "student" -> {
-                            System.out.println("Available Schools: " + Arrays.toString(School.values()));
-                            System.out.print("Please enter your school: ");
-                            School school;
-                            while (true) {
-                                try {
-                                    school = School.valueOf(scanner.nextLine().trim().toUpperCase());
-                                    break;
-                                } catch (IllegalArgumentException e) {
-                                    System.out.println("Invalid school. Please enter a valid school: " + Arrays.toString(School.values()));
-                                }
-                            }
-
-                            System.out.print("Year of Study: ");
-                            int year = scanner.nextInt();
-                            scanner.nextLine(); // Consume newline
-
-                            System.out.println("Existing student organizations:");
-                            if (db.getOrganizations().isEmpty()) {
-                                System.out.println("No organizations available.");
-                            } else {
-                                for (int i = 0; i < db.getOrganizations().size(); i++) {
-                                    System.out.println((i + 1) + ". " + db.getOrganizations().get(i).getName());
-                                }
-                            }
-                            System.out.println("Enter the number of an existing organization to join, or type a new organization name to create one (leave empty if none):");
-                            String organizationMembershipInput = scanner.nextLine();
-
-                            StudentOrganization organizationMembership = null;
-
-                            if (!organizationMembershipInput.isEmpty()) {
-                                try {
-                                    int selectedIndex = Integer.parseInt(organizationMembershipInput) - 1;
-                                    if (selectedIndex >= 0 && selectedIndex < db.getOrganizations().size()) {
-                                        organizationMembership = db.getOrganizations().get(selectedIndex);
-                                        System.out.println("Joined existing organization: " + organizationMembership.getName());
-                                    } else {
-                                        System.out.println("Invalid selection. Creating a new organization.");
-                                    }
-                                } catch (NumberFormatException e) {
-                                    // If input is not a number or invalid, assume it's a new organization name
-                                    organizationMembership = new StudentOrganization(organizationMembershipInput);
-                                    db.addOrganization(organizationMembership); // Add the new organization to the database
-                                    System.out.println("Created and became head of the new organization: " + organizationMembership.getName());
-                                }
-                            }
-
-                            newUser = new Student(
-                                    "S" + (db.getUsers().size() + 1),  // Unique student ID
-                                    firstName,
-                                    lastName,
-                                    email,
-                                    password,
-                                    school,
-                                    new Transcript(),
-                                    organizationMembership,
-                                    year
-                            );
-                            if (organizationMembership != null && organizationMembership.getHead() == null) {
-                                organizationMembership.setHead((Student) newUser);
-                            }
-                        }
-                        case "teacher" -> {
-                            System.out.println("Available Teacher Types: " + Arrays.toString(TeacherTypes.values()));
-                            TeacherTypes teacherType;
-                            while (true) {
-                                try {
-                                    System.out.print("Please enter the teacher type (Tutor, Lector, SeniorLector, Professor): ");
-                                    teacherType = TeacherTypes.valueOf(scanner.nextLine().trim());
-                                    break;
-                                } catch (IllegalArgumentException e) {
-                                    System.out.println("Invalid teacher type. Please enter a valid type: " + Arrays.toString(TeacherTypes.values()));
-                                }
-                            }
-
-                            System.out.print("Salary: ");
-                            int salary = scanner.nextInt();
-                            scanner.nextLine(); // Consume newline
-
-                            newUser = new Teacher(
-                                    "T" + System.currentTimeMillis(),
-                                    firstName,
-                                    lastName,
-                                    email,
-                                    password,
-                                    DepartmentsOfEmployees.Teacher,
-                                    salary,
-                                    teacherType
-                            );
-                        }
-                        case "manager" -> {
-                            System.out.println("Available Manager Types: " + Arrays.toString(ManagerTypes.values()));
-                            ManagerTypes managerType;
-                            while (true) {
-                                try {
-                                    System.out.print("Please enter the manager type (OR, Dean): ");
-                                    managerType = ManagerTypes.valueOf(scanner.nextLine().trim());
-                                    break;
-                                } catch (IllegalArgumentException e) {
-                                    System.out.println("Invalid manager type. Please enter a valid type: " + Arrays.toString(ManagerTypes.values()));
-                                }
-                            }
-
-                            System.out.print("Salary: ");
-                            int salary = scanner.nextInt();
-                            scanner.nextLine(); // Consume newline
-
-                            newUser = new Manager(
-                                    "M" + System.currentTimeMillis(),
-                                    firstName,
-                                    lastName,
-                                    email,
-                                    password,
-                                    DepartmentsOfEmployees.Manager,
-                                    salary,
-                                    managerType
-                            );
-                        }
-                        case "librarian" -> {
-                            System.out.print("Salary: ");
-                            int salary = scanner.nextInt();
-                            scanner.nextLine(); // Consume newline
-
-                            newUser = new Librarian(
-                                    "L" + System.currentTimeMillis(),
-                                    firstName,
-                                    lastName,
-                                    email,
-                                    password,
-                                    null, // Librarian's department is always null
-                                    salary
-                            );
-                        }
-                        default -> {
-                            System.out.println("Invalid role entered. Please try again.");
-                            break;
-                        }
-                    }
-
-                    // Add the newly created user to the database if valid
-                    if (newUser != null) {
-                        db.addUser(newUser);
-                        System.out.println("User successfully added!");
-                    }
+                    admin.addUser(scanner);
                 }
 
                 case 2 -> {
@@ -847,7 +524,11 @@ public class Main {
                         System.out.println(user);
                     }
                 }
-                case 5 -> {
+                case 5 -> admin.addCourse(scanner);
+                case 6 -> admin.removeCourse(scanner);
+                case 7 -> admin.updateCourse(scanner);
+                case 8 -> admin.viewAllCourses();
+                case 9 -> {
                     System.out.println("Logging out...");
                     return;
                 }
@@ -856,10 +537,13 @@ public class Main {
         }
     }
 
-    private static void librarianMenu(Librarian librarian, Scanner scanner, DatabaseManager db) {
+    private static void librarianMenu(Librarian librarian, Scanner scanner, DatabaseManager db) throws IOException {
+        ConsoleHelper.clearScreen();
         System.out.println("Welcome, Librarian " + librarian.getFirstName() + "!");
+        ConsoleHelper.clearScreenAfterDelay();
 
         while (true) {
+            ConsoleHelper.clearScreen();
             System.out.println("\nLibrarian Menu:");
             System.out.println("1. Send Message");
             System.out.println("2. View Books");
@@ -879,31 +563,8 @@ public class Main {
 
             switch (choice) {
                 case 1 -> {
-                    System.out.print("Enter the recipient's email: ");
-                    String recipientEmail = scanner.nextLine();
-
-                    // Find the recipient (user) by email
-                    User recipient = db.getUsers().stream()
-                            .filter(u -> u.getEmail().equalsIgnoreCase(recipientEmail))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (recipient == null) {
-                        System.out.println("User with the given email not found.");
-                        break;
-                    }
-
-                    System.out.print("Enter the message content: ");
-                    String content = scanner.nextLine();
-
-                    try {
-                        // Create and send the message
-                        Message newMessage = new Message(librarian, recipient, content);
-                        librarian.sendMessage(recipient, newMessage);
-                        System.out.println("Message sent successfully to " + recipient.getFirstName() + ".");
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Error: " + e.getMessage());
-                    }
+                    String result = librarian.sendMessage(scanner, db);
+                    System.out.println(result);
                 }
 
                 case 2 -> librarian.viewBooks();
@@ -940,7 +601,7 @@ public class Main {
                     System.out.println("Language changed to " + language);
                 }
                 case 8 -> {
-                    System.out.println("\nLatest News:\n" + librarian.viewNews());
+                    System.out.println("\nLatest News:\n" + librarian.viewNews(scanner));
                 }
                 case 9 -> {
                     // View Incoming Borrow Requests
@@ -967,10 +628,13 @@ public class Main {
         }
     }
 
-    private static void managerMenu(Manager manager, Scanner scanner, DatabaseManager db) {
+    private static void managerMenu(Manager manager, Scanner scanner, DatabaseManager db) throws IOException {
+        ConsoleHelper.clearScreen();
         System.out.println("Welcome, Manager " + manager.getFirstName() + "!");
+        ConsoleHelper.clearScreenAfterDelay();
 
         while (true) {
+            ConsoleHelper.clearScreen();
             System.out.println("\nManager Menu:");
             System.out.println("1. Send Message");
             System.out.println("2. Approve Complaint");
@@ -988,81 +652,13 @@ public class Main {
 
             switch (choice) {
                 case 1 -> {
-                    System.out.print("Enter the recipient's email: ");
-                    String recipientEmail = scanner.nextLine();
-
-                    // Find the recipient (user) by email
-                    User recipient = db.getUsers().stream()
-                            .filter(u -> u.getEmail().equalsIgnoreCase(recipientEmail))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (recipient == null) {
-                        System.out.println("User with the given email not found.");
-                        break;
-                    }
-
-                    System.out.print("Enter message content: ");
-                    String content = scanner.nextLine();
-
-                    try {
-                        // Create a new message from the manager to the recipient
-                        Message newMessage = new Message(manager, recipient, content);
-
-                        // Send the message using the sendMessage method
-                        manager.sendMessage(recipient, newMessage);
-
-                        System.out.println("Message sent successfully to " + recipient.getFirstName() + ".");
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Error: " + e.getMessage());
-                    }
+                    String result = manager.sendMessage(scanner, db);
+                    System.out.println(result);
                 }
 
                 case 2 -> {
-                    System.out.println("Approving Complaints...");
-
-                    // Fetch all unsigned complaints from DatabaseManager
-                    List<String> unsignedComplaints = db.getAllUnsignedComplaints();
-
-                    // Check if there are any unsigned complaints
-                    if (unsignedComplaints.isEmpty()) {
-                        System.out.println("No unsigned complaints to approve.");
-                        break;
-                    }
-
-                    // Display the unsigned complaints
-                    System.out.println("Unsigned Complaints:");
-                    for (int i = 0; i < unsignedComplaints.size(); i++) {
-                        System.out.println((i + 1) + ". " + unsignedComplaints.get(i));
-                    }
-
-                    // Ask the manager to select a complaint to approve
-                    System.out.print("Select a complaint to approve (enter the number): ");
-                    int complaintChoice = scanner.nextInt();
-                    scanner.nextLine(); // Consume the newline character
-
-                    if (complaintChoice < 1 || complaintChoice > unsignedComplaints.size()) {
-                        System.out.println("Invalid selection.");
-                        break;
-                    }
-
-                    // Get the selected complaint text
-                    String selectedComplaint = unsignedComplaints.get(complaintChoice - 1);
-
-                    // Retrieve the complaint from the database
-                    Complaint complaint = db.getComplaintByText(selectedComplaint);
-                    if (complaint != null) {
-                        // Approve the complaint
-                        boolean result = manager.signComplaint(selectedComplaint); // Pass only the complaint text
-                        if (result) {
-                            System.out.println("Complaint approved successfully.");
-                        } else {
-                            System.out.println("Failed to approve the complaint.");
-                        }
-                    } else {
-                        System.out.println("Complaint not found.");
-                    }
-
+                    String res = manager.approveComplaint(scanner, db);
+                    System.out.println(res);
                 }
 
                 case 3 -> {
@@ -1105,7 +701,7 @@ public class Main {
                 case 7 -> {
                     // needs to be implemented
                 }
-                case 8 -> System.out.println("\nLatest News:\n" + manager.viewNews());
+                case 8 -> System.out.println("\nLatest News:\n" + manager.viewNews(scanner));
                 case 9 -> {
                     System.out.println("Logging out...");
                     return;

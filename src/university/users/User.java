@@ -4,11 +4,13 @@ import university.communication.Language;
 import university.communication.Languages;
 import university.communication.Message;
 import university.communication.News;
+import university.database.DatabaseManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Scanner;
 
 import static university.communication.Languages.EN;
 
@@ -73,13 +75,39 @@ public abstract class User implements Serializable {
 		));
 	}
 
-	public Message sendMessage(User recipient, Message message) {
-		if (recipient == null || message == null) {
-			throw new IllegalArgumentException("Recipient or message cannot be null.");
+	public String sendMessage(Scanner scanner, DatabaseManager db) {
+		// Validate inputs
+		System.out.print("Enter the recipient's email: ");
+		String recipientEmail = scanner.nextLine();
+
+		System.out.print("Enter the message content: ");
+		String content = scanner.nextLine();
+
+		if (recipientEmail == null || content == null || content.trim().isEmpty()) {
+			throw new IllegalArgumentException("Recipient email and content cannot be null or empty.");
 		}
-		recipient.receiveMessage(message);
-		return message;
+
+
+		// Find the recipient (user) by email
+		User recipient = db.getUsers().stream()
+				.filter(u -> u.getEmail().equalsIgnoreCase(recipientEmail))
+				.findFirst()
+				.orElse(null);
+
+		if (recipient == null) {
+			throw new IllegalArgumentException("User with the given email not found.");
+		}
+
+		// Create the message
+		Message newMessage = new Message(this, recipient, content);
+
+		// Send the message to the recipient
+		recipient.receiveMessage(newMessage);
+
+		// Return confirmation
+		return "Message sent successfully to " + recipient.getFirstName() + " " + recipient.getSurname() + ".";
 	}
+
 
 	public void receiveMessage(Message message) {
 		if (message != null) {
@@ -94,24 +122,62 @@ public abstract class User implements Serializable {
 		return receivedMessages.toString();
 	}
 
-	public String viewNews() {
+	public String viewNews(Scanner scanner) {
 		StringBuilder newsContent = new StringBuilder();
 
+
 		if (newsList != null && !newsList.isEmpty()) {
-			for (News news : newsList) {
-				newsContent.append("Topic: ").append(news.getTopic()).append("\n")
-						.append("Content: ").append(news.getContent()).append("\n")
-						.append("Comments: ").append(news.getComments()).append("\n\n");
+			// Displaying the list of news to the user
+			for (int i = 0; i < newsList.size(); i++) {
+				News news = newsList.get(i);
+				newsContent.append((i + 1)).append(". ")
+						.append("Topic: ").append(news.getTopic()).append("\n")
+						.append("Content: ").append(news.getContent()).append("\n");
 			}
-		}
-		else {
-			newsContent.append("No news available.");
+
+			// Asking the user to select a news item
+			System.out.print("Select a news item to interact with (1 to " + newsList.size() + "): ");
+			int newsChoice = scanner.nextInt() - 1;
+			scanner.nextLine();  // Consume newline character
+
+			if (newsChoice < 0 || newsChoice >= newsList.size()) {
+				newsContent.append("Invalid choice.\n");
+				return newsContent.toString();
+			}
+
+			News selectedNews = newsList.get(newsChoice);
+
+			// Showing options to the user for the selected news
+			System.out.println("1) View Comments");
+			System.out.println("2) Add Comment");
+
+			System.out.print("Choose an option (1 or 2): ");
+			int option = scanner.nextInt();
+			scanner.nextLine();  // Consume newline character
+
+			if (option == 1) {
+				// View Comments
+				newsContent.append("Comments for '").append(selectedNews.getTopic()).append("':\n");
+				for (String comment : selectedNews.getComments()) {
+					newsContent.append(comment).append("\n");
+				}
+			} else if (option == 2) {
+				// Add Comment
+				System.out.print("Enter your comment: ");
+				String commentText = scanner.nextLine();
+
+				// Add comment to the selected news
+				selectedNews.addComment(this.getFirstName() + " " + this.getSurname(), commentText);
+				newsContent.append("Your comment has been added to '").append(selectedNews.getTopic()).append("'.\n");
+			} else {
+				newsContent.append("Invalid option.\n");
+			}
+		} else {
+			newsContent.append("No news available.\n");
 		}
 
 		return newsContent.toString();
 	}
-
-
 
 
 	public abstract String getRole();

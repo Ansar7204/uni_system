@@ -1,12 +1,12 @@
 package university.users;
 
 import university.communication.Complaint;
+import university.communication.News;
+import university.database.DatabaseManager;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import university.communication.News;
-import university.database.DatabaseManager;
+import java.util.Scanner;
 
 public class Manager extends Employee {
     public ManagerTypes managerType;
@@ -35,7 +35,51 @@ public class Manager extends Employee {
         return false;
     }
 
-    // Method to approve complaints (marks them as signed)
+    public String approveComplaint(Scanner scanner, DatabaseManager db) {
+        System.out.println("Approving Complaints...");
+
+        // Fetch all unsigned complaints from DatabaseManager
+        List<String> unsignedComplaints = db.getAllUnsignedComplaints();
+
+        // Check if there are any unsigned complaints
+        if (unsignedComplaints.isEmpty()) {
+            System.out.println("No unsigned complaints to approve.");
+        }
+
+        // Display the unsigned complaints
+        System.out.println("Unsigned Complaints:");
+        for (int i = 0; i < unsignedComplaints.size(); i++) {
+            System.out.println((i + 1) + ". " + unsignedComplaints.get(i));
+        }
+
+        // Ask the manager to select a complaint to approve
+        System.out.print("Select a complaint to approve (enter the number): ");
+        int complaintChoice = scanner.nextInt();
+        scanner.nextLine(); // Consume the newline character
+
+        if (complaintChoice < 1 || complaintChoice > unsignedComplaints.size()) {
+            System.out.println("Invalid selection.");
+        }
+
+        // Get the selected complaint text
+        String selectedComplaint = unsignedComplaints.get(complaintChoice - 1);
+
+        // Retrieve the complaint from the database
+        Complaint complaint = db.getComplaintByText(selectedComplaint);
+        if (complaint != null) {
+            // Approve the complaint
+            boolean result = this.signComplaint(selectedComplaint); // Pass only the complaint text
+            if (result) {
+                return "Complaint approved successfully.";
+            } else {
+                return "Failed to approve the complaint.";
+            }
+        } else {
+            return "Complaint not found.";
+        }
+    }
+
+
     public void approveComplaints() {
         List<String> unsignedComplaints = getUnsignedComplaints();
         if (unsignedComplaints.isEmpty()) {

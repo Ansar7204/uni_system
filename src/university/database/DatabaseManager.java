@@ -3,10 +3,11 @@ package university.database;
 import university.communication.Complaint;
 import university.communication.Log;
 import university.communication.News;
+import university.courses.Course;
+import university.courses.Files;
+import university.courses.StudentOrganization;
+import university.courses.Transcript;
 import university.users.*;
-import university.courses.*;
-import java.io.*;
-import java.util.*;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -60,6 +61,23 @@ public class DatabaseManager implements Serializable {
 
     public void addCourse(Course course) {
         courses.add(course);
+    }
+
+    public void listCourses() {
+        System.out.println("Available courses:");
+        for (Course course : this.getCourses()) {
+            System.out.println("Course ID: " + course.courseID + ", Course Name: " + course.courseName);
+        }
+    }
+
+    // Helper method to find a course by ID
+    public Course findCourseByID(String courseID) {
+        for (Course course : this.getCourses()) {
+            if (course.courseID.equals(courseID)) {
+                return course;
+            }
+        }
+        return null;  // If the course ID is not found
     }
 
     // Files management

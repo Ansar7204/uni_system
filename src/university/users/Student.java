@@ -8,9 +8,11 @@ import university.library.Book;
 import university.research.ResearchPaper;
 import university.research.Researcher;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Scanner;
+
 public class Student extends User {
 
 	private String studentId;
@@ -154,35 +156,42 @@ public class Student extends User {
 		return transcript;
 	}
 
-	public String rateTeacher(Teacher teacher, int rating) {
+	public String rateTeacher(Scanner scanner) {
+		List<Teacher> teachers = DatabaseManager.getInstance().getAllTeachers();
+
+		if (teachers.isEmpty()) {
+			System.out.println("No teachers available to rate.");
+
+		}
+		// Display the list of teachers
+		System.out.println("Select a teacher to rate:");
+		for (int i = 0; i < teachers.size(); i++) {
+			Teacher teacher = teachers.get(i);
+			System.out.println((i + 1) + ". " + teacher.getFirstName() + " " + teacher.getSurname());
+		}
+
+		// Get the student's choice
+		System.out.print("Enter the number of the teacher you want to rate: ");
+		int teacherChoice = scanner.nextInt();
+
+		if (teacherChoice < 1 || teacherChoice > teachers.size()) {
+			System.out.println("Invalid choice.");
+		}
+
+		Teacher selectedTeacher = teachers.get(teacherChoice - 1);
+
+		// Prompt the student to enter a rating
+		System.out.print("Enter your rating for " + selectedTeacher.getFirstName() + ": ");
+		int rating = scanner.nextInt();
 		if (rating < 0 || rating > 10) {
 			return "Invalid rating. Please provide a rating between 0 and 10.";
 		}
 
-		teacher.addRating(rating);
+		selectedTeacher.addRating(rating);
 
-		return "Rated teacher " + teacher.getFirstName() + " with " + rating + " points. Average rating: " + teacher.getAverageRating();
+		return "Rated teacher " + selectedTeacher.getFirstName() + " with " + rating + " points. Average rating: " + selectedTeacher.getAverageRating();
 	}
 
-
-	public String seeSchedule() {
-		if (registeredCourses.isEmpty()) {
-			return "No schedule available. You are not registered for any courses.";
-		}
-		StringBuilder schedule = new StringBuilder("Schedule:\n");
-		for (Course course : registeredCourses) {
-			schedule.append("Course: ").append(course.getCourseName()).append("\n");
-			List<Lesson> lessons = course.getLessonsOfCourse();
-			if (lessons.isEmpty()) {
-				schedule.append("  No lessons scheduled for this course.\n");
-			} else {
-				for (Lesson lesson : lessons) {
-					schedule.append("  Lesson: ").append(lesson.getDetails()).append("\n");
-				}
-			}
-		}
-		return schedule.toString();
-	}
 
 	public String viewFiles() {
 		if (files.isEmpty()) {
@@ -193,6 +202,58 @@ public class Student extends User {
 			fileList.append(file.getNameOfFile()).append("\n");
 		}
 		return fileList.toString();
+	}
+
+	public String borrowBook(Scanner scanner) {
+		// Retrieve the single instance of the librarian
+		Librarian librarian = DatabaseManager.getInstance().getLibrarian();
+		if (librarian == null) {
+			return "No librarian found in the system.";
+
+		}
+
+		// Retrieve the list of books from the librarian
+		List<Book> availableBooks = librarian.getBooks();
+
+		// Filter out the books that are available
+		List<Book> booksToBorrow = new ArrayList<>();
+		for (Book book : availableBooks) {
+			if (book.isAvailable()) {
+				booksToBorrow.add(book);
+			}
+		}
+
+		if (booksToBorrow.isEmpty()) {
+			return "No books are available to borrow at the moment.";
+
+		}
+
+		// Display available books
+		System.out.println("Available books to borrow:");
+		for (int i = 0; i < booksToBorrow.size(); i++) {
+			Book book = booksToBorrow.get(i);
+			System.out.println((i + 1) + ". " + book.getTitle());
+		}
+
+		// Ask the student to choose a book
+		System.out.print("Enter the number of the book you want to borrow: ");
+		int bookChoice = scanner.nextInt();
+
+		if (bookChoice < 1 || bookChoice > booksToBorrow.size()) {
+			System.out.println("Invalid choice.");
+		}
+
+		Book selectedBook = booksToBorrow.get(bookChoice - 1);
+
+		// Create a borrow request
+		librarian.receiveRequest(this, selectedBook);
+
+		// Mark the book as borrowed
+		selectedBook.setAvailable(false);  // Set the book's availability to false (borrowed)
+		this.getBorrowedBooks().add(selectedBook);
+
+		// Confirmation message
+		return "You have successfully requested to borrow the book: " + selectedBook.getTitle();
 	}
 
 
