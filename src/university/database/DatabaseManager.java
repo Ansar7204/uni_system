@@ -23,6 +23,7 @@ public class DatabaseManager implements Serializable {
     private List<Transcript> transcripts;  // Transcripts of students
     private List<News> newsList;
     private List<Complaint> complaints; // News updates
+    private List<StudentOrganization> organizations;
 
     private DatabaseManager() {
         users = new ArrayList<>();
@@ -32,6 +33,7 @@ public class DatabaseManager implements Serializable {
         transcripts = new ArrayList<>();
         newsList = new ArrayList<>();
         complaints = new ArrayList<>();
+        organizations = new ArrayList<>();
     }
 
     // Singleton instance retrieval
@@ -234,6 +236,49 @@ public class DatabaseManager implements Serializable {
         return null;
     }
 
+    // Add a new organization
+    public void addOrganization(StudentOrganization organization) {
+        if (!organizations.contains(organization)) {
+            organizations.add(organization);
+            System.out.println("Organization added: " + organization.getName());
+        } else {
+            System.out.println("Organization already exists.");
+        }
+    }
+
+    // Update an existing organization
+    public boolean updateOrganization(String oldName, String newName) {
+        for (StudentOrganization organization : organizations) {
+            if (organization.getName().equalsIgnoreCase(oldName)) {
+                organization.setName(newName);
+                System.out.println("Organization updated: " + newName);
+                return true;
+            }
+        }
+        System.out.println("Organization not found.");
+        return false;
+    }
+
+    // Delete an organization
+    public boolean deleteOrganization(String name) {
+        for (StudentOrganization organization : organizations) {
+            if (organization.getName().equalsIgnoreCase(name)) {
+                organizations.remove(organization);
+                System.out.println("Organization deleted: " + name);
+                return true;
+            }
+        }
+        System.out.println("Organization not found.");
+        return false;
+    }
+
+    // Get list of organizations
+    public List<StudentOrganization> getOrganizations() {
+        return organizations;
+    }
+
+
+
     // Serialization methods
     public void saveToFile(String filePath) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
@@ -246,5 +291,7 @@ public class DatabaseManager implements Serializable {
             instance = (DatabaseManager) ois.readObject();
         }
     }
+
+
 }
 

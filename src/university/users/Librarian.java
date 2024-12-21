@@ -30,7 +30,6 @@ public class Librarian extends Employee {
 		this.receivedMessages = new ArrayList<>();
 		this.books = new ArrayList<>();
 		this.incomingRequests = new ArrayList<>();
-		this.currentDate = LocalDate.now();
 	}
 
 	public static Librarian getInstance(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary) {

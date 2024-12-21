@@ -3,7 +3,6 @@ package university.users;
 import university.communication.*;
 import university.courses.Course;
 import university.courses.Mark;
-import university.courses.School;
 import university.database.DatabaseManager;
 import university.research.ResearchPaper;
 import university.research.Researcher;
@@ -19,7 +18,7 @@ public class Teacher extends Employee{
 	private List<Integer> ratings;
 	public Researcher researcherProfile;
 
-	public Teacher(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary, TeacherTypes typeOfTeacher, String courses) {
+	public Teacher(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary, TeacherTypes typeOfTeacher) {
 		super(id, name, surName, email, password, department, salary);
         this.ratings = new ArrayList<>();
 		this.typeOfTeacher = typeOfTeacher;

@@ -5,6 +5,7 @@ import university.communication.Message;
 import university.communication.UrgencyLevel;
 import university.courses.Course;
 import university.courses.Files;
+import university.courses.StudentOrganization;
 import university.courses.Transcript;
 import university.exceptions.CreditLimitExceededException;
 import university.library.Book;
@@ -12,9 +13,7 @@ import university.users.*;
 import university.database.DatabaseManager;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws CreditLimitExceededException {
@@ -80,7 +79,7 @@ public class Main {
 
             } else if (choice == 2) {
                 // Registration flow
-                System.out.println("Please enter your role (Student, Teacher, Admin):");
+                System.out.println("Please enter your role (Student, Teacher, Admin,Manager,Librarian):");
                 String role = scanner.nextLine();
                 System.out.println("Please enter your first name:");
                 String firstName = scanner.nextLine();
@@ -94,18 +93,158 @@ public class Main {
                 User newUser = null;
 
                 switch (role.toLowerCase()) {
+                    case "manager":
+                        // Prompt for salary
+                        System.out.println("Please enter your salary:");
+                        int managerSalary = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+
+                        // Prompt for manager type
+                        ManagerTypes managerType;
+                        while (true) {
+                            try {
+                                System.out.println("Please specify the manager type (OR or Dean):");
+                                String managerTypeInput = scanner.nextLine().trim().toUpperCase();
+                                managerType = ManagerTypes.valueOf(managerTypeInput);
+                                break; // Break the loop if valid input is given
+                            } catch (IllegalArgumentException e) {
+                                System.out.println("Invalid manager type. Please enter 'OR' or 'Dean'.");
+                            }
+                        }
+
+                        // Create a new Manager object
+                        newUser = new Manager(
+                                "M" + (db.getUsers().size() + 1),  // Unique ID
+                                firstName,
+                                surname,
+                                email,
+                                password,
+                                DepartmentsOfEmployees.Manager,  // Fixed as "Manager"
+                                managerSalary,
+                                managerType
+                        );
+
+                        System.out.println("Manager successfully registered.");
+                        break;
+
+                    case "librarian":
+
+                        System.out.println("Please enter your salary:");
+                        int librarianSalary = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+
+
+                        newUser = new Librarian(
+                                "L" + (db.getUsers().size() + 1),
+                                firstName,
+                                surname,
+                                email,
+                                password,
+                                DepartmentsOfEmployees.Librarian,                              // Department is always null for librarians
+                                librarianSalary
+                        );
+
+                        System.out.println("Librarian successfully registered.");
+                        break;
+
                     case "student":
-                        newUser = new Student("S" + (db.getUsers().size() + 1), firstName, surname, email, password, null, new Transcript(), null, 1);
+                        System.out.println("Please enter your school (Available options: SITE, SEOGI, SNSS, SAM, SMSGT, ISE, BS, KMA, SCE, SG):");
+                        School school = null;
+                        while (school == null) {
+                            try {
+                                String schoolInput = scanner.nextLine().toUpperCase();
+                                school = School.valueOf(schoolInput);
+                            } catch (IllegalArgumentException e) {
+                                System.out.println("Invalid school. Please enter one of the following options: SITE, SEOGI, SNSS, SAM, SMSGT, ISE, BS, KMA, SCE, SG:");
+                            }
+                        }
+
+                        System.out.println("Please enter your year of study (1-4):");
+                        int yearOfStudy = -1;
+                        while (yearOfStudy < 1 || yearOfStudy > 4) {
+                            try {
+                                yearOfStudy = scanner.nextInt();
+                                if (yearOfStudy < 1 || yearOfStudy > 4) {
+                                    System.out.println("Year of study must be between 1 and 4. Please try again:");
+                                }
+                            } catch (InputMismatchException e) {
+                                System.out.println("Invalid input. Please enter a number between 1 and 4:");
+                                scanner.nextLine(); // Consume invalid input
+                            }
+                        }
+                        scanner.nextLine(); // Consume leftover newline
+
+                        // Display list of existing student organizations
+                        System.out.println("Existing student organizations:");
+                        if (db.getOrganizations().isEmpty()) {
+                            System.out.println("No organizations available.");
+                        } else {
+                            for (int i = 0; i < db.getOrganizations().size(); i++) {
+                                System.out.println((i + 1) + ". " + db.getOrganizations().get(i).getName());
+                            }
+                        }
+
+// Prompt user to select an existing organization or create a new one
+                        System.out.println("Enter the number of an existing organization to join, or type a new organization name to create one (leave empty if none):");
+                        String organizationMembershipInput = scanner.nextLine();
+
+                        StudentOrganization organizationMembership = null;
+
+                        if (!organizationMembershipInput.isEmpty()) {
+                            try {
+                                int selectedIndex = Integer.parseInt(organizationMembershipInput) - 1;
+                                if (selectedIndex >= 0 && selectedIndex < db.getOrganizations().size()) {
+                                    organizationMembership = db.getOrganizations().get(selectedIndex);
+                                    System.out.println("Joined existing organization: " + organizationMembership.getName());
+                                } else {
+                                    System.out.println("Invalid selection. Creating a new organization.");
+                                }
+                            } catch (NumberFormatException e) {
+                                // If input is not a number or invalid, assume it's a new organization name
+                                organizationMembership = new StudentOrganization(organizationMembershipInput);
+                                db.addOrganization(organizationMembership); // Add the new organization to the database
+                                System.out.println("Created and became head of the new organization: " + organizationMembership.getName());
+                            }
+                        }
+
+
+
+                        Transcript transcript = new Transcript(); // Assuming Transcript has a default constructor
+
+                        newUser = new Student(
+                                "S" + (db.getUsers().size() + 1),  // Unique student ID
+                                firstName,
+                                surname,
+                                email,
+                                password,
+                                school,
+                                transcript,
+                                organizationMembership,
+                                yearOfStudy
+                        );
+                        if (organizationMembership != null && organizationMembership.getHead() == null) {
+                            organizationMembership.setHead((Student) newUser);
+                        }
+
+                        System.out.println("Student registered successfully!");
                         break;
                     case "teacher":
-                        System.out.println("Please enter your department:");
-                        String department = scanner.nextLine();
                         System.out.println("Please enter your salary:");
                         int salary = scanner.nextInt();
                         scanner.nextLine(); // Consume newline
-                        System.out.println("Please enter your teacher type (Lector, Professor):");
-                        String teacherType = scanner.nextLine();
-                        newUser = new Teacher("T" + (db.getUsers().size() + 1), firstName, surname, email, password, DepartmentsOfEmployees.Teacher, salary, TeacherTypes.valueOf(teacherType), department);
+
+                        TeacherTypes teacherType;
+                        while (true) {
+                            try {
+                                System.out.println("Please enter your teacher type (Tutor, Lector, SeniorLector, Professor):");
+                                String teacherTypeInput = scanner.nextLine().trim();
+                                teacherType = TeacherTypes.valueOf(teacherTypeInput); // Convert input to enum
+                                break; // Exit loop if input is valid
+                            } catch (IllegalArgumentException e) {
+                                System.out.println("Invalid teacher type. Please enter one of the following: Tutor, Lector, SeniorLector, Professor.");
+                            }
+                        }
+                        newUser = new Teacher("T" + (db.getUsers().size() + 1), firstName, surname, email, password, DepartmentsOfEmployees.Teacher, salary, teacherType);
                         break;
                     case "admin":
                         newUser = new Admin("A" + (db.getUsers().size() + 1), firstName, surname, email, password);
@@ -137,7 +276,6 @@ public class Main {
     private static void studentMenu(Student student, Scanner scanner, DatabaseManager db) {
         System.out.println("Welcome, " + student.getFirstName() + "!");
         List<Course> courses = db.getCourses();
-        List<Files> files = db.getAllFolders();
 
         while (true) {
             System.out.println("\nStudent Menu:");
@@ -506,8 +644,8 @@ public class Main {
             switch (choice) {
                 case 1 -> {
                     System.out.println("Enter user details to add:");
-                    System.out.print("Role (Student/Teacher/Admin): ");
-                    String role = scanner.nextLine();
+                    System.out.print("Role (Student/Teacher/Manager/Librarian): ");
+                    String role = scanner.nextLine().trim();
 
                     System.out.print("First Name: ");
                     String firstName = scanner.nextLine();
@@ -518,25 +656,155 @@ public class Main {
                     System.out.print("Password: ");
                     String password = scanner.nextLine();
 
-                    User newUser;
-                    if (role.equalsIgnoreCase("Student")) {
-                        System.out.print("Year: ");
-                        int year = scanner.nextInt();
-                        scanner.nextLine();
-                        newUser = new Student("S" + System.currentTimeMillis(), firstName, lastName, email, password, null, new Transcript(), null, year);
-                    } else if (role.equalsIgnoreCase("Teacher")) {
-                        System.out.print("Department: ");
-                        String department = scanner.nextLine();
-                        newUser = new Teacher("T" + System.currentTimeMillis(), firstName, lastName, email, password, DepartmentsOfEmployees.Teacher, 0, TeacherTypes.Lector, department);
-                    } else if (role.equalsIgnoreCase("Admin")) {
-                        newUser = new Admin("A" + System.currentTimeMillis(), firstName, lastName, email, password);
-                    } else {
-                        System.out.println("Invalid role entered. Please try again.");
-                        continue;
+                    User newUser = null;
+
+                    switch (role.toLowerCase()) {
+                        case "student" -> {
+                            System.out.println("Available Schools: " + Arrays.toString(School.values()));
+                            System.out.print("Please enter your school: ");
+                            School school;
+                            while (true) {
+                                try {
+                                    school = School.valueOf(scanner.nextLine().trim().toUpperCase());
+                                    break;
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Invalid school. Please enter a valid school: " + Arrays.toString(School.values()));
+                                }
+                            }
+
+                            System.out.print("Year of Study: ");
+                            int year = scanner.nextInt();
+                            scanner.nextLine(); // Consume newline
+
+                            System.out.println("Existing student organizations:");
+                            if (db.getOrganizations().isEmpty()) {
+                                System.out.println("No organizations available.");
+                            } else {
+                                for (int i = 0; i < db.getOrganizations().size(); i++) {
+                                    System.out.println((i + 1) + ". " + db.getOrganizations().get(i).getName());
+                                }
+                            }
+                            System.out.println("Enter the number of an existing organization to join, or type a new organization name to create one (leave empty if none):");
+                            String organizationMembershipInput = scanner.nextLine();
+
+                            StudentOrganization organizationMembership = null;
+
+                            if (!organizationMembershipInput.isEmpty()) {
+                                try {
+                                    int selectedIndex = Integer.parseInt(organizationMembershipInput) - 1;
+                                    if (selectedIndex >= 0 && selectedIndex < db.getOrganizations().size()) {
+                                        organizationMembership = db.getOrganizations().get(selectedIndex);
+                                        System.out.println("Joined existing organization: " + organizationMembership.getName());
+                                    } else {
+                                        System.out.println("Invalid selection. Creating a new organization.");
+                                    }
+                                } catch (NumberFormatException e) {
+                                    // If input is not a number or invalid, assume it's a new organization name
+                                    organizationMembership = new StudentOrganization(organizationMembershipInput);
+                                    db.addOrganization(organizationMembership); // Add the new organization to the database
+                                    System.out.println("Created and became head of the new organization: " + organizationMembership.getName());
+                                }
+                            }
+
+                            newUser = new Student(
+                                    "S" + (db.getUsers().size() + 1),  // Unique student ID
+                                    firstName,
+                                    lastName,
+                                    email,
+                                    password,
+                                    school,
+                                    new Transcript(),
+                                    organizationMembership,
+                                    year
+                            );
+                            if (organizationMembership != null && organizationMembership.getHead() == null) {
+                                organizationMembership.setHead((Student) newUser);
+                            }
+                        }
+                        case "teacher" -> {
+                            System.out.println("Available Teacher Types: " + Arrays.toString(TeacherTypes.values()));
+                            TeacherTypes teacherType;
+                            while (true) {
+                                try {
+                                    System.out.print("Please enter the teacher type (Tutor, Lector, SeniorLector, Professor): ");
+                                    teacherType = TeacherTypes.valueOf(scanner.nextLine().trim());
+                                    break;
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Invalid teacher type. Please enter a valid type: " + Arrays.toString(TeacherTypes.values()));
+                                }
+                            }
+
+                            System.out.print("Salary: ");
+                            int salary = scanner.nextInt();
+                            scanner.nextLine(); // Consume newline
+
+                            newUser = new Teacher(
+                                    "T" + System.currentTimeMillis(),
+                                    firstName,
+                                    lastName,
+                                    email,
+                                    password,
+                                    DepartmentsOfEmployees.Teacher,
+                                    salary,
+                                    teacherType
+                            );
+                        }
+                        case "manager" -> {
+                            System.out.println("Available Manager Types: " + Arrays.toString(ManagerTypes.values()));
+                            ManagerTypes managerType;
+                            while (true) {
+                                try {
+                                    System.out.print("Please enter the manager type (OR, Dean): ");
+                                    managerType = ManagerTypes.valueOf(scanner.nextLine().trim());
+                                    break;
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println("Invalid manager type. Please enter a valid type: " + Arrays.toString(ManagerTypes.values()));
+                                }
+                            }
+
+                            System.out.print("Salary: ");
+                            int salary = scanner.nextInt();
+                            scanner.nextLine(); // Consume newline
+
+                            newUser = new Manager(
+                                    "M" + System.currentTimeMillis(),
+                                    firstName,
+                                    lastName,
+                                    email,
+                                    password,
+                                    DepartmentsOfEmployees.Manager,
+                                    salary,
+                                    managerType
+                            );
+                        }
+                        case "librarian" -> {
+                            System.out.print("Salary: ");
+                            int salary = scanner.nextInt();
+                            scanner.nextLine(); // Consume newline
+
+                            newUser = new Librarian(
+                                    "L" + System.currentTimeMillis(),
+                                    firstName,
+                                    lastName,
+                                    email,
+                                    password,
+                                    null, // Librarian's department is always null
+                                    salary
+                            );
+                        }
+                        default -> {
+                            System.out.println("Invalid role entered. Please try again.");
+                            break;
+                        }
                     }
 
-                    admin.addUser(newUser);
+                    // Add the newly created user to the database if valid
+                    if (newUser != null) {
+                        db.addUser(newUser);
+                        System.out.println("User successfully added!");
+                    }
                 }
+
                 case 2 -> {
                     System.out.print("Enter the User ID of the user you want to update: ");
                     String userId = scanner.nextLine();

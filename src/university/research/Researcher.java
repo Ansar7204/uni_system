@@ -1,7 +1,7 @@
 package university.research;
 
 import university.communication.Language;
-import university.courses.School;
+import university.users.School;
 import university.users.Student;
 import university.users.Teacher;
 import university.users.User;

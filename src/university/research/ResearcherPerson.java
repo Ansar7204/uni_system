@@ -1,8 +1,6 @@
 package university.research;
 
-import university.courses.School;
-import university.users.DepartmentsOfEmployees;
-import university.users.Employee;
+import university.users.School;
 
 import java.util.Comparator;
 import java.util.List;
