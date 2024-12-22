@@ -22,7 +22,7 @@ public class Lesson {
 		this.course = course;
 		this.lessonTime = lessonTime;
 		this.roomType = roomType;
-		this.attendance = new HashMap<>(); // Initialize attendance map
+		this.attendance = new HashMap<>();
 	}
 
 	public String getDetails() {

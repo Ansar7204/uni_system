@@ -24,7 +24,6 @@ public class Admin extends User {
 
 	public void addUser(Scanner scanner) {
 		Language lang = Language.getInstance();
-		// Get user details from the admin
 		System.out.println(lang.getLocalizedMessage(
 				"Enter user details to add:",
 				"Введите данные пользователя для добавления:",
@@ -80,10 +79,8 @@ public class Admin extends User {
 		}
 
 
-		// Create user based on role
 		User newUser = createUser(role, firstName, lastName, email, password, scanner);
 
-		// Add user to the database and print success message
 		if (newUser != null) {
 			db.addUser(newUser);
 
@@ -160,7 +157,7 @@ public class Admin extends User {
 				"Оқу жылы: "
 		));
 		int year = scanner.nextInt();
-		scanner.nextLine(); // Consume newline
+		scanner.nextLine();
 
 		System.out.println(lang.getLocalizedMessage(
 				"Existing student organizations:",
@@ -209,9 +206,8 @@ public class Admin extends User {
 					));
 				}
 			} catch (NumberFormatException e) {
-				// If input is not a number or invalid, assume it's a new organization name
 				organizationMembership = new StudentOrganization(organizationMembershipInput);
-				db.addOrganization(organizationMembership); // Add the new organization to the database
+				db.addOrganization(organizationMembership);
 				System.out.println(lang.getLocalizedMessage(
 						"Created and became head of the new organization: " + organizationMembership.getName(),
 						"Создано и возглавлено новое объединение: " + organizationMembership.getName(),
@@ -222,7 +218,7 @@ public class Admin extends User {
 		}
 
 		User newStudent = new Student(
-				"S" + (db.getUsers().size() + 1),  // Unique student ID
+				"S" + (db.getUsers().size() + 1),
 				firstName,
 				lastName,
 				email,
@@ -240,7 +236,6 @@ public class Admin extends User {
 
 	public User createTeacher(String firstName, String lastName, String email, String password, Scanner scanner) {
 		Language lang = Language.getInstance();
-		// Ask for teacher type
 		System.out.println(lang.getLocalizedMessage(
 				"Available Teacher Types: " + Arrays.toString(TeacherTypes.values()),
 				"Доступные типы преподавателей: " + Arrays.toString(TeacherTypes.values()),
@@ -265,14 +260,13 @@ public class Admin extends User {
 			}
 		}
 
-		// Ask for salary
 		System.out.print(lang.getLocalizedMessage(
 				"Salary: ",
 				"Зарплата: ",
 				"Жалақы: "
 		));
 		int salary = scanner.nextInt();
-		scanner.nextLine(); // Consume newline
+		scanner.nextLine();
 
 		Teacher newTeacher = new Teacher(
 				"T" + System.currentTimeMillis(),
@@ -298,10 +292,9 @@ public class Admin extends User {
 					"Доступные курсы:",
 					"Қолжетімді курстар:"
 			));
-			db.listCourses(); // List all available courses
+			db.listCourses();
 		}
 
-		// Ask which courses the teacher will teach
 		List<Course> teacherCourses = new ArrayList<>();
 		System.out.println(lang.getLocalizedMessage(
 				"Enter course IDs (comma separated) that this teacher will teach, or press Enter to skip:",
@@ -365,7 +358,7 @@ public class Admin extends User {
 				"Жалақы: "
 		));
 		int salary = scanner.nextInt();
-		scanner.nextLine(); // Consume newline
+		scanner.nextLine();
 
 		return new Manager(
 				"M" + (db.getUsers().size() + 1),
@@ -387,7 +380,7 @@ public class Admin extends User {
 				"Жалақы: "
 		));
 		int salary = scanner.nextInt();
-		scanner.nextLine(); // Consume newline
+		scanner.nextLine();
 
 		return new Librarian(
 				"L" + (db.getUsers().size() + 1),
@@ -395,7 +388,7 @@ public class Admin extends User {
 				lastName,
 				email,
 				password,
-				DepartmentsOfEmployees.Librarian, // Librarian's department is always null
+				DepartmentsOfEmployees.Librarian,
 				salary
 		);
 	}
@@ -458,19 +451,17 @@ public class Admin extends User {
 
 		System.out.print("Credits: ");
 		int credits = scanner.nextInt();
-		scanner.nextLine(); // Consume newline character
+		scanner.nextLine();
 
 		List<Course> majorRequirements = new ArrayList<>();
 		List<Course> minorRequirements = new ArrayList<>();
-		// Ask about Major Requirements
 		System.out.println("Do you want to add major requirements for this course? (yes/no)");
 		String addMajor = scanner.nextLine().trim().toLowerCase();
 
 		if (addMajor.equals("yes")) {
-			// Major and Minor Requirements selection
 			System.out.println("Select courses to add as Major Requirements:");
 
-			listCourses();  // Show existing courses
+			listCourses();
 			System.out.print("Enter course IDs (separated by commas) for major requirements, or type 'none' to skip: ");
 			String majorCourseIDs = scanner.nextLine();
 
@@ -487,7 +478,6 @@ public class Admin extends User {
 			}
 		}
 
-		// Ask about Minor Requirements
 		System.out.println("Do you want to add minor requirements for this course? (yes/no)");
 		String addMinor = scanner.nextLine().trim().toLowerCase();
 
@@ -495,7 +485,7 @@ public class Admin extends User {
 
 			System.out.println("Select courses to add as Minor Requirements:");
 
-			listCourses();  // Show existing courses
+			listCourses();
 			System.out.print("Enter course IDs (separated by commas) for minor requirements, or type 'none' to skip: ");
 			String minorCourseIDs = scanner.nextLine();
 
@@ -511,8 +501,6 @@ public class Admin extends User {
 				}
 			}
 		}
-
-		// Create the new course with selected requirements
 		Course newCourse = new Course(courseID, courseName, majorRequirements, minorRequirements, "No", credits);
 		db.addCourse(newCourse);
 		System.out.println("Course " + courseName + " added successfully.");
@@ -520,7 +508,6 @@ public class Admin extends User {
 		DatabaseManager.getInstance().addLog(log);
 	}
 
-	// Method to remove a course
 	public void removeCourse(Scanner scanner) {
 		System.out.println("Select a course to remove:");
 		listCourses();
@@ -546,7 +533,6 @@ public class Admin extends User {
 		}
 	}
 
-	// Method to update a course
 	public void updateCourse(Scanner scanner) {
 		System.out.println("Select a course to update:");
 		listCourses();
@@ -571,12 +557,10 @@ public class Admin extends User {
 
 			System.out.print("Enter new credits (current: " + courseToUpdate.credits + "): ");
 			int newCredits = scanner.nextInt();
-			scanner.nextLine(); // Consume newline character
+			scanner.nextLine();
 			if (newCredits > 0) {
 				courseToUpdate.credits = newCredits;
 			}
-
-			// If needed, add other updates for majorRequirements, minorRequirements, etc.
 
 			System.out.println("Course updated successfully.");
 		} else {
@@ -584,12 +568,10 @@ public class Admin extends User {
 		}
 	}
 
-	// Method to view all courses
 	public void viewAllCourses() {
 		listCourses();
 	}
 
-	// Helper method to list all courses
 	public void listCourses() {
 		System.out.println("Available courses:");
 		for (Course course : db.getCourses()) {
@@ -599,15 +581,13 @@ public class Admin extends User {
 
 	public void addStudentOrganization() {
 		Scanner scanner = new Scanner(System.in);
-		Language lang = Language.getInstance(); // Language instance for localization
+		Language lang = Language.getInstance();
 
-		// Ask for organization name
 		System.out.print(lang.getLocalizedMessage("Enter organization name: ",
 				"Введите название организации: ",
 				"Ұйым атауын енгізіңіз: "));
 		String organizationName = scanner.nextLine().trim();
 
-		// Check if the name is valid
 		if (organizationName.isEmpty()) {
 			System.out.println(lang.getLocalizedMessage("Organization name cannot be empty.",
 					"Название организации не может быть пустым.",
@@ -615,20 +595,17 @@ public class Admin extends User {
 			return;
 		}
 
-		// Check if the organization already exists
 		for (StudentOrganization org : db.getOrganizations()) {
 			if (org.getName().equalsIgnoreCase(organizationName)) {
 				System.out.println(lang.getLocalizedMessage("Organization already exists.",
 						"Организация уже существует.",
 						"Ұйым бар."));
-				return;  // Exit if the organization exists
+				return;
 			}
 		}
 
-		// Create a new StudentOrganization with the provided name
 		StudentOrganization newOrganization = new StudentOrganization(organizationName);
 
-		// List all students to choose a head
 		System.out.println(lang.getLocalizedMessage("Available students to choose as the head of the organization:",
 				"Доступные студенты для назначения руководителем организации:",
 				"Ұйымның жетекшісі етіп тағайындай алатын студенттер тізімі:"));
@@ -641,19 +618,16 @@ public class Admin extends User {
 			return;
 		}
 
-		// Display available students and let the admin choose a head
 		for (int i = 0; i < students.size(); i++) {
 			Student student = students.get(i);
 			System.out.println((i + 1) + ". " + student.getFirstName() + " " + student.getSurname());
 		}
 
-		// Get the admin's choice for the head of the organization
 		System.out.print(lang.getLocalizedMessage("Enter the number of the student to assign as the head: ",
 				"Введите номер студента для назначения руководителем: ",
 				"Жетекші етіп тағайындау үшін студенттің нөмірін енгізіңіз: "));
 		int choice = scanner.nextInt();
-		scanner.nextLine();  // Consume newline
-
+		scanner.nextLine();
 		if (choice < 1 || choice > students.size()) {
 			System.out.println(lang.getLocalizedMessage("Invalid student selection.",
 					"Неверный выбор студента.",
@@ -661,11 +635,9 @@ public class Admin extends User {
 			return;
 		}
 
-		// Assign the head
 		Student head = students.get(choice - 1);
-		newOrganization.setHead(head); // Set head for the organization
+		newOrganization.setHead(head);
 
-		// Add the organization to the database
 		db.addOrganization(newOrganization);
 	}
 

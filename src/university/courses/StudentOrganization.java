@@ -42,7 +42,7 @@ public class StudentOrganization implements Serializable {
 	public void setHead(Student head) {
 		this.head = head;
 		if (!members.contains(head)) {
-			members.add(head); // Add the head to the members list if not already included
+			members.add(head);
 		}
 	}
 

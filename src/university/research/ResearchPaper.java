@@ -40,7 +40,7 @@ public class ResearchPaper {
 	}
 
 	public void SortByDate(List<String> papers) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // Adjust format as needed
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Collections.sort(papers, (p1, p2) -> {
 			try {
 				Date date1 = sdf.parse(p1);

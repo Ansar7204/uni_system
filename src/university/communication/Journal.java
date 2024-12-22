@@ -9,7 +9,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 
-public class Journal {
+public class  Journal {
     private List<Student> subscribers;
     private List<ResearchPaper> researchPapers;
 

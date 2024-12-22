@@ -20,9 +20,9 @@ public class Language {
     }
     public static Language getInstance(Languages lang) {
         if (instance == null) {
-            instance = new Language(lang); // Create new instance if null
+            instance = new Language(lang);
         } else if (instance.getCurrentLanguage() != lang) {
-            instance.setCurrentLanguage(lang); // Only update if different
+            instance.setCurrentLanguage(lang);
         }
         return instance;
     }

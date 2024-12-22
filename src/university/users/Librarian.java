@@ -36,12 +36,10 @@ public class Librarian extends Employee {
 		return instance;
 	}
 
-	// Optional: Method to reset the instance (useful if you need to reset the librarian for some reason)
 	public static void resetInstance() {
 		instance = null;
 	}
 
-	// 1. Add a Book
 	public void addBook(String id, String title, String author, int numberOfPages) {
 		Language lang = Language.getInstance();
 		Book newBook = new Book(id, title, author, numberOfPages);
@@ -56,7 +54,6 @@ public class Librarian extends Employee {
 	}
 
 
-	// 2. Remove a Book
 	public void removeBook(String title) {
 		Language lang = Language.getInstance();
 		Book bookToRemove = null;
@@ -96,7 +93,6 @@ public class Librarian extends Employee {
 		return null;
 	}
 
-	// 4. View Borrowed Books
 	public String viewBorrowedBooks() {
 		Language lang = Language.getInstance();
 		StringBuilder sb = new StringBuilder(lang.getLocalizedMessage(
@@ -125,7 +121,6 @@ public class Librarian extends Employee {
 		));
 	}
 
-	// Method to view incoming borrow requests
 	public String viewIncomingRequests() {
 		Language lang = Language.getInstance();
 		StringBuilder sb = new StringBuilder(lang.getLocalizedMessage(
@@ -158,7 +153,6 @@ public class Librarian extends Employee {
 		return sb.toString();
 	}
 
-	// Method to handle a borrow request (approve/decline)
 	public void handleBorrowRequest(int requestIndex, boolean approve) {
 		Language lang = Language.getInstance();
 		if (requestIndex < 1 || requestIndex > incomingRequests.size()) {
@@ -170,13 +164,11 @@ public class Librarian extends Employee {
 		Student student = request.getStudent();
 		Book book = request.getBook();
 
-		// If the request is already processed, return early
 		if (request.isProcessed()) {
 			System.out.println(lang.getLocalizedMessage("This request has already been processed.", "Этот запрос уже обработан.", "Бұл сұраныс бұрын өңделген."));
 			return;
 		}
 
-		// Process the request: approve or decline
 		if (approve) {
 			if (!books.contains(book)) {
 				sendMessageToStudent(student, "The book '" + book.getTitle() + "' is not available in the library.", false);
@@ -184,7 +176,6 @@ public class Librarian extends Employee {
 				return;
 			}
 
-			// Lend the book
 			LocalDate dueDate = currentDate.plusMonths(6);
 			books.remove(book);
 			student.getBorrowedBooks().add(book);
@@ -208,11 +199,9 @@ public class Librarian extends Employee {
 			DatabaseManager.getInstance().addLog(log);
 		}
 
-		// Mark the request as processed
 		request.setProcessed(true);
 	}
 
-	// Helper method to send a message to the student
 	private void sendMessageToStudent(Student student, String content, boolean approved) {
 		Language lang = Language.getInstance();
 		Message message = new Message(this,student,content);
@@ -232,7 +221,6 @@ public class Librarian extends Employee {
 		}
 	}
 
-	// Role Getter
 	public String getRole() {
 		Language lang = Language.getInstance();
 		return lang.getLocalizedMessage("Librarian","Библиотекарь","Кітапханашы");
@@ -257,7 +245,6 @@ public class Librarian extends Employee {
 					"Кітапханаңыздағы кітаптар:\n"
 			));
 			for (Book book : books) {
-				// Assuming the Book class has getTitle() and getAuthor() methods
 				booksInfo.append(lang.getLocalizedMessage(
 						"Title: " + book.getTitle() + ", Author: " + book.getAuthor() + "\n",
 						"Название: " + book.getTitle() + ", Автор: " + book.getAuthor() + "\n",
@@ -266,7 +253,6 @@ public class Librarian extends Employee {
 			}
 		}
 
-		// Return the string containing the book information
 		return booksInfo.toString();
 	}
 }

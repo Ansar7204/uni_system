@@ -21,10 +21,10 @@ public class DatabaseManager implements Serializable {
     private List<User> users;
     private List<Course> courses;
     private List<Files> fileSystem;
-    private List<Log> logs;                // User activity logs
-    private List<Transcript> transcripts;  // Transcripts of students
+    private List<Log> logs;
+    private List<Transcript> transcripts;
     private List<News> newsList;
-    private List<Complaint> complaints; // News updates
+    private List<Complaint> complaints;
     private List<StudentOrganization> organizations;
 
     private DatabaseManager() {
@@ -38,7 +38,6 @@ public class DatabaseManager implements Serializable {
         organizations = new ArrayList<>();
     }
 
-    // Singleton instance retrieval
     public static DatabaseManager getInstance() {
         if (instance == null) {
             instance = new DatabaseManager();
@@ -47,14 +46,13 @@ public class DatabaseManager implements Serializable {
     }
     public boolean isPasswordAlreadyExists(String password) {
         for (User user : users) {
-            if (user.getPassword().equals(password)) {  // Assuming User class has a getPassword method
-                return true;  // Password already exists
+            if (user.getPassword().equals(password)) {
+                return true;
             }
         }
-        return false;  // Password is unique
+        return false;
     }
 
-    // User management methods
     public void addUser(User user) {
         users.add(user);
     }
@@ -63,7 +61,6 @@ public class DatabaseManager implements Serializable {
         return users;
     }
 
-    // Course management methods
     public List<Course> getCourses() {
         return courses;
     }
@@ -88,17 +85,15 @@ public class DatabaseManager implements Serializable {
         }
     }
 
-    // Helper method to find a course by ID
     public Course findCourseByID(String courseID) {
         for (Course course : this.getCourses()) {
             if (course.courseID.equals(courseID)) {
                 return course;
             }
         }
-        return null;  // If the course ID is not found
+        return null;
     }
 
-    // Files management
     public void addFolder(Files folder) {
         fileSystem.add(folder);
     }
@@ -185,10 +180,9 @@ public class DatabaseManager implements Serializable {
                 return (Librarian) user;
             }
         }
-        return null;  // Return null if no librarian found
+        return null;
     }
 
-    // Logs management
     public void addLog(Log log) {
         logs.add(log);
     }
@@ -213,19 +207,15 @@ public class DatabaseManager implements Serializable {
     }
     public void clearAllLogs() {
         Language lang = Language.getInstance();
-        // Check if logs are present
         if (logs.isEmpty()) {
-            // If no logs are available, print the localized message
             System.out.println(lang.getLocalizedMessage(
                     "No logs to clear.",
                     "Журналдарды жоюға болмайды, олар жоқ.",
                     "Нет журналов для удаления."
             ));
         } else {
-            // Clear the list of logs
             logs.clear();
 
-            // Print a localized success message
             System.out.println(lang.getLocalizedMessage(
                     "All logs have been cleared.",
                     "Все журналы были очищены.",
@@ -236,7 +226,6 @@ public class DatabaseManager implements Serializable {
 
 
 
-    // Transcript management
     public void addTranscript(Transcript transcript) {
         transcripts.add(transcript);
     }
@@ -246,7 +235,6 @@ public class DatabaseManager implements Serializable {
     }
 
     public Transcript getTranscriptForStudent(String studentID) {
-        // Iterate over all users and find the student with the given studentID
         for (User user : users) {
             if (user instanceof Student) {
                 Student student = (Student) user;
@@ -255,7 +243,6 @@ public class DatabaseManager implements Serializable {
                 }
             }
         }
-        // If no matching student is found, return null
         System.out.println("Student with ID " + studentID + " not found.");
         return null;
     }
@@ -267,7 +254,6 @@ public class DatabaseManager implements Serializable {
         }
     }
 
-    // News management
     public void addNews(News news) {
         newsList.add(news);
     }
@@ -286,7 +272,7 @@ public class DatabaseManager implements Serializable {
     }
 
     public void addComplaint(Complaint complaint) {
-        complaints.add(complaint);  // Adds a new complaint to the list
+        complaints.add(complaint);
     }
 
 
@@ -294,10 +280,10 @@ public class DatabaseManager implements Serializable {
         List<String> unsignedComplaints = new ArrayList<>();
         for (Complaint complaint : complaints) {
             if (!complaint.signedByManager) {
-                unsignedComplaints.add(complaint.complaintText);  // Add the complaint text if it's unsigned
+                unsignedComplaints.add(complaint.complaintText);
             }
         }
-        return unsignedComplaints;  // Return a list of all unsigned complaints
+        return unsignedComplaints;
     }
 
 
@@ -308,13 +294,12 @@ public class DatabaseManager implements Serializable {
     public Complaint getComplaintByText(String complaintText) {
         for (Complaint complaint : complaints) {
             if (this.getAllComplaints().contains(complaintText)) {
-                return complaint;  // Returns the complaint by the text
+                return complaint;
             }
         }
         return null;
     }
 
-    // Add a new organization
     public void addOrganization(StudentOrganization organization) {
         Language lang = Language.getInstance();
         if (!organizations.contains(organization)) {
@@ -333,7 +318,6 @@ public class DatabaseManager implements Serializable {
         }
     }
 
-    // Update an existing organization
     public boolean updateOrganization(String oldName, String newName) {
         Language lang = Language.getInstance();
         for (StudentOrganization organization : organizations) {
@@ -355,7 +339,6 @@ public class DatabaseManager implements Serializable {
         return false;
     }
 
-    // Delete an organization
     public boolean deleteOrganization(String name) {
         Language lang = Language.getInstance();
         for (StudentOrganization organization : organizations) {
@@ -377,14 +360,11 @@ public class DatabaseManager implements Serializable {
         return false;
     }
 
-    // Get list of organizations
     public List<StudentOrganization> getOrganizations() {
         return organizations;
     }
 
 
-
-    // Serialization methods
     public void saveToFile(String filePath) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
             oos.writeObject(this);

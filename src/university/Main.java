@@ -25,7 +25,6 @@ public class Main {
 
         String filePath = "src/university/database/database.txt";
 
-        // Load data at startup
         try {
             DatabaseManager.loadFromFile(filePath);
             System.out.println("Data loaded successfully.");
@@ -48,13 +47,11 @@ public class Main {
             scanner.nextLine();
 
             if (choice == 1) {
-                // Login flow
                 System.out.println("Please enter your email:");
                 String email = scanner.nextLine();
                 System.out.println("Please enter your password:");
                 String password = scanner.nextLine();
 
-                // Authenticate the user
                 User user = db.getUsers().stream()
                         .filter(u -> u.logIn(email, password))
                         .findFirst()
@@ -83,7 +80,6 @@ public class Main {
                 }
 
             } else if (choice == 2) {
-                // Registration flow
                 System.out.println("Please enter your role (Student, Teacher, Admin,Manager,Librarian):");
                 String role = scanner.nextLine();
                 System.out.println("Please enter your first name:");
@@ -108,32 +104,29 @@ public class Main {
 
                 switch (role.toLowerCase()) {
                     case "manager":
-                        // Prompt for salary
                         System.out.println("Please enter your salary:");
                         int managerSalary = scanner.nextInt();
-                        scanner.nextLine(); // Consume newline
+                        scanner.nextLine();
 
-                        // Prompt for manager type
                         ManagerTypes managerType;
                         while (true) {
                             try {
                                 System.out.println("Please specify the manager type (OR or Dean):");
                                 String managerTypeInput = scanner.nextLine().trim().toUpperCase();
                                 managerType = ManagerTypes.valueOf(managerTypeInput);
-                                break; // Break the loop if valid input is given
+                                break;
                             } catch (IllegalArgumentException e) {
                                 System.out.println("Invalid manager type. Please enter 'OR' or 'Dean'.");
                             }
                         }
 
-                        // Create a new Manager object
                         newUser = new Manager(
-                                "M" + (db.getUsers().size() + 1),  // Unique ID
+                                "M" + (db.getUsers().size() + 1),
                                 firstName,
                                 surname,
                                 email,
                                 password,
-                                DepartmentsOfEmployees.Manager,  // Fixed as "Manager"
+                                DepartmentsOfEmployees.Manager,
                                 managerSalary,
                                 managerType
                         );
@@ -145,7 +138,7 @@ public class Main {
 
                         System.out.println("Please enter your salary:");
                         int librarianSalary = scanner.nextInt();
-                        scanner.nextLine(); // Consume newline
+                        scanner.nextLine();
 
 
                         newUser = new Librarian(
@@ -154,7 +147,7 @@ public class Main {
                                 surname,
                                 email,
                                 password,
-                                DepartmentsOfEmployees.Librarian,                              // Department is always null for librarians
+                                DepartmentsOfEmployees.Librarian,
                                 librarianSalary
                         );
 
@@ -183,12 +176,11 @@ public class Main {
                                 }
                             } catch (InputMismatchException e) {
                                 System.out.println("Invalid input. Please enter a number between 1 and 4:");
-                                scanner.nextLine(); // Consume invalid input
+                                scanner.nextLine();
                             }
                         }
-                        scanner.nextLine(); // Consume leftover newline
+                        scanner.nextLine();
 
-                        // Display list of existing student organizations
                         System.out.println("Existing student organizations:");
                         if (db.getOrganizations().isEmpty()) {
                             System.out.println("No organizations available.");
@@ -198,7 +190,6 @@ public class Main {
                             }
                         }
 
-// Prompt user to select an existing organization or create a new one
                         System.out.println("Enter the number of an existing organization to join, or type a new organization name to create one (leave empty if none):");
                         String organizationMembershipInput = scanner.nextLine();
 
@@ -216,9 +207,8 @@ public class Main {
                                     System.out.println("Invalid selection. Creating a new organization.");
                                 }
                             } catch (NumberFormatException e) {
-                                // If input is not a number or invalid, assume it's a new organization name
                                 organizationMembership = new StudentOrganization(organizationMembershipInput);
-                                db.addOrganization(organizationMembership); // Add the new organization to the database
+                                db.addOrganization(organizationMembership);
                                 myOrgs.add(organizationMembership);
                                 System.out.println("Created and became head of the new organization: " + organizationMembership.getName());
                             }
@@ -226,12 +216,10 @@ public class Main {
 
 
 
-
-
-                        Transcript transcript = new Transcript(); // Assuming Transcript has a default constructor
+                        Transcript transcript = new Transcript();
 
                         newUser = new Student(
-                                "S" + (db.getUsers().size() + 1),  // Unique student ID
+                                "S" + (db.getUsers().size() + 1),
                                 firstName,
                                 surname,
                                 email,
@@ -250,15 +238,15 @@ public class Main {
                     case "teacher":
                         System.out.println("Please enter your salary:");
                         int salary = scanner.nextInt();
-                        scanner.nextLine(); // Consume newline
+                        scanner.nextLine();
 
                         TeacherTypes teacherType;
                         while (true) {
                             try {
                                 System.out.println("Please enter your teacher type (Tutor, Lector, SeniorLector, Professor):");
                                 String teacherTypeInput = scanner.nextLine().trim();
-                                teacherType = TeacherTypes.valueOf(teacherTypeInput); // Convert input to enum
-                                break; // Exit loop if input is valid
+                                teacherType = TeacherTypes.valueOf(teacherTypeInput);
+                                break;
                             } catch (IllegalArgumentException e) {
                                 System.out.println("Invalid teacher type. Please enter one of the following: Tutor, Lector, SeniorLector, Professor.");
                             }
@@ -268,10 +256,9 @@ public class Main {
                             System.out.println("No courses available in the system.");
                         } else {
                             System.out.println("Available Courses:");
-                            db.listCourses(); // List all available courses
+                            db.listCourses();
                         }
 
-                        // Ask which courses the teacher will teach
                         List<Course> teacherCourses = new ArrayList<>();
                         System.out.println("Enter course IDs (comma separated) that this teacher will teach, or press Enter to skip:");
 
@@ -429,7 +416,6 @@ public class Main {
                 }
 
                 case 7 -> {
-                    // Case 7: View Borrowed Books
 
                     List<Book> borrowedBooks = student.getBorrowedBooks();
 
@@ -593,12 +579,10 @@ public class Main {
                 case 8 -> {
                     teacher.addFiles(scanner, db);
 
-                    //add files to course
 
                 }
                 case 9 -> {
                     teacher.deleteFiles(scanner, db);
-                    //delete files from course
                 }
                 case 10 -> {
                     teacher.viewAllFoldersAndFiles();
@@ -684,7 +668,7 @@ public class Main {
 
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> {
@@ -881,7 +865,7 @@ public class Main {
 
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> {
@@ -919,7 +903,7 @@ public class Main {
                             "Беттердің санын енгізіңіз: "
                     ));
                     int numberOfPages = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine();
 
                     librarian.addBook(bookId, bookTitle, author, numberOfPages);
                     System.out.println(lang.getLocalizedMessage(
@@ -970,7 +954,6 @@ public class Main {
                     ));
                 }
                 case 9 -> {
-                    // View Incoming Borrow Requests
                     System.out.println(lang.getLocalizedMessage(
                             "\nIncoming Borrow Requests:\n" + librarian.viewIncomingRequests(),
                             "\nВходящие запросы на заимствование:\n" + librarian.viewIncomingRequests(),
@@ -978,14 +961,13 @@ public class Main {
                     ));
                 }
                 case 10 -> {
-                    // Process Borrow Request
                     System.out.print(lang.getLocalizedMessage(
                             "Enter the number of the request you want to process: ",
                             "Введите номер запроса, который вы хотите обработать: ",
                             "Өңдегіңіз келетін сұраудың нөмірін енгізіңіз: "
                     ));
                     int requestIndex = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine();
 
                     System.out.print(lang.getLocalizedMessage(
                             "Approve request? (yes/no): ",
@@ -1072,7 +1054,7 @@ public class Main {
 
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
+            scanner.nextLine();
 
             switch (choice) {
                 case 1 -> {

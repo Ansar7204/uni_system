@@ -19,7 +19,6 @@ public class Manager extends Employee {
         this.managerType = managerType;
     }
 
-    // Get all unsigned complaints from DatabaseManager
     public List<String> getUnsignedComplaints() {
         return DatabaseManager.getInstance().getAllUnsignedComplaints();
     }
@@ -28,7 +27,6 @@ public class Manager extends Employee {
 
     }
 
-    // Sign a complaint from the list of unsigned complaints
     public boolean signComplaint(String complaintText) {
         Complaint complaint = getComplaintByText(complaintText);
         if (complaint != null && getUnsignedComplaints().contains(complaintText)) {
@@ -69,14 +67,13 @@ public class Manager extends Employee {
             System.out.println((i + 1) + ". " + unsignedComplaints.get(i));
         }
 
-        // Ask the manager to select a complaint to approve
         System.out.print(lang.getLocalizedMessage(
                 "Select a complaint to approve (enter the number): ",
                 "Выберите жалобу для утверждения (введите номер): ",
                 "Бекіту үшін шағымды таңдаңыз (нөмірді енгізіңіз): "
         ));
         int complaintChoice = scanner.nextInt();
-        scanner.nextLine(); // Consume the newline character
+        scanner.nextLine();
 
         if (complaintChoice < 1 || complaintChoice > unsignedComplaints.size()) {
             System.out.println(lang.getLocalizedMessage(
@@ -135,7 +132,6 @@ public class Manager extends Employee {
     public void assignTeachersToCourses(Scanner scanner, List<Course> courses, List<Teacher> teachers) {
         Language lang = Language.getInstance();
 
-        // Check if there are any courses available
         if (courses.isEmpty()) {
             System.out.println(lang.getLocalizedMessage(
                     "No available courses.",
@@ -145,7 +141,6 @@ public class Manager extends Employee {
             return;
         }
 
-        // Display all available courses
         System.out.println(lang.getLocalizedMessage(
                 "Available courses:",
                 "Доступные курсы:",
@@ -155,7 +150,6 @@ public class Manager extends Employee {
             System.out.println((i + 1) + ". " + courses.get(i).getCourseName());
         }
 
-        // Ask the manager to choose a course
         System.out.println(lang.getLocalizedMessage(
                 "Enter the number of the course to assign teachers (or type 'back' to return): ",
                 "Введите номер курса для назначения учителей (или введите 'назад' для возврата): ",
@@ -164,10 +158,9 @@ public class Manager extends Employee {
         String courseChoice = scanner.nextLine();
 
         if (courseChoice.equalsIgnoreCase("back") || courseChoice.equalsIgnoreCase("назад") || courseChoice.equalsIgnoreCase("артқа")) {
-            return; // Exit the method
+            return;
         }
 
-        // Validate course choice
         int courseIndex;
         try {
             courseIndex = Integer.parseInt(courseChoice) - 1;
@@ -185,7 +178,6 @@ public class Manager extends Employee {
 
         Course selectedCourse = courses.get(courseIndex);
 
-        // Check if there are any teachers available
         if (teachers.isEmpty()) {
             System.out.println(lang.getLocalizedMessage(
                     "No available teachers.",
@@ -195,7 +187,6 @@ public class Manager extends Employee {
             return;
         }
 
-        // Display all available teachers
         System.out.println(lang.getLocalizedMessage(
                 "Available teachers:",
                 "Доступные учителя:",
@@ -205,7 +196,6 @@ public class Manager extends Employee {
             System.out.println((i + 1) + ". " + teachers.get(i).getFirstName() + " " + teachers.get(i).getSurname());
         }
 
-        // Ask the manager to choose a teacher
         System.out.println(lang.getLocalizedMessage(
                 "Enter the number of the teacher to assign to the course (or type 'back' to return): ",
                 "Введите номер учителя, которого хотите назначить на курс (или введите 'назад' для возврата): ",
@@ -214,10 +204,9 @@ public class Manager extends Employee {
         String teacherChoice = scanner.nextLine();
 
         if (teacherChoice.equalsIgnoreCase("back") || teacherChoice.equalsIgnoreCase("назад") || teacherChoice.equalsIgnoreCase("артқа")) {
-            return; // Exit the method
+            return;
         }
 
-        // Validate teacher choice
         int teacherIndex;
         try {
             teacherIndex = Integer.parseInt(teacherChoice) - 1;
@@ -234,8 +223,6 @@ public class Manager extends Employee {
         }
 
         Teacher selectedTeacher = teachers.get(teacherIndex);
-
-        // Check if the teacher is already assigned to the course
         if (selectedCourse.getCourseTeachers().contains(selectedTeacher)) {
             System.out.println(lang.getLocalizedMessage(
                     "This teacher is already assigned to the selected course.",
@@ -245,7 +232,6 @@ public class Manager extends Employee {
             return;
         }
 
-        // Assign the teacher to the course
         selectedCourse.assignTeacher(selectedTeacher);
         selectedTeacher.getCourses().add(selectedCourse);
 
@@ -263,8 +249,8 @@ public class Manager extends Employee {
     }
     public void addNews(String topic, String content) {
         Language lang = Language.getInstance();
-        News newNews = new News(topic, content, new ArrayList<>(), false); // Create a new News object
-        DatabaseManager.getInstance().addNews(newNews);  // Add the news to the DatabaseManager
+        News newNews = new News(topic, content, new ArrayList<>(), false);
+        DatabaseManager.getInstance().addNews(newNews);
         System.out.println(lang.getLocalizedMessage(
                 "News added successfully: " + topic,
                 "Новости успешно добавлены: " + topic,
@@ -274,7 +260,7 @@ public class Manager extends Employee {
         DatabaseManager.getInstance().addLog(log);
     }
     public void removeAllNews() {
-        DatabaseManager.getInstance().removeAllNews(); // Call the DatabaseManager to remove all news
+        DatabaseManager.getInstance().removeAllNews();
         Log log = new Log(this.getFirstName() + " " + this.getSurname(),"REMOVED NEWS");
         DatabaseManager.getInstance().addLog(log);
     }
