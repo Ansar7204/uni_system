@@ -1,6 +1,7 @@
 package university.users;
 
 import university.communication.Language;
+import university.communication.Log;
 import university.courses.Course;
 import university.courses.StudentOrganization;
 import university.courses.Transcript;
@@ -22,19 +23,49 @@ public class Admin extends User {
 	}
 
 	public void addUser(Scanner scanner) {
+		Language lang = Language.getInstance();
 		// Get user details from the admin
-		System.out.println("Enter user details to add:");
-		System.out.print("Role (Student/Teacher/Manager/Librarian): ");
+		System.out.println(lang.getLocalizedMessage(
+				"Enter user details to add:",
+				"Введите данные пользователя для добавления:",
+				"Пайдаланушы деректерін қосу үшін енгізіңіз:"
+		));
+
+		System.out.print(lang.getLocalizedMessage(
+				"Role (Student/Teacher/Manager/Librarian): ",
+				"Роль (Студент/Учитель/Менеджер/Библиотекарь): ",
+				"Рөл (Студент/Ұстаз/Менеджер/Кітапханашы): "
+		));
 		String role = scanner.nextLine().trim();
 
-		System.out.print("First Name: ");
+		System.out.print(lang.getLocalizedMessage(
+				"First Name: ",
+				"Имя: ",
+				"Аты: "
+		));
 		String firstName = scanner.nextLine();
-		System.out.print("Last Name: ");
+
+		System.out.print(lang.getLocalizedMessage(
+				"Last Name: ",
+				"Фамилия: ",
+				"Тегі: "
+		));
 		String lastName = scanner.nextLine();
-		System.out.print("Email: ");
+
+		System.out.print(lang.getLocalizedMessage(
+				"Email: ",
+				"Электронная почта: ",
+				"Электрондық пошта: "
+		));
 		String email = scanner.nextLine();
-		System.out.print("Password: ");
+
+		System.out.print(lang.getLocalizedMessage(
+				"Password: ",
+				"Пароль: ",
+				"Құпия сөз: "
+		));
 		String password = scanner.nextLine();
+
 
 		// Create user based on role
 		User newUser = createUser(role, firstName, lastName, email, password, scanner);
@@ -42,12 +73,14 @@ public class Admin extends User {
 		// Add user to the database and print success message
 		if (newUser != null) {
 			db.addUser(newUser);
-			Language language = Language.getInstance();
-			System.out.println(language.getLocalizedMessage(
+
+			System.out.println(lang.getLocalizedMessage(
 					"User " + newUser.getFirstName() + " " + newUser.getSurname() + " added.",
 					"Пользователь " + newUser.getFirstName() + " " + newUser.getSurname() + " добавлен.",
 					"Қолданушы " + newUser.getFirstName() + " " + newUser.getSurname() + " қосылды."
 			));
+			Log log = new Log(this.getFirstName() + " " + this.getSurname(),"ADDED NEW USER");
+			DatabaseManager.getInstance().addLog(log);
 		} else {
 			System.out.println("Failed to create user. Please try again.");
 		}
@@ -57,19 +90,18 @@ public class Admin extends User {
 		User newUser = null;
 
 		switch (role.toLowerCase()) {
-			case "student":
+			case "student", "студент":
 				newUser = createStudent(firstName, lastName, email, password, scanner);
 				break;
-
-			case "teacher":
+            case "teacher","учитель","ұстаз":
 				newUser = createTeacher(firstName, lastName, email, password, scanner);
 				break;
 
-			case "manager":
+			case "manager","менеджер":
 				newUser = createManager(firstName, lastName, email, password, scanner);
 				break;
 
-			case "librarian":
+			case "librarian","библиотекарь","кітапханашы":
 				newUser = createLibrarian(firstName, lastName, email, password, scanner);
 				break;
 
@@ -82,50 +114,97 @@ public class Admin extends User {
 	}
 
 	public User createStudent(String firstName, String lastName, String email, String password, Scanner scanner) {
-		System.out.println("Available Schools: " + Arrays.toString(School.values()));
-		System.out.print("Please enter your school: ");
+		Language lang = Language.getInstance();
+		System.out.println(lang.getLocalizedMessage(
+				"Available Schools: " + Arrays.toString(School.values()),
+				"Доступные школы: " + Arrays.toString(School.values()),
+				"Қолжетімді мектептер: " + Arrays.toString(School.values())
+		));
+
+		System.out.print(lang.getLocalizedMessage(
+				"Please enter your school: ",
+				"Пожалуйста, введите вашу школу: ",
+				"Өз мектебіңізді енгізіңіз: "
+		));
+
 		School school;
 		while (true) {
 			try {
 				school = School.valueOf(scanner.nextLine().trim().toUpperCase());
 				break;
 			} catch (IllegalArgumentException e) {
-				System.out.println("Invalid school. Please enter a valid school: " + Arrays.toString(School.values()));
+				System.out.println(lang.getLocalizedMessage(
+						"Invalid school. Please enter a valid school: " + Arrays.toString(School.values()),
+						"Неверная школа. Пожалуйста, введите действительную школу: " + Arrays.toString(School.values()),
+						"Қате мектеп. Дұрыс мектеп енгізіңіз: " + Arrays.toString(School.values())
+				));
 			}
 		}
 
-		System.out.print("Year of Study: ");
+		System.out.print(lang.getLocalizedMessage(
+				"Year of Study: ",
+				"Год обучения: ",
+				"Оқу жылы: "
+		));
 		int year = scanner.nextInt();
 		scanner.nextLine(); // Consume newline
 
-		System.out.println("Existing student organizations:");
+		System.out.println(lang.getLocalizedMessage(
+				"Existing student organizations:",
+				"Существующие студенческие организации:",
+				"Мақұлданған студенттік ұйымдар:"
+		));
+
 		if (db.getOrganizations().isEmpty()) {
-			System.out.println("No organizations available.");
+			System.out.println(lang.getLocalizedMessage(
+					"No organizations available.",
+					"Нет доступных организаций.",
+					"Ұйымдар жоқ."
+			));
 		} else {
 			for (int i = 0; i < db.getOrganizations().size(); i++) {
 				System.out.println((i + 1) + ". " + db.getOrganizations().get(i).getName());
 			}
 		}
 
-		System.out.println("Enter the number of an existing organization to join, or type a new organization name to create one (leave empty if none):");
+		System.out.println(lang.getLocalizedMessage(
+				"Enter the number of an existing organization to join, or type a new organization name to create one (leave empty if none):",
+				"Введите номер существующей организации для вступления, или введите имя новой организации для создания (оставьте пустым, если нет):",
+				"Бар ұйымға қосылу үшін нөмірін енгізіңіз немесе жаңа ұйымның атын жазыңыз (ештеңе болмаса бос қалдырыңыз):"
+		));
 		String organizationMembershipInput = scanner.nextLine();
 
 		StudentOrganization organizationMembership = null;
+		List<StudentOrganization> myOrgs = new ArrayList<>();
 
 		if (!organizationMembershipInput.isEmpty()) {
 			try {
 				int selectedIndex = Integer.parseInt(organizationMembershipInput) - 1;
 				if (selectedIndex >= 0 && selectedIndex < db.getOrganizations().size()) {
 					organizationMembership = db.getOrganizations().get(selectedIndex);
-					System.out.println("Joined existing organization: " + organizationMembership.getName());
+					System.out.println(lang.getLocalizedMessage(
+							"Joined existing organization: " + organizationMembership.getName(),
+							"Присоединился к существующей организации: " + organizationMembership.getName(),
+							"Бар ұйымға қосылды: " + organizationMembership.getName()
+					));
+					myOrgs.add(organizationMembership);
 				} else {
-					System.out.println("Invalid selection. Creating a new organization.");
+					System.out.println(lang.getLocalizedMessage(
+							"Invalid selection. Creating a new organization.",
+							"Неверный выбор. Создаю новую организацию.",
+							"Қате таңдау. Жаңа ұйым құру."
+					));
 				}
 			} catch (NumberFormatException e) {
 				// If input is not a number or invalid, assume it's a new organization name
 				organizationMembership = new StudentOrganization(organizationMembershipInput);
 				db.addOrganization(organizationMembership); // Add the new organization to the database
-				System.out.println("Created and became head of the new organization: " + organizationMembership.getName());
+				System.out.println(lang.getLocalizedMessage(
+						"Created and became head of the new organization: " + organizationMembership.getName(),
+						"Создано и возглавлено новое объединение: " + organizationMembership.getName(),
+						"Жаңа ұйым құрылды және оның жетекшісі болдым: " + organizationMembership.getName()
+				));
+				myOrgs.add(organizationMembership);
 			}
 		}
 
@@ -137,7 +216,7 @@ public class Admin extends User {
 				password,
 				school,
 				new Transcript(),
-				organizationMembership,
+				myOrgs,
 				year
 		);
 		if (organizationMembership != null && organizationMembership.getHead() == null) {
@@ -147,21 +226,38 @@ public class Admin extends User {
 	}
 
 	public User createTeacher(String firstName, String lastName, String email, String password, Scanner scanner) {
+		Language lang = Language.getInstance();
 		// Ask for teacher type
-		System.out.println("Available Teacher Types: " + Arrays.toString(TeacherTypes.values()));
+		System.out.println(lang.getLocalizedMessage(
+				"Available Teacher Types: " + Arrays.toString(TeacherTypes.values()),
+				"Доступные типы преподавателей: " + Arrays.toString(TeacherTypes.values()),
+				"Қолжетімді оқытушы түрлері: " + Arrays.toString(TeacherTypes.values())
+		));
 		TeacherTypes teacherType;
 		while (true) {
 			try {
-				System.out.print("Please enter the teacher type (Tutor, Lector, SeniorLector, Professor): ");
+				System.out.print(lang.getLocalizedMessage(
+						"Please enter the teacher type (Tutor, Lector, SeniorLector, Professor): ",
+						"Введите тип преподавателя (Tutor - Тьютор,Lector - Лектор,SeniorLector - Старший Лектор,Professor - Профессор): ",
+						"Оқытушы түрін енгізіңіз (Tutor - Тьютор,Lector - Лектор,SeniorLector -  Аға Лектор,Professor - Профессор): "
+				));
 				teacherType = TeacherTypes.valueOf(scanner.nextLine().trim());
 				break;
 			} catch (IllegalArgumentException e) {
-				System.out.println("Invalid teacher type. Please enter a valid type: " + Arrays.toString(TeacherTypes.values()));
+				System.out.println(lang.getLocalizedMessage(
+						"Invalid teacher type. Please enter a valid type: " + Arrays.toString(TeacherTypes.values()),
+						"Неверный тип преподавателя. Пожалуйста, введите действительный тип: " + Arrays.toString(TeacherTypes.values()),
+						"Қате оқытушы түрі. Дұрыс түрін енгізіңіз: " + Arrays.toString(TeacherTypes.values())
+				));
 			}
 		}
 
 		// Ask for salary
-		System.out.print("Salary: ");
+		System.out.print(lang.getLocalizedMessage(
+				"Salary: ",
+				"Зарплата: ",
+				"Жалақы: "
+		));
 		int salary = scanner.nextInt();
 		scanner.nextLine(); // Consume newline
 
@@ -178,15 +274,27 @@ public class Admin extends User {
 
 
 		if (db.getCourses().isEmpty()) {
-			System.out.println("No courses available in the system.");
+			System.out.println(lang.getLocalizedMessage(
+					"No courses available in the system.",
+					"В системе нет доступных курсов.",
+					"Жүйеде қолжетімді курстар жоқ."
+			));
 		} else {
-			System.out.println("Available Courses:");
+			System.out.println(lang.getLocalizedMessage(
+					"Available Courses:",
+					"Доступные курсы:",
+					"Қолжетімді курстар:"
+			));
 			db.listCourses(); // List all available courses
 		}
 
 		// Ask which courses the teacher will teach
 		List<Course> teacherCourses = new ArrayList<>();
-		System.out.println("Enter course IDs (comma separated) that this teacher will teach, or press Enter to skip:");
+		System.out.println(lang.getLocalizedMessage(
+				"Enter course IDs (comma separated) that this teacher will teach, or press Enter to skip:",
+				"Введите идентификаторы курсов (через запятую), которые этот преподаватель будет преподавать, или нажмите Enter для пропуска:",
+				"Бұл оқытушы оқытатын курстардың ID-лерін енгізіңіз (үлкен әріптермен, үтірмен бөлініп), немесе өткізіп жіберу үшін Enter басыңыз:"
+		));
 
 		String courseInput = scanner.nextLine().trim();
 		if (!courseInput.isEmpty()) {
@@ -197,7 +305,11 @@ public class Admin extends User {
 					teacherCourses.add(course);
 					course.assignTeacher(newTeacher);
 				} else {
-					System.out.println("Course with ID " + courseID.trim() + " not found.");
+					System.out.println(lang.getLocalizedMessage(
+							"Course with ID " + courseID.trim() + " not found.",
+							"Курс с ID " + courseID.trim() + " не найден.",
+							"ID-мен курс табылмады: " + courseID.trim()
+					));
 				}
 			}
 		}
@@ -209,19 +321,36 @@ public class Admin extends User {
 
 
 	public User createManager(String firstName, String lastName, String email, String password, Scanner scanner) {
-		System.out.println("Available Manager Types: " + Arrays.toString(ManagerTypes.values()));
+		Language lang = Language.getInstance();
+		System.out.println(lang.getLocalizedMessage(
+				"Available Manager Types: " + Arrays.toString(ManagerTypes.values()),
+				"Доступные типы менеджеров: " + Arrays.toString(ManagerTypes.values()),
+				"Қолжетімді менеджер түрлері: " + Arrays.toString(ManagerTypes.values())
+		));
 		ManagerTypes managerType;
 		while (true) {
 			try {
-				System.out.print("Please enter the manager type (OR, Dean): ");
+				System.out.print(lang.getLocalizedMessage(
+						"Please enter the manager type (OR, Dean): ",
+						"Введите тип менеджера (OR - ОР, Dean - Декан): ",
+						"Менеджер түрін енгізіңіз (OR - ОР,Dean - Декан): "
+				));
 				managerType = ManagerTypes.valueOf(scanner.nextLine().trim());
 				break;
 			} catch (IllegalArgumentException e) {
-				System.out.println("Invalid manager type. Please enter a valid type: " + Arrays.toString(ManagerTypes.values()));
+				System.out.println(lang.getLocalizedMessage(
+						"Invalid manager type. Please enter a valid type: " + Arrays.toString(ManagerTypes.values()),
+						"Неверный тип менеджера. Пожалуйста, введите действительный тип: " + Arrays.toString(ManagerTypes.values()),
+						"Қате менеджер түрі. Дұрыс түрін енгізіңіз: " + Arrays.toString(ManagerTypes.values())
+				));
 			}
 		}
 
-		System.out.print("Salary: ");
+		System.out.print(lang.getLocalizedMessage(
+				"Salary: ",
+				"Зарплата: ",
+				"Жалақы: "
+		));
 		int salary = scanner.nextInt();
 		scanner.nextLine(); // Consume newline
 
@@ -238,7 +367,12 @@ public class Admin extends User {
 	}
 
 	public User createLibrarian(String firstName, String lastName, String email, String password, Scanner scanner) {
-		System.out.print("Salary: ");
+		Language lang = Language.getInstance();
+		System.out.print(lang.getLocalizedMessage(
+				"Salary: ",
+				"Зарплата: ",
+				"Жалақы: "
+		));
 		int salary = scanner.nextInt();
 		scanner.nextLine(); // Consume newline
 
@@ -270,6 +404,8 @@ public class Admin extends User {
 					"Пользователь " + user.getFirstName() + " " + user.getSurname() + " не найден.",
 					"Қолданушы " + user.getFirstName() + " " + user.getSurname() + " табылмады."
 			));
+			Log log = new Log(this.getFirstName() + " " + this.getSurname(),"REMOVED USER");
+			DatabaseManager.getInstance().addLog(log);
 		}
 	}
 
@@ -367,6 +503,8 @@ public class Admin extends User {
 		Course newCourse = new Course(courseID, courseName, majorRequirements, minorRequirements, "No", credits);
 		db.addCourse(newCourse);
 		System.out.println("Course " + courseName + " added successfully.");
+		Log log = new Log(this.getFirstName() + " " + this.getSurname(),"ADDED COURSE");
+		DatabaseManager.getInstance().addLog(log);
 	}
 
 	// Method to remove a course
@@ -388,6 +526,8 @@ public class Admin extends User {
 		if (courseToRemove != null) {
 			db.getCourses().remove(courseToRemove);
 			System.out.println("Course " + courseToRemove.getCourseName() + " removed successfully.");
+			Log log = new Log(this.getFirstName() + " " + this.getSurname(),"REMOVED COURSE");
+			DatabaseManager.getInstance().addLog(log);
 		} else {
 			System.out.println("Course with ID " + courseID + " not found.");
 		}
@@ -442,6 +582,78 @@ public class Admin extends User {
 		for (Course course : db.getCourses()) {
 			System.out.println("Course ID: " + course.courseID + ", Course Name: " + course.courseName);
 		}
+	}
+
+	public void addStudentOrganization() {
+		Scanner scanner = new Scanner(System.in);
+		Language lang = Language.getInstance(); // Language instance for localization
+
+		// Ask for organization name
+		System.out.print(lang.getLocalizedMessage("Enter organization name: ",
+				"Введите название организации: ",
+				"Ұйым атауын енгізіңіз: "));
+		String organizationName = scanner.nextLine().trim();
+
+		// Check if the name is valid
+		if (organizationName.isEmpty()) {
+			System.out.println(lang.getLocalizedMessage("Organization name cannot be empty.",
+					"Название организации не может быть пустым.",
+					"Ұйым атауы бос болмауы керек."));
+			return;
+		}
+
+		// Check if the organization already exists
+		for (StudentOrganization org : db.getOrganizations()) {
+			if (org.getName().equalsIgnoreCase(organizationName)) {
+				System.out.println(lang.getLocalizedMessage("Organization already exists.",
+						"Организация уже существует.",
+						"Ұйым бар."));
+				return;  // Exit if the organization exists
+			}
+		}
+
+		// Create a new StudentOrganization with the provided name
+		StudentOrganization newOrganization = new StudentOrganization(organizationName);
+
+		// List all students to choose a head
+		System.out.println(lang.getLocalizedMessage("Available students to choose as the head of the organization:",
+				"Доступные студенты для назначения руководителем организации:",
+				"Ұйымның жетекшісі етіп тағайындай алатын студенттер тізімі:"));
+		List<Student> students = db.getAllStudents();
+
+		if (students.isEmpty()) {
+			System.out.println(lang.getLocalizedMessage("No students available to assign as the head.",
+					"Нет доступных студентов для назначения руководителем.",
+					"Жетекші тағайындауға студенттер жоқ."));
+			return;
+		}
+
+		// Display available students and let the admin choose a head
+		for (int i = 0; i < students.size(); i++) {
+			Student student = students.get(i);
+			System.out.println((i + 1) + ". " + student.getFirstName() + " " + student.getSurname());
+		}
+
+		// Get the admin's choice for the head of the organization
+		System.out.print(lang.getLocalizedMessage("Enter the number of the student to assign as the head: ",
+				"Введите номер студента для назначения руководителем: ",
+				"Жетекші етіп тағайындау үшін студенттің нөмірін енгізіңіз: "));
+		int choice = scanner.nextInt();
+		scanner.nextLine();  // Consume newline
+
+		if (choice < 1 || choice > students.size()) {
+			System.out.println(lang.getLocalizedMessage("Invalid student selection.",
+					"Неверный выбор студента.",
+					"Қате студент таңдау."));
+			return;
+		}
+
+		// Assign the head
+		Student head = students.get(choice - 1);
+		newOrganization.setHead(head); // Set head for the organization
+
+		// Add the organization to the database
+		db.addOrganization(newOrganization);
 	}
 
 

@@ -1,9 +1,6 @@
 package university.users;
 
-import university.communication.Language;
-import university.communication.Languages;
-import university.communication.Message;
-import university.communication.News;
+import university.communication.*;
 import university.database.DatabaseManager;
 
 import java.io.Serializable;
@@ -76,11 +73,16 @@ public abstract class User implements Serializable {
 	}
 
 	public String sendMessage(Scanner scanner, DatabaseManager db) {
+		Language language = Language.getInstance();
 		// Validate inputs
-		System.out.print("Enter the recipient's email: ");
+		System.out.print(language.getLocalizedMessage("Enter the recipient's email: ",
+				"Введите электронную почту получателя",
+				"Қабылдаушының почтасын енгізіңіз"));
 		String recipientEmail = scanner.nextLine();
 
-		System.out.print("Enter the message content: ");
+		System.out.print(language.getLocalizedMessage("Enter the message content: ",
+				"Напишите сообщение",
+				"Жолдаманы жазыңыз"));
 		String content = scanner.nextLine();
 
 		if (recipientEmail == null || content == null || content.trim().isEmpty()) {
@@ -103,9 +105,13 @@ public abstract class User implements Serializable {
 
 		// Send the message to the recipient
 		recipient.receiveMessage(newMessage);
+		Log log = new Log(this.getFirstName() + " " + this.getSurname(),"SEND MESSAGE");
+		DatabaseManager.getInstance().addLog(log);
 
 		// Return confirmation
-		return "Message sent successfully to " + recipient.getFirstName() + " " + recipient.getSurname() + ".";
+		return language.getLocalizedMessage("Message sent successfully to " + recipient.getFirstName() + " " + recipient.getSurname() + ".",
+				"Сообщение успешно отправлено к" + recipient.getFirstName() + " " + recipient.getSurname(),
+				"Жолдама" + recipient.getFirstName() + " " + recipient.getSurname() + "-ға сәтті жіберілді");
 	}
 
 
@@ -116,13 +122,17 @@ public abstract class User implements Serializable {
 	}
 
 	public String viewMessages() {
+		Language language = Language.getInstance();
 		if (receivedMessages.isEmpty()) {
-			return "No messages.";
+			return language.getLocalizedMessage("No messages.",
+					"Сообщений нет",
+					"Жолдама жоқ");
 		}
 		return receivedMessages.toString();
 	}
 
 	public String viewNews(Scanner scanner) {
+		Language language = Language.getInstance();
 		StringBuilder newsContent = new StringBuilder();
 
 
@@ -131,49 +141,54 @@ public abstract class User implements Serializable {
 			for (int i = 0; i < newsList.size(); i++) {
 				News news = newsList.get(i);
 				newsContent.append((i + 1)).append(". ")
-						.append("Topic: ").append(news.getTopic()).append("\n")
-						.append("Content: ").append(news.getContent()).append("\n");
+						.append(language.getLocalizedMessage("Topic: ",
+								"Тема: ","Тақырып: ")).append(news.getTopic()).append("\n")
+						.append(language.getLocalizedMessage("Content: ",
+								"Содержание: ","Мазмұны: ")).append(news.getContent()).append("\n");
 			}
 
 			// Asking the user to select a news item
-			System.out.print("Select a news item to interact with (1 to " + newsList.size() + "): ");
+			System.out.print(language.getLocalizedMessage("Select a news item to interact with (1 to " + newsList.size() + ")",
+					"Выберите новость от 1 до " + newsList.size(),"Жаңалықты таңдаңыз (1 ден " + newsList.size() + ")"));
 			int newsChoice = scanner.nextInt() - 1;
 			scanner.nextLine();  // Consume newline character
 
 			if (newsChoice < 0 || newsChoice >= newsList.size()) {
-				newsContent.append("Invalid choice.\n");
+				newsContent.append(language.getLocalizedMessage("Invalid choice. \n","Неверный выбор. \n","Қате таңдау. \n"));
 				return newsContent.toString();
 			}
 
 			News selectedNews = newsList.get(newsChoice);
 
 			// Showing options to the user for the selected news
-			System.out.println("1) View Comments");
-			System.out.println("2) Add Comment");
+			System.out.println(language.getLocalizedMessage("1) View Comments","1) Смотреть комментарий","1) Пікірлерді қарау "));
+			System.out.println(language.getLocalizedMessage("2) Add Comment","2) Добавить комментарий ","2) Пікір қосу "));
 
-			System.out.print("Choose an option (1 or 2): ");
+			System.out.print(language.getLocalizedMessage("Choose an option (1 or 2 )","Выберите опцию (1 или 2)","Таңдау жасаңыз (1 немесе 2)"));
 			int option = scanner.nextInt();
 			scanner.nextLine();  // Consume newline character
 
 			if (option == 1) {
 				// View Comments
-				newsContent.append("Comments for '").append(selectedNews.getTopic()).append("':\n");
+				newsContent.append(language.getLocalizedMessage("Comments for ","Комментарий к","Пікірлер ")).append(selectedNews.getTopic()).append("':\n");
 				for (String comment : selectedNews.getComments()) {
 					newsContent.append(comment).append("\n");
 				}
 			} else if (option == 2) {
 				// Add Comment
-				System.out.print("Enter your comment: ");
+				System.out.print(language.getLocalizedMessage("Enter your comment: ","Введите комментарий: ","Пікір қосыңыз: "));
 				String commentText = scanner.nextLine();
 
 				// Add comment to the selected news
 				selectedNews.addComment(this.getFirstName() + " " + this.getSurname(), commentText);
-				newsContent.append("Your comment has been added to '").append(selectedNews.getTopic()).append("'.\n");
+				Log log = new Log(this.getFirstName() + " " + this.getSurname(),"COMMENTED NEWS");
+				DatabaseManager.getInstance().addLog(log);
+				newsContent.append(language.getLocalizedMessage("Your comment has been added to ","Ваш комментарий добавлен к","Сіздік пікіріңіз қосылды")).append(selectedNews.getTopic()).append("'.\n");
 			} else {
-				newsContent.append("Invalid option.\n");
+				newsContent.append(language.getLocalizedMessage("Invalid option.\n","Неверный выбор \n","Қате таңдау \n"));
 			}
 		} else {
-			newsContent.append("No news available.\n");
+			newsContent.append(language.getLocalizedMessage("No news available.\n","Нет доступных новостей \n","Жаңалық жоқ \n"));
 		}
 
 		return newsContent.toString();
@@ -227,9 +242,17 @@ public abstract class User implements Serializable {
 	}
 
 	public void setPreferredLanguage(Languages preferredLanguage) {
-		this.preferredLanguage = preferredLanguage;
-		System.out.println("Preferred language changed to: " + preferredLanguage);
+		if (this.preferredLanguage != preferredLanguage) {
+			this.preferredLanguage = preferredLanguage;
+			Language.getInstance().setCurrentLanguage(preferredLanguage); // Update singleton
+			System.out.println(Language.getInstance().getLocalizedMessage(
+					"Preferred language changed to: " + preferredLanguage,
+					"Язык изменен на: " + preferredLanguage,
+					preferredLanguage + " тіліне ауыстырылды"
+			));
+		}
 	}
+
 
 	public List<Message> getReceivedMessages() {
 		return receivedMessages;

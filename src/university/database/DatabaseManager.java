@@ -1,6 +1,7 @@
 package university.database;
 
 import university.communication.Complaint;
+import university.communication.Language;
 import university.communication.Log;
 import university.communication.News;
 import university.courses.Course;
@@ -44,6 +45,14 @@ public class DatabaseManager implements Serializable {
         }
         return instance;
     }
+    public boolean isPasswordAlreadyExists(String password) {
+        for (User user : users) {
+            if (user.getPassword().equals(password)) {  // Assuming User class has a getPassword method
+                return true;  // Password already exists
+            }
+        }
+        return false;  // Password is unique
+    }
 
     // User management methods
     public void addUser(User user) {
@@ -64,9 +73,18 @@ public class DatabaseManager implements Serializable {
     }
 
     public void listCourses() {
-        System.out.println("Available courses:");
+        Language lang = Language.getInstance();
+        System.out.println(lang.getLocalizedMessage(
+                "Available courses:",
+                "Доступные курсы:",
+                "Қолжетімді курстар:"
+        ));
         for (Course course : this.getCourses()) {
-            System.out.println("Course ID: " + course.courseID + ", Course Name: " + course.courseName);
+            System.out.println(lang.getLocalizedMessage(
+                    "Course ID: " + course.courseID + ", Course Name: " + course.courseName,
+                    "ID курса: " + course.courseID + ", Название курса: " + course.courseName,
+                    "Курс ID: " + course.courseID + ", Курстың атауы: " + course.courseName
+            ));
         }
     }
 
@@ -91,7 +109,7 @@ public class DatabaseManager implements Serializable {
 
     public Files getFolderByName(String folderName) {
         for (Files folder : fileSystem) {
-            if (folder.getNameOfFile().equals(folderName)) {
+            if (folder.getNameOfFile().equalsIgnoreCase(folderName)) {
                 return folder;
             }
         }
@@ -99,18 +117,27 @@ public class DatabaseManager implements Serializable {
     }
 
     public void addFileToFolder(String folderName, String fileName) {
+        Language lang = Language.getInstance();
         Files folder = getFolderByName(folderName);
         if (folder != null) {
             folder.getFilesInFolder().add(fileName);
         } else {
-            System.out.println("Folder not found!");
+            System.out.println(lang.getLocalizedMessage(
+                    "Folder not found!",
+                    "Папка не найдена!",
+                    "Қалта табылмады!"
+            ));
         }
     }
 
     public void printAllFolders() {
+        Language lang = Language.getInstance();
         for (Files folder : fileSystem) {
-            System.out.println("Folder: " + folder.getNameOfFile() +
-                    " (Owned by: " + folder.getTeacher().getFirstName() + " " + folder.getTeacher().getSurname() + ")");
+            System.out.println(lang.getLocalizedMessage(
+                    "Folder: " + folder.getNameOfFile() + " (Owned by: " + folder.getTeacher().getFirstName() + " " + folder.getTeacher().getSurname() + ")",
+                    "Папка: " + folder.getNameOfFile() + " (Владелец: " + folder.getTeacher().getFirstName() + " " + folder.getTeacher().getSurname() + ")",
+                    "Қалтанының атауы: " + folder.getNameOfFile() + " (Иесі: " + folder.getTeacher().getFirstName() + " " + folder.getTeacher().getSurname() + ")"
+            ));
             for (String file : folder.getFilesInFolder()) {
                 System.out.println("  - " + file);
             }
@@ -171,10 +198,43 @@ public class DatabaseManager implements Serializable {
     }
 
     public void printLogs() {
-        for (Log log : logs) {
-            System.out.println(log);
+        if (logs.isEmpty()) {
+            Language lang = Language.getInstance();
+            System.out.println(lang.getLocalizedMessage(
+                    "No logs available.",
+                    "Журналдар жоқ.",
+                    "Журналдар жоқ."
+            ));
+        } else {
+            for (Log log : logs) {
+                System.out.println(log);
+            }
         }
     }
+    public void clearAllLogs() {
+        Language lang = Language.getInstance();
+        // Check if logs are present
+        if (logs.isEmpty()) {
+            // If no logs are available, print the localized message
+            System.out.println(lang.getLocalizedMessage(
+                    "No logs to clear.",
+                    "Журналдарды жоюға болмайды, олар жоқ.",
+                    "Нет журналов для удаления."
+            ));
+        } else {
+            // Clear the list of logs
+            logs.clear();
+
+            // Print a localized success message
+            System.out.println(lang.getLocalizedMessage(
+                    "All logs have been cleared.",
+                    "Все журналы были очищены.",
+                    "Барлық журналдар жойылды."
+            ));
+        }
+    }
+
+
 
     // Transcript management
     public void addTranscript(Transcript transcript) {
@@ -256,37 +316,64 @@ public class DatabaseManager implements Serializable {
 
     // Add a new organization
     public void addOrganization(StudentOrganization organization) {
+        Language lang = Language.getInstance();
         if (!organizations.contains(organization)) {
             organizations.add(organization);
-            System.out.println("Organization added: " + organization.getName());
+            System.out.println(lang.getLocalizedMessage(
+                    "Organization added: " + organization.getName(),
+                    "Организация добавлена: " + organization.getName(),
+                    "Ұйым қосылды: " + organization.getName()
+            ));
         } else {
-            System.out.println("Organization already exists.");
+            System.out.println(lang.getLocalizedMessage(
+                    "Organization already exists.",
+                    "Организация уже существует.",
+                    "Ұйым бар."
+            ));
         }
     }
 
     // Update an existing organization
     public boolean updateOrganization(String oldName, String newName) {
+        Language lang = Language.getInstance();
         for (StudentOrganization organization : organizations) {
             if (organization.getName().equalsIgnoreCase(oldName)) {
                 organization.setName(newName);
-                System.out.println("Organization updated: " + newName);
+                System.out.println(lang.getLocalizedMessage(
+                        "Organization updated: " + newName,
+                        "Организация обновлена: " + newName,
+                        "Ұйым жаңартылды: " + newName
+                ));
                 return true;
             }
         }
-        System.out.println("Organization not found.");
+        System.out.println(lang.getLocalizedMessage(
+                "Organization not found.",
+                "Организация не найдена.",
+                "Ұйым табылмады."
+        ));
         return false;
     }
 
     // Delete an organization
     public boolean deleteOrganization(String name) {
+        Language lang = Language.getInstance();
         for (StudentOrganization organization : organizations) {
             if (organization.getName().equalsIgnoreCase(name)) {
                 organizations.remove(organization);
-                System.out.println("Organization deleted: " + name);
+                System.out.println(lang.getLocalizedMessage(
+                        "Organization deleted: " + name,
+                        "Организация удалена: " + name,
+                        "Ұйым жойылды: " + name
+                ));
                 return true;
             }
         }
-        System.out.println("Organization not found.");
+        System.out.println(lang.getLocalizedMessage(
+                "Organization not found.",
+                "Организация не найдена.",
+                "Ұйым табылмады."
+        ));
         return false;
     }
 

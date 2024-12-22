@@ -1,18 +1,14 @@
 package university.users;
 
-import university.communication.Complaint;
-import university.communication.Language;
-import university.communication.Languages;
-import university.communication.UrgencyLevel;
+import university.communication.*;
 import university.courses.Course;
+import university.courses.Files;
 import university.courses.Mark;
 import university.database.DatabaseManager;
 import university.research.ResearchPaper;
 import university.research.Researcher;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Teacher extends Employee{
@@ -21,12 +17,14 @@ public class Teacher extends Employee{
 	public List<Course> courseList;
 	private List<Integer> ratings;
 	public Researcher researcherProfile;
+	public List<Files> myFiles;
 
 	public Teacher(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary, TeacherTypes typeOfTeacher) {
 		super(id, name, surName, email, password, department, salary);
         this.ratings = new ArrayList<>();
 		this.typeOfTeacher = typeOfTeacher;
 		this.courseList = new ArrayList<>();
+		this.myFiles = new ArrayList<>();
 		if (isProfessor()) {
 			this.researcherProfile = new Researcher(id, firstname, surname, email, password, school, 0);
 		}
@@ -48,39 +46,42 @@ public class Teacher extends Employee{
 	}
 
 	public void putMarkForStudent(Scanner scanner) {
-		System.out.println("Courses you are teaching:");
+		Language lang = Language.getInstance();
+		System.out.println(lang.getLocalizedMessage("Courses you are teaching:","Курсы которые вы проводите: ","Сабақ беретін курстар: "));
 		List<Course> courses = this.getCourses();  // Assuming Teacher has getCourses method
 		for (int i = 0; i < courses.size(); i++) {
 			System.out.println((i + 1) + ". " + courses.get(i).getCourseName());
 		}
 
 		// Select a course
-		System.out.print("Select a course (1-" + courses.size() + "): ");
+		System.out.print(lang.getLocalizedMessage("Select a course (1-" + courses.size() + "): ","Выберите курс (1-" + courses.size() + ")","Курсты таңдаңыз (1-" + courses.size() + ") "));
 		int courseIndex = scanner.nextInt() - 1;
 		Course selectedCourse = courses.get(courseIndex);
 
 		// Display students enrolled in the selected course
 		List<Student> enrolledStudents = selectedCourse.getEnrolledStudents();  // Method to get students enrolled in the course
-		System.out.println("Students enrolled in " + selectedCourse.getCourseName() + ":");
+		System.out.println(lang.getLocalizedMessage("Students enrolled in " + selectedCourse.getCourseName() + ":","Студенты обучающийся в " + selectedCourse.getCourseName(),selectedCourse.getCourseName() + " оқып жүрген студенттер"));
 		for (int i = 0; i < enrolledStudents.size(); i++) {
 			System.out.println((i + 1) + ". " + enrolledStudents.get(i).getFirstName() + " " + enrolledStudents.get(i).getSurname());
 		}
 
 		// Select a student
-		System.out.print("Select a student to put marks for (1-" + enrolledStudents.size() + "): ");
+		System.out.print(lang.getLocalizedMessage("Select a student to put marks for (1-" + enrolledStudents.size() + "): ","Выберите студента для оценки (1-" + enrolledStudents.size() + "):","Бағалауға студентты таңдаңыз (1-" + enrolledStudents.size() + "):"));
 		int studentIndex = scanner.nextInt() - 1;
 		Student selectedStudent = enrolledStudents.get(studentIndex);
 
 		// Input marks
-		System.out.print("Enter marks for " + selectedStudent.getFirstName() + " " + selectedStudent.getSurname() + " in " + selectedCourse.getCourseName() + "\n");
+		System.out.print(lang.getLocalizedMessage("Enter marks for " + selectedStudent.getFirstName() + " " + selectedStudent.getSurname() + " in " + selectedCourse.getCourseName() + "\n",
+				"Введите оценки для " + selectedStudent.getFirstName() + " " + selectedStudent.getSurname() + " в " + selectedCourse.getCourseName() + "\n",
+				"Бағалауды " +  selectedCourse.getCourseName() + " курсындағы " + selectedStudent.getFirstName() + " " + selectedStudent.getSurname() + " студентіне "  + "енгізіңіз"));
 
-		System.out.print("First Attestation (0-30): ");
+		System.out.print(lang.getLocalizedMessage("First Attestation (0-30): ","Первая аттестация (0-30): ","Бірінші аттестация (0-30): "));
 		double firstAttestation = scanner.nextDouble();
 
-		System.out.print("Second Attestation (0-30): ");
+		System.out.print(lang.getLocalizedMessage("Second Attestation (0-30): ","Вторая аттестация (0-30): ","Екінші аттестация (0-30): "));
 		double secondAttestation = scanner.nextDouble();
 
-		System.out.print("Final Exam (0-40): ");
+		System.out.print(lang.getLocalizedMessage("Final exam (0-40): ","Финальный экзамен (0-30): ","Шешуші экзамен (0-30): "));
 		double finalExam = scanner.nextDouble();
 
 		// Call the putMarks method to save the marks
@@ -120,43 +121,406 @@ public class Teacher extends Employee{
 	}
 
 	public String sendComplaintForStudent(Scanner scanner, DatabaseManager db) {
+		Language lang = Language.getInstance();
 		List<Student> students = db.getAllStudents();  // Assuming teacher has a method to get students
 		if (students.isEmpty()) {
-			System.out.println("No students available.");
+			System.out.println(lang.getLocalizedMessage("No students available.","Студентов нет","Студенттер жоқ"));
 		}
 
 		// Show student options to choose from
-		System.out.println("Choose a student to file a complaint against:");
+		System.out.println(lang.getLocalizedMessage("Choose a student to file a complaint against:","Выберите студента для жалобы: ","Шағым жасауға студентті таңдаңыз: "));
 		for (int i = 0; i < students.size(); i++) {
 			System.out.println(i + 1 + ". " + students.get(i).getFirstName() + " " + students.get(i).getSurname());
 		}
 		int studentChoice = scanner.nextInt() - 1;  // Get student choice
 		if (studentChoice < 0 || studentChoice >= students.size()) {
-			System.out.println("Invalid choice.");
+			System.out.println(lang.getLocalizedMessage("Invalid option.\n","Неверный выбор \n","Қате таңдау \n"));
 		}
 
 		// Get the selected student
 		Student selectedStudent = students.get(studentChoice);
 
 		// Ask for the urgency level of the complaint
-		System.out.println("Choose the urgency level for the complaint (1. LOW, 2. MEDIUM, 3. HIGH):");
+		System.out.println(lang.getLocalizedMessage("Choose the urgency level for the complaint (1. LOW, 2. MEDIUM, 3. HIGH):",
+				"Выберите уровень срочности для жалобы (1. НИЗКИЙ, 2. СРЕДНИЙ, 3. ВЫСОКИЙ): ",
+				"Шағымның шұғылдық деңгейін таңдаңыз (1.ТӨМЕН , 2. ОРТАША , 3. ЖОҒАРЫ)"));
 		int urgencyChoice = scanner.nextInt();
 		UrgencyLevel urgency = UrgencyLevel.LOW;  // Default to LOW
 		switch (urgencyChoice) {
 			case 1 -> urgency = UrgencyLevel.LOW;
 			case 2 -> urgency = UrgencyLevel.MEDIUM;
 			case 3 -> urgency = UrgencyLevel.HIGH;
-			default -> System.out.println("Invalid urgency level. Defaulting to LOW.");
+			default -> System.out.println(lang.getLocalizedMessage("Invalid urgency level. Defaulting to LOW.","Неверный уровень срочности. Поставлен НИЗКИЙ по умолчанию","Шұғыл деңгейі қате. ТӨМЕН деңгейіне қойылды"));
 		}
 
 		// Ask for the complaint text
 		scanner.nextLine();  // Consume newline character from previous input
-		System.out.println("Enter the complaint text:");
+		System.out.println(lang.getLocalizedMessage("Enter the complaint text:","Введите текст жалобы: ","Шағымды жазыңыз: "));
 		String complaintText = scanner.nextLine();
 
 		// Call the sendComplaint method to send the complaint
-		return (this.sendComplaint(urgency, "Complaint against student " + selectedStudent.getFirstName() + " " + selectedStudent.getSurname(), selectedStudent, complaintText, db));
+		return (this.sendComplaint(urgency, lang.getLocalizedMessage("Complaint against student ","Жалобу против студента","Шағым студентке") + selectedStudent.getFirstName() + " " + selectedStudent.getSurname(), selectedStudent, complaintText, db));
 
+	}
+
+	public void addFileToCourse(String folderName, String fileName, DatabaseManager db) {
+		Language lang = Language.getInstance();
+		Files courseFolder = db.getFolderByName(folderName);
+
+		if (courseFolder != null) {
+			// Add the file to the teacher's course folder
+			courseFolder.addFile(fileName);
+			System.out.println(lang.getLocalizedMessage(
+					"File added successfully to the course folder.",
+					"Файл успешно добавлен в папку курса.",
+					"Файл сәтті түрде курс қалтасына қосылды."
+			));
+			Log log = new Log(this.firstname + " " + this.surname,"ADDED FILE");
+			db.addLog(log);
+		} else {
+			System.out.println(lang.getLocalizedMessage(
+					"Course folder not found.",
+					"Папка курса не найдена.",
+					"Курс қалтасы табылмады."
+			));
+		}
+	}
+
+	public List<Files> getMyFiles() {
+		return myFiles;
+	}
+
+	public void viewAllFoldersAndFiles() {
+		Language lang = Language.getInstance();
+
+		// Check if the teacher has any folders
+		if (this.myFiles.isEmpty()) {
+			System.out.println(lang.getLocalizedMessage(
+					"You don't have any course folders.",
+					"У вас нет папок курса.",
+					"Сіздің курс қалталарыңыз жоқ."
+			));
+			return;
+		}
+
+		// Display folders and their files
+		System.out.println(lang.getLocalizedMessage(
+				"Your course folders and their contents:",
+				"Ваши папки курса и их содержимое:",
+				"Сіздің курс қалталарыңыз және олардың мазмұны:"
+		));
+
+		for (Files folder : this.myFiles) {
+			System.out.println(lang.getLocalizedMessage(
+					"Folder: " + folder.getNameOfFile(),
+					"Папка: " + folder.getNameOfFile(),
+					"Қалта: " + folder.getNameOfFile()
+			));
+
+			if (folder.getFilesInFolder().isEmpty()) {
+				System.out.println(lang.getLocalizedMessage(
+						"  (Empty folder)",
+						"  (Пустая папка)",
+						"  (Бос қалта)"
+				));
+			} else {
+				for (String file : folder.getFilesInFolder()) {
+					System.out.println("  - " + file);
+				}
+			}
+		}
+	}
+
+	public void updateFolders(Scanner scanner, DatabaseManager db) {
+		Language lang = Language.getInstance();
+
+		// Check if the teacher has any folders
+		if (this.myFiles.isEmpty()) {
+			System.out.println(lang.getLocalizedMessage(
+					"You don't have any course folders.",
+					"У вас нет папок курса.",
+					"Сіздің курс қалталарыңыз жоқ."
+			));
+			return;
+		}
+
+		// Display all folders and their files
+		System.out.println(lang.getLocalizedMessage(
+				"Your course folders and their contents:",
+				"Ваши папки курса и их содержимое:",
+				"Сіздің курс қалталарыңыз және олардың мазмұны:"
+		));
+		for (Files folder : this.myFiles) {
+			System.out.println(lang.getLocalizedMessage(
+					"Folder: " + folder.getNameOfFile(),
+					"Папка: " + folder.getNameOfFile(),
+					"Қалта: " + folder.getNameOfFile()
+			));
+
+			if (folder.getFilesInFolder().isEmpty()) {
+				System.out.println(lang.getLocalizedMessage(
+						"  (Empty folder)",
+						"  (Пустая папка)",
+						"  (Бос қалта)"
+				));
+			} else {
+				for (String file : folder.getFilesInFolder()) {
+					System.out.println("  - " + file);
+				}
+			}
+		}
+
+		// Ask which folder to update
+		System.out.println(lang.getLocalizedMessage(
+				"Enter the name of the folder you want to update (or type 'back' to return): ",
+				"Введите название папки, которую вы хотите обновить (или введите 'назад' для возврата): ",
+				"Жаңартқыңыз келетін қалтаның атын енгізіңіз (немесе 'артқа' деп жазыңыз): "
+		));
+		String folderName = scanner.nextLine();
+
+		if (folderName.equalsIgnoreCase("back") || folderName.equalsIgnoreCase("назад") || folderName.equalsIgnoreCase("артқа")) {
+			return; // Exit the method
+		}
+
+		// Find the folder
+		Files folderToUpdate = db.getFolderByName(folderName);
+		if (folderToUpdate == null || !this.myFiles.contains(folderToUpdate)) {
+			System.out.println(lang.getLocalizedMessage(
+					"Folder not found.",
+					"Папка не найдена.",
+					"Қалта табылмады."
+			));
+			return;
+		}
+
+		// Check if the folder is empty
+		if (folderToUpdate.getFilesInFolder().isEmpty()) {
+			System.out.println(lang.getLocalizedMessage(
+					"The folder is empty. Nothing to delete.",
+					"Папка пуста. Нечего удалять.",
+					"Қалта бос. Жоюға ештеңе жоқ."
+			));
+			return;
+		}
+
+		// Ask which file to delete
+		System.out.println(lang.getLocalizedMessage(
+				"Enter the name of the file you want to delete (or type 'back' to return): ",
+				"Введите название файла, который вы хотите удалить (или введите 'назад' для возврата): ",
+				"Жою қажет файлдың атын енгізіңіз (немесе 'артқа' деп жазыңыз): "
+		));
+		String fileName = scanner.nextLine();
+
+		if (fileName.equalsIgnoreCase("back") || fileName.equalsIgnoreCase("назад") || fileName.equalsIgnoreCase("артқа")) {
+			return; // Exit the method
+		}
+
+		// Attempt to delete the file
+		if (folderToUpdate.containsFile(fileName)) {
+			folderToUpdate.removeFile(fileName);
+			System.out.println(lang.getLocalizedMessage(
+					"File deleted successfully.",
+					"Файл успешно удален.",
+					"Файл сәтті түрде жойылды."
+			));
+		} else {
+			System.out.println(lang.getLocalizedMessage(
+					"File not found in the folder.",
+					"Файл не найден в папке.",
+					"Файл қалтада табылмады."
+			));
+		}
+	}
+
+
+
+	public void deleteFileFromCourse(String folderName, String fileName, DatabaseManager db) {
+		Language lang = Language.getInstance();
+		Files courseFolder = db.getFolderByName(folderName);
+
+		if (courseFolder != null) {
+			// Attempt to remove the file from the folder
+			if (courseFolder.containsFile(fileName)) {
+				courseFolder.removeFile(fileName); // Remove file from the folder
+				System.out.println(lang.getLocalizedMessage(
+						"File deleted successfully from the course folder.",
+						"Файл успешно удален из папки курса.",
+						"Файл сәтті түрде курс қалтасынан жойылды."
+				));
+			} else {
+				System.out.println(lang.getLocalizedMessage(
+						"File not found in the course folder.",
+						"Файл не найден в папке курса.",
+						"Файл курс қалтасында табылмады."
+				));
+			}
+		} else {
+			System.out.println(lang.getLocalizedMessage(
+					"Course folder not found.",
+					"Папка курса не найдена.",
+					"Курс қалтасы табылмады."
+			));
+		}
+	}
+
+	public void createNewFolder(Scanner scanner,DatabaseManager db) {
+		Language lang = Language.getInstance();
+
+		System.out.println(lang.getLocalizedMessage(
+				"Enter the name of the new folder: ",
+				"Введите название новой папки: ",
+				"Жаңа қалтаның атын енгізіңіз: "
+		));
+		String newFolderName = scanner.nextLine();
+
+		Files newFolder = new Files(this, newFolderName);
+		db.addFolder(newFolder); // Using DatabaseManager method
+		this.getMyFiles().add(newFolder); // Add folder to teacher's list
+
+		System.out.println(lang.getLocalizedMessage(
+				"New folder created successfully.",
+				"Новая папка успешно создана.",
+				"Жаңа қалта сәтті жасалды."
+		));
+		Log log = new Log(this.firstname + " " + this.surname,"CREATED FOLDER");
+		db.addLog(log);
+	}
+
+	public void deleteAllFilesFromCourse(String folderName, DatabaseManager db) {
+		Language lang = Language.getInstance();
+		Files courseFolder = db.getFolderByName(folderName);
+
+		if (courseFolder != null) {
+			// Clear all files from the folder
+			courseFolder.getFilesInFolder().clear();
+			System.out.println(lang.getLocalizedMessage(
+					"All files deleted from the course folder.",
+					"Все файлы удалены из папки курса.",
+					"Барлық файлдар курс қалтасынан жойылды."
+			));
+			Log log = new Log(this.firstname + " " + this.surname,"DELETED FILES");
+			db.addLog(log);
+		} else {
+			System.out.println(lang.getLocalizedMessage(
+					"Course folder not found.",
+					"Папка курса не найдена.",
+					"Курс қалтасы табылмады."
+			));
+		}
+	}
+	public void deleteFiles(Scanner scanner,DatabaseManager db){
+		Language lang = Language.getInstance();
+
+		System.out.println(lang.getLocalizedMessage(
+				"Choose an option:\n1. Delete all folders\n2. Delete all files from a specific folder\nEnter your choice: ",
+				"Выберите опцию:\n1. Удалить все папки\n2. Удалить все файлы из определенной папки\nВведите ваш выбор: ",
+				"Опцияны таңдаңыз:\n1. Барлық қалталарды жою\n2. Белгілі бір қалтадан барлық файлдарды жою\nТаңдауыңызды енгізіңіз: "
+		));
+		int deleteChoice = scanner.nextInt();
+		scanner.nextLine(); // Consume newline
+
+		switch (deleteChoice) {
+			case 1:
+				this.getMyFiles().clear();
+				db.getAllFolders().removeIf(folder -> folder.getTeacher().equals(this));
+				System.out.println(lang.getLocalizedMessage(
+						"All folders deleted successfully.",
+						"Все папки успешно удалены.",
+						"Барлық қалталар сәтті жойылды."
+				));
+				break;
+
+			case 2:
+				if (this.getMyFiles().isEmpty()) {
+					System.out.println(lang.getLocalizedMessage(
+							"You don't have any folders to delete files from.",
+							"У вас нет папок, из которых можно удалить файлы.",
+							"Файлдарды жою үшін қалталарыңыз жоқ."
+					));
+					return;
+				}
+
+				System.out.println(lang.getLocalizedMessage(
+						"Your existing course folders are:",
+						"Ваши существующие папки курса:",
+						"Сіздің бар курс қалталарыңыз:"
+				));
+				for (Files folder : this.getMyFiles()) {
+					System.out.println("- " + folder.getNameOfFile());
+				}
+
+				System.out.println(lang.getLocalizedMessage(
+						"Enter the folder name to delete all files: ",
+						"Введите название папки для удаления всех файлов: ",
+						"Барлық файлдарды жою үшін қалта атауын енгізіңіз: "
+				));
+				String folderName = scanner.nextLine();
+				this.deleteAllFilesFromCourse(folderName, db); // Using Teacher method
+				break;
+
+			default:
+				System.out.println(lang.getLocalizedMessage(
+						"Invalid option. Returning to the main menu.",
+						"Неверная опция. Возврат в главное меню.",
+						"Қате опция. Негізгі мәзірге оралу."
+				));
+		}
+	}
+
+	public void addFiles(Scanner scanner,DatabaseManager db){
+		Language lang = Language.getInstance();
+
+		if (this.getMyFiles().isEmpty()) {
+			System.out.println(lang.getLocalizedMessage(
+					"You don't have any course folders. Would you like to create one? (yes/no): ",
+					"У вас нет папок курса. Хотите создать одну? (да/нет): ",
+					"Сіздің курс қалталарыңыз жоқ. Біреуін жасағыңыз келе ме? (иә/жоқ): "
+			));
+			Set<String> affirmativeResponses = new HashSet<>(Arrays.asList(
+					"yes", "да", "иә"
+			));
+			String response = scanner.nextLine();
+			if (affirmativeResponses.contains(response.trim().toLowerCase())) {
+				this.createNewFolder(scanner, db);
+			} else {
+				return;
+			}
+		}
+
+		while (true) {
+			System.out.println(lang.getLocalizedMessage(
+					"Your existing course folders are:",
+					"Ваши существующие папки курса:",
+					"Сіздің бар курс қалталарыңыз:"
+			));
+			for (Files folder : this.getMyFiles()) {
+				System.out.println("- " + folder.getNameOfFile());
+			}
+
+			System.out.println(lang.getLocalizedMessage(
+					"Enter the folder name to add files or type 'new' to create a new folder (or 'back' to return): ",
+					"Введите название папки для добавления файлов или введите 'new' для создания новой папки (или 'назад' для возврата): ",
+					"Файлдарды қосу үшін қалта атауын енгізіңіз немесе жаңа қалта жасау үшін 'new' деп жазыңыз (немесе 'артқа' деп жазыңыз): "
+			));
+			String folderName = scanner.nextLine();
+			Set<String> affirmativeResponses = new HashSet<>(Arrays.asList(
+					"back", "назад", "артқа"
+			));
+
+			if (affirmativeResponses.contains(folderName.trim().toLowerCase())) {
+				return;
+			} else if (folderName.equalsIgnoreCase("new")) {
+				this.createNewFolder(scanner, db);
+			} else {
+				System.out.println(lang.getLocalizedMessage(
+						"Enter the file name to add: ",
+						"Введите имя файла для добавления: ",
+						"Қосылатын файлдың атын енгізіңіз: "
+				));
+				String fileName = scanner.nextLine();
+				this.addFileToCourse(folderName, fileName, db); // Using Teacher method
+			}
+		}
 	}
 
 
@@ -192,7 +556,7 @@ public class Teacher extends Employee{
 	}
 
 	public String viewCourses() {
-		return "something";
+		return courseList.toString();
 	}
 
 	public String viewStudent(Student student) {

@@ -8,12 +8,25 @@ public class Language {
         currentLanguage = Languages.EN;
     }
 
+    public Language(Languages currentLanguage) {
+        this.currentLanguage = currentLanguage;
+    }
+
     public static Language getInstance() {
         if (instance == null) {
             instance = new Language();
         }
         return instance;
     }
+    public static Language getInstance(Languages lang) {
+        if (instance == null) {
+            instance = new Language(lang); // Create new instance if null
+        } else if (instance.getCurrentLanguage() != lang) {
+            instance.setCurrentLanguage(lang); // Only update if different
+        }
+        return instance;
+    }
+
 
 
     public Languages getCurrentLanguage() {
