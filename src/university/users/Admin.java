@@ -64,7 +64,20 @@ public class Admin extends User {
 				"Пароль: ",
 				"Құпия сөз: "
 		));
-		String password = scanner.nextLine();
+
+		String password = null;
+		while (true) {
+			 password = scanner.nextLine();
+			if(DatabaseManager.getInstance().isPasswordAlreadyExists(password)){
+				System.out.println(Language.getInstance().getLocalizedMessage(
+						"Password already exists. Please choose a different password.",
+						"Пароль уже существует. Пожалуйста, выберите другой пароль.",
+						"Құпия сөз қазірдің өзінде бар. Басқа құпия сөзді таңдаңыз."
+				));
+			} else {
+				break;
+			}
+		}
 
 
 		// Create user based on role
