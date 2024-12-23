@@ -86,6 +86,19 @@ public class Main {
                 // Registration flow
                 System.out.println("Please enter your role (Student, Teacher, Admin,Manager,Librarian):");
                 String role = scanner.nextLine();
+                if(role.equalsIgnoreCase("librarian")){
+                    if(!(Librarian.checkInstance())){
+                        System.out.println("Librarian already exists in the system!");
+                        System.out.println("Do you want to reset librarian account? (yes/no)");
+                        String answer = scanner.nextLine();
+                        if(answer.equalsIgnoreCase("yes")){
+                            Librarian.resetInstance();
+                            System.out.println("Librarian account reset. You can continue registration");
+                        } else{
+                            continue;
+                        }
+                    }
+                }
                 System.out.println("Please enter your first name:");
                 String firstName = scanner.nextLine();
                 System.out.println("Please enter your surname:");
@@ -889,8 +902,8 @@ public class Main {
                     System.out.println(result);
                 }
 
-                case 2 -> librarian.viewBooks();
-                case 3 -> librarian.viewBorrowedBooks();
+                case 2 -> System.out.println(librarian.viewBooks());
+                case 3 -> System.out.println(librarian.viewBorrowedBooks());
                 case 4 -> {
                     System.out.print(lang.getLocalizedMessage(
                             "Enter the book ID: ",
@@ -971,11 +984,7 @@ public class Main {
                 }
                 case 9 -> {
                     // View Incoming Borrow Requests
-                    System.out.println(lang.getLocalizedMessage(
-                            "\nIncoming Borrow Requests:\n" + librarian.viewIncomingRequests(),
-                            "\nВходящие запросы на заимствование:\n" + librarian.viewIncomingRequests(),
-                            "\nКеліп түскен қарыз сұраулар:\n" + librarian.viewIncomingRequests()
-                    ));
+                    librarian.viewIncomingRequests();
                 }
                 case 10 -> {
                     // Process Borrow Request
@@ -1175,7 +1184,6 @@ public class Main {
                     manager.assignTeachersToCourses(scanner,db.getCourses(),db.getAllTeachers());
 
                 }
-
                 case 10 -> {
                     System.out.println(lang.getLocalizedMessage(
                             "Logging out...",
@@ -1186,7 +1194,6 @@ public class Main {
                     db.addLog(log);
                     return;
                 }
-
                 default -> System.out.println(lang.getLocalizedMessage(
                         "Invalid option. Please try again.",
                         "Неверный выбор. Пожалуйста, попробуйте снова.",
@@ -1195,5 +1202,4 @@ public class Main {
             }
         }
     }
-
 }

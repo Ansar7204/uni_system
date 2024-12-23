@@ -7,7 +7,7 @@ public class ConsoleHelper {
     static long delay = 2000;
 
     public static void clearScreen() throws IOException {
-        for (int i = 0; i < 10;i++){
+        for (int i = 0; i < 5;i++){
             System.out.println();
         }
     }

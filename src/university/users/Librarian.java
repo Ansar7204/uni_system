@@ -21,12 +21,14 @@ public class Librarian extends Employee {
 	public String name;
 	private List<Request> incomingRequests;
 	public List<Book> books;
+	public List<Book> borrowedBooks;
 	public LocalDate currentDate;
 
 	public Librarian(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary) {
 		super(id, name, surName, email, password, department, salary);
 		this.books = new ArrayList<>();
 		this.incomingRequests = new ArrayList<>();
+		this.borrowedBooks = new ArrayList<>();
 	}
 
 	public static Librarian getInstance(String id, String name, String surName, String email, String password, DepartmentsOfEmployees department, int salary) {
@@ -34,6 +36,9 @@ public class Librarian extends Employee {
 			instance = new Librarian(id, name, surName, email, password, department, salary);
 		}
 		return instance;
+	}
+	public static boolean checkInstance(){
+        return instance == null;
 	}
 
 	// Optional: Method to reset the instance (useful if you need to reset the librarian for some reason)
@@ -104,7 +109,10 @@ public class Librarian extends Employee {
 				"Взятые книги:\n",
 				"Алынған кітаптар:\n"
 		));
-		for (Book book : books) {
+		if(borrowedBooks.isEmpty()){
+			return lang.getLocalizedMessage("No borrowed books","Нет взятых книг","Алынған кітап жоқ");
+		}
+		for (Book book : borrowedBooks) {
 			sb.append(" - ").append(book.getTitle()).append("\n");
 		}
 		return sb.isEmpty() ? lang.getLocalizedMessage(
@@ -183,10 +191,10 @@ public class Librarian extends Employee {
 				System.out.println(lang.getLocalizedMessage("Book is not available.", "Книга недоступна.", "Кітап қолжетімсіз."));
 				return;
 			}
-
-			// Lend the book
+			currentDate = LocalDate.now();
 			LocalDate dueDate = currentDate.plusMonths(6);
 			books.remove(book);
+			borrowedBooks.add(book);
 			student.getBorrowedBooks().add(book);
 			book.setDueDate(dueDate);
 

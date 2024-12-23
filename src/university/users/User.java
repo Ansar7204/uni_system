@@ -42,14 +42,15 @@ public abstract class User implements Serializable {
 					"Сіз сәтті кірдіңіз!"
 			));
 			return true;
+		} else {
+
+			System.out.println(language.getLocalizedMessage(
+					"Login failed!",
+					"Вход не выполнен!",
+					"Кіру сәтсіз аяқталды!"
+			));
+			return false;
 		}
-		
-		System.out.println(language.getLocalizedMessage(
-				"Login failed!",
-				"Вход не выполнен!",
-				"Кіру сәтсіз аяқталды!"
-		));
-		return false;
 
 	}
 

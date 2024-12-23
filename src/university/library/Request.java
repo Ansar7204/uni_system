@@ -2,7 +2,9 @@ package university.library;
 
 import university.users.Student;
 
-public class Request {
+import java.io.Serializable;
+
+public class Request implements Serializable {
     private Student student;
     private Book book;
     private boolean isProcessed;  // Indicates if the request has been processed
