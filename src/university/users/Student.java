@@ -55,7 +55,6 @@ public class Student extends User {
 		DatabaseManager dbManager = DatabaseManager.getInstance();
 		List<Files> studentFiles = new ArrayList<>();
 
-		// Loop through all files in DatabaseManager to find those owned by this student's teachers
 		for (Files file : dbManager.getAllFolders()) {
 			if (file.getTeacher() != null && isTeacherRelatedToStudent(file.getTeacher())) {
 				studentFiles.add(file);
@@ -86,14 +85,12 @@ public class Student extends User {
 
 	public String registerForCourses(Course course) throws CreditLimitExceededException {
 		Language lang = Language.getInstance();
-		int totalCredits = course.getCredits(); // Start with the credits of the course being added
+		int totalCredits = course.getCredits();
 
-		// Calculate total credits of currently registered courses
 		for (Course registeredCourse : registeredCourses) {
 			totalCredits += registeredCourse.getCredits();
 		}
 
-		// Check if total credits exceed the limit
 		if (totalCredits > 21) {
 			throw new CreditLimitExceededException(
 					"Cannot register for " + course.getCourseName() +
@@ -106,7 +103,6 @@ public class Student extends User {
 					"Вы уже зарегистрированы на курс " + course.getCourseName(),"Сіз " + course.getCourseName() + " курсына тіркелгенсіз");
 		}
 
-		// Register the course and update the student's course list
 		registeredCourses.add(course);
 		course.addStudent(this);
 		Log log = new Log(this.getFirstName() + " " + this.getSurname(),"REGISTRATION FOR COURSES");
@@ -120,7 +116,7 @@ public class Student extends User {
 	public String viewTeacher(String courseName) {
 		for (Course course : registeredCourses) {
 			if (course.getCourseName().equals(courseName)) {
-				List<Teacher> teachers = course.getCourseTeachers(); // List of teachers
+				List<Teacher> teachers = course.getCourseTeachers();
 				if (teachers.isEmpty()) {
 					return "No teachers assigned for " + courseName;
 				}
@@ -130,7 +126,6 @@ public class Student extends User {
 					teacherNames.append(teacher.getFirstName()).append(", ");
 				}
 
-				// Remove the trailing comma and space
 				return teacherNames.substring(0, teacherNames.length() - 2);
 			}
 		}
@@ -172,14 +167,12 @@ public class Student extends User {
 			System.out.println(lang.getLocalizedMessage("No teachers available to rate.","Нет учиетелей для оценки","Бағалауға мұғалімдер жоқ"));
 
 		}
-		// Display the list of teachers
 		System.out.println(lang.getLocalizedMessage("Select a teacher to rate:","Выберите учителя для оценки: ","Бағалауға мұғалімді таңдаңыз: "));
 		for (int i = 0; i < teachers.size(); i++) {
 			Teacher teacher = teachers.get(i);
 			System.out.println((i + 1) + ". " + teacher.getFirstName() + " " + teacher.getSurname());
 		}
 
-		// Get the student's choice
 		System.out.print(lang.getLocalizedMessage("Enter the number of the teacher you want to rate: ","Введите число учителя для оценки","Бағалайтын мұғалімнің санын таңдаңыз"));
 		int teacherChoice = scanner.nextInt();
 
@@ -189,7 +182,6 @@ public class Student extends User {
 
 		Teacher selectedTeacher = teachers.get(teacherChoice - 1);
 
-		// Prompt the student to enter a rating
 		System.out.print(lang.getLocalizedMessage("Enter your rating for " + selectedTeacher.getFirstName() + ": ","Введите рейтинг для " + selectedTeacher.getFirstName() + ":",
 				"Бағалауды " + selectedTeacher.getFirstName() + " мұғаліміне енгізіңіз" + ":"));
 		int rating = scanner.nextInt();
@@ -210,7 +202,6 @@ public class Student extends User {
 	public String viewFiles() {
 		Language lang = Language.getInstance();
 
-		// Refresh the files list to ensure it's up-to-date
 		refreshFiles();
 
 		if (files.isEmpty()) {
@@ -221,19 +212,16 @@ public class Student extends User {
 			);
 		}
 
-		// Group files by teacher and their folders
 		Map<Teacher, Map<String, List<String>>> filesByTeacherAndFolder = new HashMap<>();
 		for (Files folder : files) {
 			Teacher teacher = folder.getTeacher();
 			if (!filesByTeacherAndFolder.containsKey(teacher)) {
 				filesByTeacherAndFolder.put(teacher, new HashMap<>());
 			}
-			// Add folder and its files to the teacher's map
 			Map<String, List<String>> teacherFolders = filesByTeacherAndFolder.get(teacher);
 			teacherFolders.put(folder.getNameOfFile(), folder.getFilesInFolder());
 		}
 
-		// Build a string to display files grouped by teacher and folder
 		StringBuilder fileList = new StringBuilder(lang.getLocalizedMessage(
 				"Files available from your teachers:\n",
 				"Доступные файлы от ваших учителей:\n",
@@ -281,17 +269,14 @@ public class Student extends User {
 	public String borrowBook(Scanner scanner) {
 		Language lang = Language.getInstance();
 
-		// Retrieve the single instance of the librarian
 		Librarian librarian = DatabaseManager.getInstance().getLibrarian();
 		if (librarian == null) {
 			return  lang.getLocalizedMessage("No librarian found in the system.","Нет библиотекаря в системе","Кітапханашы системада жоқ");
 
 		}
 
-		// Retrieve the list of books from the librarian
 		List<Book> availableBooks = librarian.getBooks();
 
-		// Filter out the books that are available
 		List<Book> booksToBorrow = new ArrayList<>();
 		for (Book book : availableBooks) {
 			if (book.isAvailable()) {
@@ -304,14 +289,12 @@ public class Student extends User {
 
 		}
 
-		// Display available books
 		System.out.println(lang.getLocalizedMessage("Available books to borrow:","Доступные книги для взятия: ","Алуға болатын кітаптар: "));
 		for (int i = 0; i < booksToBorrow.size(); i++) {
 			Book book = booksToBorrow.get(i);
 			System.out.println((i + 1) + ". " + book.getTitle());
 		}
 
-		// Ask the student to choose a book
 		System.out.print(lang.getLocalizedMessage("Enter the number of the book you want to borrow: ","Введите число книги для взятие: ","Алатын кітаптың санын енгізіңіз: "));
 		int bookChoice = scanner.nextInt();
 
@@ -321,17 +304,14 @@ public class Student extends User {
 
 		Book selectedBook = booksToBorrow.get(bookChoice - 1);
 
-		// Create a borrow request
 		librarian.receiveRequest(this, selectedBook);
 
-		// Mark the book as borrowed
-		selectedBook.setAvailable(false);  // Set the book's availability to false (borrowed)
+		selectedBook.setAvailable(false);
 		this.getBorrowedBooks().add(selectedBook);
 
 		Log log = new Log(this.getFirstName() + " " + this.getSurname(),"RATED TEACHERS");
 		DatabaseManager.getInstance().addLog(log);
 
-		// Confirmation message
 		return lang.getLocalizedMessage("You have successfully requested to borrow the book: " + selectedBook.getTitle(),"Вы отправили заявку на взятие книги: " + selectedBook.getTitle(),
 				selectedBook.getTitle() + " кітабын алуға ұсыныс жіберілді");
 	}
@@ -339,7 +319,6 @@ public class Student extends User {
 	public void joinOrganization(DatabaseManager db) {
 		Language lang = Language.getInstance();
 
-		// Check if there are any organizations in the system
 		if (db.getOrganizations().isEmpty()) {
 			System.out.println(lang.getLocalizedMessage("There are no organizations available to join.",
 					"Нет доступных организаций для присоединения.",
@@ -347,7 +326,6 @@ public class Student extends User {
 			return;
 		}
 
-		// Ask the student to choose an organization to join
 		System.out.println(lang.getLocalizedMessage("Available organizations to join:",
 				"Доступные организации для присоединения:",
 				"Қосылуға қолжетімді ұйымдар:"));
@@ -358,13 +336,12 @@ public class Student extends User {
 			System.out.println((i + 1) + ". " + org.getName() + " (Head: " + org.getHead().getFirstName() + " " + org.getHead().getSurname() + ")");
 		}
 
-		// Get student's choice of organization
 		Scanner scanner = new Scanner(System.in);
 		System.out.print(lang.getLocalizedMessage("Enter the number of the organization you want to join: ",
 				"Введите номер организации, в которую вы хотите присоединиться: ",
 				"Қосылғыңыз келетін ұйымның нөмірін енгізіңіз: "));
 		int choice = scanner.nextInt();
-		scanner.nextLine();  // Consume newline
+		scanner.nextLine();
 
 		if (choice < 1 || choice > organizations.size()) {
 			System.out.println(lang.getLocalizedMessage("Invalid organization selection.",
@@ -375,7 +352,6 @@ public class Student extends User {
 
 		StudentOrganization selectedOrganization = organizations.get(choice - 1);
 
-		// Check if the student is the head of the selected organization
 		if (selectedOrganization.getHead().equals(this)) {
 			System.out.println(lang.getLocalizedMessage("You cannot join your own organization as the head.",
 					"Вы не можете присоединиться к своей организации как глава.",
@@ -383,7 +359,6 @@ public class Student extends User {
 			return;
 		}
 
-		// Check if the student is already a member of the selected organization
 		if (selectedOrganization.getMembers().contains(this)) {
 			System.out.println(lang.getLocalizedMessage("You are already a member of this organization.",
 					"Вы уже являетесь членом этой организации.",
@@ -391,7 +366,6 @@ public class Student extends User {
 			return;
 		}
 
-		// Join the organization
 		selectedOrganization.addMember(this);
 		this.getOrganizationMemberships().add(selectedOrganization);
 		System.out.println(lang.getLocalizedMessage("You have successfully joined the organization: " + selectedOrganization.getName(),
@@ -402,17 +376,15 @@ public class Student extends User {
 	public void viewAndUpdateOrganization(Scanner scanner, DatabaseManager db) {
 		Language lang = Language.getInstance();
 
-		// Check if the student is a head of any organization
 		StudentOrganization studentOrganization = null;
 		for (StudentOrganization org : this.organizationMembership) {
 			if (org.getHead().equals(this)) {
-				studentOrganization = org; // Student is the head of this organization
+				studentOrganization = org;
 				break;
 			}
 		}
 
 		if (studentOrganization == null) {
-			// Student is not the head of any organization
 			System.out.println(lang.getLocalizedMessage(
 					"You are not the head of any organization, you cannot perform this action.",
 					"Вы не являетесь руководителем никакой организации, вы не можете выполнить это действие.",
@@ -420,7 +392,6 @@ public class Student extends User {
 			return;
 		}
 
-		// Display the organization details
 		System.out.println(lang.getLocalizedMessage("Your organization details:",
 				"Детали вашей организации:",
 				"Сіздің ұйымыңыздың мәліметтері:"));
@@ -437,19 +408,17 @@ public class Student extends User {
 			System.out.println(member.getFirstName() + " " + member.getSurname());
 		}
 
-		// Option to update organization name
 		System.out.println(lang.getLocalizedMessage("Would you like to update the organization name? (Yes/No)",
 				"Хотите ли вы обновить название организации? (Да/Нет)",
 				"Ұйымның атауын жаңартқыңыз келе ме? (Иә/Жоқ)"));
 		String choice = scanner.nextLine();
 		if ("Yes".equalsIgnoreCase(choice)) {
-			// Get new name for the organization
+
 			System.out.print(lang.getLocalizedMessage("Enter the new organization name: ",
 					"Введите новое название организации: ",
 					"Ұйымның жаңа атауын енгізіңіз: "));
 			String newName = scanner.nextLine();
 
-			// Check if the new name already exists in the database
 			for (StudentOrganization org : db.getOrganizations()) {
 				if (org.getName().equalsIgnoreCase(newName)) {
 					System.out.println(lang.getLocalizedMessage("Organization with that name already exists.",
@@ -459,7 +428,6 @@ public class Student extends User {
 				}
 			}
 
-			// Update organization name
 			boolean updated = db.updateOrganization(studentOrganization.getName(), newName);
 			if (updated) {
 				studentOrganization.setName(newName);
@@ -469,23 +437,19 @@ public class Student extends User {
 			}
 		}
 
-		// Option to delete organization
 		System.out.println(lang.getLocalizedMessage("Would you like to delete the organization? (Yes/No)",
 				"Хотите ли вы удалить организацию? (Да/Нет)",
 				"Ұйымды жойғыңыз келе ме? (Иә/Жоқ)"));
 		String deleteChoice = scanner.nextLine();
 		if ("Yes".equalsIgnoreCase(deleteChoice)) {
-			// Delete the organization
 			boolean deleted = db.deleteOrganization(studentOrganization.getName());
 			if (deleted) {
-				// Send message to all affected members
 				for (Student member : studentOrganization.getMembers()) {
 					Message message = new Message(this,member, lang.getLocalizedMessage("The organization " + studentOrganization.getName() + " has been deleted.",
 							"Организация " + studentOrganization.getName() + " была удалена.",
 							"Ұйым " + studentOrganization.getName() + " жойылды."));
-					member.receiveMessage(message);  // Send message to each student
+					member.receiveMessage(message);
 				}
-				// Clear the student's organization list after deletion
 				this.organizationMembership.remove(studentOrganization);
 				System.out.println(lang.getLocalizedMessage("Organization deleted successfully.",
 						"Организация успешно удалена.",

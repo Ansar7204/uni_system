@@ -14,8 +14,8 @@ public class ConsoleHelper {
 
     public static void clearScreenAfterDelay() {
         try {
-            Thread.sleep(delay);  // Sleep for the specified time interval (in milliseconds)
-            clearScreen();        // Clear the screen after the delay
+            Thread.sleep(delay);
+            clearScreen();
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }

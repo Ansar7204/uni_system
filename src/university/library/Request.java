@@ -7,12 +7,12 @@ import java.io.Serializable;
 public class Request implements Serializable {
     private Student student;
     private Book book;
-    private boolean isProcessed;  // Indicates if the request has been processed
+    private boolean isProcessed;
 
     public Request(Student student, Book book) {
         this.student = student;
         this.book = book;
-        this.isProcessed = false; // Initially, the request is pending
+        this.isProcessed = false;
     }
 
     public Student getStudent() {
