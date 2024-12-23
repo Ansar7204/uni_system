@@ -86,19 +86,6 @@ public class Main {
                 // Registration flow
                 System.out.println("Please enter your role (Student, Teacher, Admin,Manager,Librarian):");
                 String role = scanner.nextLine();
-                if(role.equalsIgnoreCase("librarian")){
-                    if(!(Librarian.checkInstance())){
-                        System.out.println("Librarian already exists in the system!");
-                        System.out.println("Do you want to reset librarian account? (yes/no)");
-                        String answer = scanner.nextLine();
-                        if(answer.equalsIgnoreCase("yes")){
-                            Librarian.resetInstance();
-                            System.out.println("Librarian account reset. You can continue registration");
-                        } else{
-                            continue;
-                        }
-                    }
-                }
                 System.out.println("Please enter your first name:");
                 String firstName = scanner.nextLine();
                 System.out.println("Please enter your surname:");

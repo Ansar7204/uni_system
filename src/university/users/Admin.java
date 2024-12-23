@@ -641,6 +641,18 @@ public class Admin extends User {
 		db.addOrganization(newOrganization);
 	}
 
+	@Override
+	public String toString() {
+		return "Admin{" +
+				"db=" + db +
+				", id='" + id + '\'' +
+				", firstname='" + firstname + '\'' +
+				", surname='" + surname + '\'' +
+				", email='" + email + '\'' +
+				", preferredLanguage=" + preferredLanguage +
+				", newsList=" + newsList +
+				'}';
+	}
 
 	public String getRole() {
 		return "Admin";

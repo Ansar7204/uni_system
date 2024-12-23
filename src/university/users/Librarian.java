@@ -250,6 +250,25 @@ public class Librarian extends Employee {
 		return books;
 	}
 
+
+	@Override
+	public String toString() {
+		return "Librarian{" +
+				"name='" + name + '\'' +
+				", incomingRequests=" + incomingRequests +
+				", books=" + books +
+				", borrowedBooks=" + borrowedBooks +
+				", currentDate=" + currentDate +
+				", department=" + department +
+				", id='" + id + '\'' +
+				", firstname='" + firstname + '\'' +
+				", surname='" + surname + '\'' +
+				", email='" + email + '\'' +
+				", preferredLanguage=" + preferredLanguage +
+				", newsList=" + newsList +
+				'}';
+	}
+
 	public String viewBooks() {
 		Language lang = Language.getInstance();
 		StringBuilder booksInfo = new StringBuilder();

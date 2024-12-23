@@ -38,6 +38,21 @@ public class Student extends User {
 		 this.files = loadFilesFromDatabase();
 		 this.borrowedBooks = new ArrayList<>();
 	}
+
+	public String toString() {
+		return "Student{" +
+				"studentId='" + studentId + '\'' +
+				", school=" + school +
+				", transcript=" + transcript +
+				", organizationMembership=" + organizationMembership +
+				", yearOfStudy=" + yearOfStudy +
+				", registeredCourses=" + registeredCourses +
+				", diplomaProjects=" + diplomaProjects +
+				", files=" + files +
+				", borrowedBooks=" + borrowedBooks +
+				'}';
+	}
+
 	private boolean isTeacherRelatedToStudent(Teacher teacher) {
 		for (Course course : registeredCourses) {
 			if (course.getCourseTeachers().contains(teacher)) {
